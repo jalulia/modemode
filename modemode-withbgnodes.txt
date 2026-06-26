@@ -1,0 +1,835 @@
+{
+  "blend": "color-burn",
+  "fx": {
+    "bg": "light",
+    "dim": 0.7,
+    "hoverFade": 0.33,
+    "curve": 0.16,
+    "oglow": {
+      "on": false,
+      "size": 46,
+      "op": 0.35
+    },
+    "iglow": {
+      "on": false,
+      "size": 8,
+      "op": 0.6
+    },
+    "perlin": {
+      "on": true,
+      "scale": 18.5,
+      "op": 0.11
+    },
+    "grain": {
+      "on": true,
+      "size": 2.5,
+      "op": 0.058
+    },
+    "grad": {
+      "mode": "off",
+      "low": [
+        10,
+        10,
+        14
+      ],
+      "high": [
+        244,
+        244,
+        238
+      ]
+    },
+    "ht": {
+      "on": false,
+      "fillMode": "fill",
+      "density": 120,
+      "pointSize": 0.5,
+      "depth": 0.6,
+      "edgeSoft": 0.44,
+      "scatter": 0.22,
+      "breathe": 0.24,
+      "speed": 1,
+      "shimmer": 5,
+      "links": 0,
+      "colorMix": 1,
+      "color": [
+        42,
+        114,
+        160
+      ],
+      "glow": 0.1,
+      "soft": 0.2,
+      "additive": true,
+      "curR": 320,
+      "curI": 0.6,
+      "repel": 14,
+      "mode": "inflate"
+    },
+    "flow": {
+      "on": false,
+      "count": 3450,
+      "speed": 1.1,
+      "trail": 0.9,
+      "swirl": 0.22,
+      "width": 0.6,
+      "colorMix": 0.9,
+      "color": [
+        120,
+        180,
+        230
+      ],
+      "glow": 0,
+      "additive": true
+    },
+    "label": {
+      "style": "black",
+      "size": 10,
+      "dist": 16,
+      "bg": false
+    },
+    "anim": {
+      "on": true,
+      "amount": 0.74,
+      "walk": 0.045,
+      "breathe": 0.15,
+      "intens": 0.2,
+      "fall": 0.15,
+      "speed": 0.6,
+      "variance": 0.92
+    }
+  },
+  "projects": [
+    {
+      "code": "P-05",
+      "name": "65 PORTER",
+      "tier": "medium",
+      "colors": {
+        "edge": [
+          127,
+          255,
+          235
+        ],
+        "core": [
+          136,
+          212,
+          32
+        ]
+      },
+      "nodes": [
+        {
+          "x": 0.946,
+          "y": 0.829,
+          "radius": 0.22,
+          "intensity": 0.35,
+          "falloff": 3,
+          "core": true,
+          "label": "Architectural Design",
+          "labelAngle": 0
+        },
+        {
+          "x": 1,
+          "y": 0.424,
+          "radius": 0.29,
+          "intensity": 0.8,
+          "falloff": 2,
+          "core": false,
+          "label": "Interior Design",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.744,
+          "y": 0.494,
+          "radius": 0.12,
+          "intensity": 0.8,
+          "falloff": 2,
+          "core": false,
+          "label": "Environtmental Signage",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.833,
+          "y": -0.056,
+          "radius": 0.12,
+          "intensity": 0.57,
+          "falloff": 3.45,
+          "core": false,
+          "label": "Furniture Design & Fabrication",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.948,
+          "y": -0.247,
+          "radius": 0.075,
+          "intensity": 0.13,
+          "falloff": 3.7,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        }
+      ]
+    },
+    {
+      "code": "P-06",
+      "name": "SELECTED ARCADE",
+      "tier": "medium",
+      "colors": {
+        "edge": [
+          254,
+          205,
+          194
+        ],
+        "core": [
+          249,
+          249,
+          11
+        ]
+      },
+      "nodes": [
+        {
+          "x": 1,
+          "y": -0.998,
+          "radius": 0.16,
+          "intensity": 0.85,
+          "falloff": 3.05,
+          "core": true,
+          "label": "Engineering & Fabrication",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.855,
+          "y": -0.803,
+          "radius": 0.075,
+          "intensity": 0.23,
+          "falloff": 3,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.754,
+          "y": -0.927,
+          "radius": 0.185,
+          "intensity": 0.33,
+          "falloff": 3.05,
+          "core": false,
+          "label": "Cabinet Design",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.692,
+          "y": -0.623,
+          "radius": 0.12,
+          "intensity": 0.28,
+          "falloff": 2,
+          "core": false,
+          "label": "Graphic Design",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.566,
+          "y": -0.93,
+          "radius": 0.065,
+          "intensity": 0.22,
+          "falloff": 3.45,
+          "core": false,
+          "label": "Interface Design",
+          "labelAngle": 0
+        }
+      ]
+    },
+    {
+      "code": "P-02",
+      "name": "MASSIVE",
+      "tier": "focused",
+      "colors": {
+        "edge": [
+          139,
+          255,
+          204
+        ],
+        "core": [
+          30,
+          111,
+          224
+        ]
+      },
+      "nodes": [
+        {
+          "x": -1,
+          "y": 0.259,
+          "radius": 0.12,
+          "intensity": 0.44,
+          "falloff": 2.8,
+          "core": false,
+          "label": "SFX & BGM",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.26,
+          "y": -0.943,
+          "radius": 0.12,
+          "intensity": 0.51,
+          "falloff": 2,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -1,
+          "y": -0.071,
+          "radius": 0.19,
+          "intensity": 0.48,
+          "falloff": 3.6,
+          "core": false,
+          "label": "Quantum & Macro Physics Simulations",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.416,
+          "y": -1,
+          "radius": 0.19,
+          "intensity": 0.8,
+          "falloff": 2,
+          "core": false,
+          "label": "Cabinet fabrication & Design",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.934,
+          "y": -0.515,
+          "radius": 0.195,
+          "intensity": 0.96,
+          "falloff": 2,
+          "core": true,
+          "label": "Game Design & Development",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.852,
+          "y": 0.257,
+          "radius": 0.12,
+          "intensity": 0.8,
+          "falloff": 2,
+          "core": false,
+          "label": "Visual Identity System",
+          "labelAngle": 0
+        },
+        {
+          "x": -1,
+          "y": -0.859,
+          "radius": 0.095,
+          "intensity": 0.25,
+          "falloff": 3.8,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.75,
+          "y": -0.667,
+          "radius": 0.055,
+          "intensity": 0.12,
+          "falloff": 3.3,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.775,
+          "y": -0.219,
+          "radius": 0.195,
+          "intensity": 0.33,
+          "falloff": 2,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -1,
+          "y": 0.452,
+          "radius": 0.075,
+          "intensity": 0.18,
+          "falloff": 3.7,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        }
+      ]
+    },
+    {
+      "code": "P-03",
+      "name": "GIF",
+      "tier": "medium",
+      "colors": {
+        "edge": [
+          212,
+          255,
+          192
+        ],
+        "core": [
+          0,
+          167,
+          255
+        ]
+      },
+      "nodes": [
+        {
+          "x": 1,
+          "y": -0.541,
+          "radius": 0.1,
+          "intensity": 0.88,
+          "falloff": 4,
+          "core": true,
+          "label": "Neon Lightpiece Design",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.871,
+          "y": -0.585,
+          "radius": 0.055,
+          "intensity": 0.16,
+          "falloff": 4,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        }
+      ]
+    },
+    {
+      "code": "P-04",
+      "name": "NIGHTMARE KART",
+      "tier": "medium",
+      "colors": {
+        "edge": [
+          255,
+          210,
+          51
+        ],
+        "core": [
+          196,
+          0,
+          33
+        ]
+      },
+      "nodes": [
+        {
+          "x": 0.556,
+          "y": -0.691,
+          "radius": 0.25,
+          "intensity": 0.85,
+          "falloff": 2,
+          "core": true,
+          "label": "Cabinet Design & Fabrication",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.652,
+          "y": -0.266,
+          "radius": 0.12,
+          "intensity": 0.34,
+          "falloff": 4,
+          "core": false,
+          "label": "Welding, Fabrics, Blood",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.426,
+          "y": -0.619,
+          "radius": 0.12,
+          "intensity": 0.17,
+          "falloff": 4,
+          "core": false,
+          "label": "3D Modeling & Printing",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.233,
+          "y": -0.729,
+          "radius": 0.192,
+          "intensity": 0.3,
+          "falloff": 4,
+          "core": false,
+          "label": "Interface Feedback System",
+          "labelAngle": 0.107
+        },
+        {
+          "x": 0.124,
+          "y": -0.348,
+          "radius": 0.12,
+          "intensity": 0.4,
+          "falloff": 2.6,
+          "core": false,
+          "label": "Interactive Lighting System",
+          "labelAngle": 0
+        }
+      ]
+    },
+    {
+      "code": "P-01",
+      "name": "EYEKNOW MANOR",
+      "tier": "wide",
+      "colors": {
+        "edge": [
+          221,
+          218,
+          252
+        ],
+        "core": [
+          215,
+          3,
+          89
+        ]
+      },
+      "nodes": [
+        {
+          "x": 0.168,
+          "y": 0.426,
+          "radius": 0.4,
+          "intensity": 0.88,
+          "falloff": 2.25,
+          "core": true,
+          "label": "Experiential Design",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.475,
+          "y": 0.015,
+          "radius": 0.203,
+          "intensity": 0.3,
+          "falloff": 2.9,
+          "core": false,
+          "label": "Integrated Facial Recognition AI system",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.372,
+          "y": -0.302,
+          "radius": 0.22,
+          "intensity": 0.88,
+          "falloff": 2,
+          "core": false,
+          "label": "Installation design",
+          "labelAngle": -1.032
+        },
+        {
+          "x": 0.192,
+          "y": -0.52,
+          "radius": 0.12,
+          "intensity": 0.31,
+          "falloff": 2.5,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.287,
+          "y": -0.396,
+          "radius": 0.123,
+          "intensity": 0.37,
+          "falloff": 4,
+          "core": false,
+          "label": "Living portraits",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.022,
+          "y": -0.876,
+          "radius": 0.15,
+          "intensity": 0.32,
+          "falloff": 3.25,
+          "core": false,
+          "label": "Pepper's Ghost Fortune Teller",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.074,
+          "y": -0.134,
+          "radius": 0.205,
+          "intensity": 0.5,
+          "falloff": 2.5,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.553,
+          "y": 0.525,
+          "radius": 0.225,
+          "intensity": 0.8,
+          "falloff": 2,
+          "core": false,
+          "label": "Interior Design",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.346,
+          "y": 0.66,
+          "radius": 0.205,
+          "intensity": 0.38,
+          "falloff": 3.25,
+          "core": false,
+          "label": "Event visual system",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.111,
+          "y": 0.852,
+          "radius": 0.12,
+          "intensity": 0.31,
+          "falloff": 2,
+          "core": false,
+          "label": "Sound Design",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.633,
+          "y": -0.04,
+          "radius": 0.144,
+          "intensity": 0.33,
+          "falloff": 3.65,
+          "core": false,
+          "label": "Environmental Sigange",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.799,
+          "y": -0.45,
+          "radius": 0.12,
+          "intensity": 0.8,
+          "falloff": 2,
+          "core": false,
+          "label": "Custom Tarot Card Deck",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.579,
+          "y": 0.847,
+          "radius": 0.12,
+          "intensity": 0.11,
+          "falloff": 3.6,
+          "core": false,
+          "label": "Social & Digital Extensions",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.657,
+          "y": 0.964,
+          "radius": 0.12,
+          "intensity": 0.16,
+          "falloff": 3.65,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.042,
+          "y": -0.52,
+          "radius": 0.12,
+          "intensity": 0.5,
+          "falloff": 2.35,
+          "core": false,
+          "label": "CRT Array Streaming Display",
+          "labelAngle": 0
+        }
+      ]
+    },
+    {
+      "code": "P-07",
+      "name": "BG",
+      "tier": "medium",
+      "colors": {
+        "edge": [
+          239,
+          244,
+          239
+        ],
+        "core": [
+          225,
+          227,
+          222
+        ]
+      },
+      "nodes": [
+        {
+          "x": -0.651,
+          "y": -0.6,
+          "radius": 0.08,
+          "intensity": 0.85,
+          "falloff": 3.45,
+          "core": true,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.532,
+          "y": -0.635,
+          "radius": 0.12,
+          "intensity": 0.8,
+          "falloff": 2,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.437,
+          "y": -0.471,
+          "radius": 0.055,
+          "intensity": 0.8,
+          "falloff": 2,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.393,
+          "y": -0.841,
+          "radius": 0.12,
+          "intensity": 0.55,
+          "falloff": 3.85,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.941,
+          "y": 0.755,
+          "radius": 0.12,
+          "intensity": 0.42,
+          "falloff": 3,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.825,
+          "y": 0.957,
+          "radius": 0.07,
+          "intensity": 0.64,
+          "falloff": 2.9,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.798,
+          "y": 0.623,
+          "radius": 0.065,
+          "intensity": 0.47,
+          "falloff": 3.2,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.658,
+          "y": 0.693,
+          "radius": 0.12,
+          "intensity": 0.43,
+          "falloff": 3.65,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.025,
+          "y": -0.564,
+          "radius": 0.12,
+          "intensity": 0.67,
+          "falloff": 2.3,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.897,
+          "y": -0.943,
+          "radius": 0.075,
+          "intensity": 0.26,
+          "falloff": 2,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.743,
+          "y": -0.855,
+          "radius": 0.17,
+          "intensity": 0.59,
+          "falloff": 3.9,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.399,
+          "y": 0.826,
+          "radius": 0.095,
+          "intensity": 0.69,
+          "falloff": 4,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.32,
+          "y": 0.942,
+          "radius": 0.055,
+          "intensity": 0.42,
+          "falloff": 3.65,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.492,
+          "y": 0.935,
+          "radius": 0.07,
+          "intensity": 0.92,
+          "falloff": 3.25,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": -0.146,
+          "y": -0.367,
+          "radius": 0.095,
+          "intensity": 0.8,
+          "falloff": 3.5,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 1,
+          "y": -0.11,
+          "radius": 0.09,
+          "intensity": 0.61,
+          "falloff": 3.1,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.88,
+          "y": -0.233,
+          "radius": 0.12,
+          "intensity": 0.8,
+          "falloff": 2.6,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        },
+        {
+          "x": 0.745,
+          "y": -0.015,
+          "radius": 0.09,
+          "intensity": 0.91,
+          "falloff": 2.6,
+          "core": false,
+          "label": "",
+          "labelAngle": 0
+        }
+      ]
+    }
+  ]
+}

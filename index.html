@@ -219,21 +219,18 @@ function smoothstep(a,b,x){let t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);}
 
 const TIERS=['wide','medium','focused'];
 function seed(){return [
-  {id:uid(),code:'P-01',name:"EYEKNOW MANOR",tier:'wide',colors:{edge:[233,210,252],core:[255,4,105]},nodes:[
-    {id:uid(),x:0.168,y:0.426,r:0.4,i:0.88,f:2.25,core:true,label:"Experiential Design"},
-    {id:uid(),x:-0.475,y:0.015,r:0.203,i:0.3,f:2.9,core:false,label:"Integrated Facial Recognition AI system"},
-    {id:uid(),x:0.372,y:-0.302,r:0.22,i:0.88,f:2,core:false,label:"Installation design"},
-    {id:uid(),x:0.192,y:-0.52,r:0.12,i:0.31,f:2.5,core:false,label:""},
-    {id:uid(),x:-0.287,y:-0.396,r:0.123,i:0.37,f:4,core:false,label:"Living portraits"},
-    {id:uid(),x:-0.022,y:-0.876,r:0.15,i:0.32,f:3.25,core:false,label:"Pepper's Ghost Fortune Teller"},
-    {id:uid(),x:-0.074,y:-0.134,r:0.205,i:0.5,f:2.5,core:false,label:""},
-    {id:uid(),x:0.553,y:0.525,r:0.225,i:0.8,f:2,core:false,label:"Interior Design"},
-    {id:uid(),x:-0.346,y:0.66,r:0.205,i:0.38,f:3.25,core:false,label:"Event visual system"},
-    {id:uid(),x:-0.111,y:0.852,r:0.12,i:0.31,f:2,core:false,label:"Sound Design"},
-    {id:uid(),x:0.633,y:-0.04,r:0.144,i:0.33,f:3.65,core:false,label:"Environmental Sigange"},
-    {id:uid(),x:0.799,y:-0.45,r:0.12,i:0.8,f:2,core:false,label:"Custom Tarot Card Deck"},
-    {id:uid(),x:-0.579,y:0.847,r:0.12,i:0.11,f:3.6,core:false,label:"Social & Digital Extensions"},
-    {id:uid(),x:0.657,y:0.964,r:0.12,i:0.16,f:3.65,core:false,label:""}]},
+  {id:uid(),code:'P-05',name:"65 PORTER",tier:'medium',colors:{edge:[127,255,235],core:[136,212,32]},nodes:[
+    {id:uid(),x:0.946,y:0.829,r:0.22,i:0.35,f:3,core:true,label:"Architectural Design"},
+    {id:uid(),x:1,y:0.424,r:0.29,i:0.8,f:2,core:false,label:"Interior Design"},
+    {id:uid(),x:0.744,y:0.494,r:0.12,i:0.8,f:2,core:false,label:"Environtmental Signage"},
+    {id:uid(),x:0.833,y:-0.056,r:0.12,i:0.57,f:3.45,core:false,label:"Furniture Design & Fabrication"},
+    {id:uid(),x:0.948,y:-0.247,r:0.075,i:0.13,f:3.7,core:false,label:""}]},
+  {id:uid(),code:'P-06',name:"SELECTED ARCADE",tier:'medium',colors:{edge:[254,205,194],core:[249,249,11]},nodes:[
+    {id:uid(),x:1,y:-0.998,r:0.16,i:0.85,f:3.05,core:true,label:"Engineering & Fabrication"},
+    {id:uid(),x:0.855,y:-0.803,r:0.075,i:0.23,f:3,core:false,label:""},
+    {id:uid(),x:0.754,y:-0.927,r:0.185,i:0.33,f:3.05,core:false,label:"Cabinet Design"},
+    {id:uid(),x:0.692,y:-0.623,r:0.12,i:0.28,f:2,core:false,label:"Graphic Design"},
+    {id:uid(),x:0.566,y:-0.93,r:0.065,i:0.22,f:3.45,core:false,label:"Interface Design"}]},
   {id:uid(),code:'P-02',name:"MASSIVE",tier:'focused',colors:{edge:[139,255,204],core:[30,111,224]},nodes:[
     {id:uid(),x:-1,y:0.259,r:0.12,i:0.44,f:2.8,core:false,label:"SFX & BGM"},
     {id:uid(),x:0.26,y:-0.943,r:0.12,i:0.51,f:2,core:false,label:""},
@@ -252,25 +249,48 @@ function seed(){return [
     {id:uid(),x:0.556,y:-0.691,r:0.25,i:0.85,f:2,core:true,label:"Cabinet Design & Fabrication"},
     {id:uid(),x:0.652,y:-0.266,r:0.12,i:0.34,f:4,core:false,label:"Welding, Fabrics, Blood"},
     {id:uid(),x:0.426,y:-0.619,r:0.12,i:0.17,f:4,core:false,label:"3D Modeling & Printing"},
-    {id:uid(),x:0.233,y:-0.729,r:0.192,i:0.3,f:4,core:false,label:"Interface Feedback System"},
+    {id:uid(),x:0.233,y:-0.729,r:0.192,i:0.3,f:4,core:false,label:"Interface Feedback System",la:0.107},
     {id:uid(),x:0.124,y:-0.348,r:0.12,i:0.4,f:2.6,core:false,label:"Interactive Lighting System"}]},
-  {id:uid(),code:'P-05',name:"65 Porter",tier:'medium',colors:{edge:[127,255,235],core:[136,212,32]},nodes:[
-    {id:uid(),x:0.946,y:0.829,r:0.22,i:0.85,f:3,core:true,label:"Architectural Design"},
-    {id:uid(),x:1,y:0.424,r:0.29,i:0.8,f:2,core:false,label:"Interior Design"},
-    {id:uid(),x:0.744,y:0.494,r:0.12,i:0.8,f:2,core:false,label:"Environtmental Signage"},
-    {id:uid(),x:0.833,y:-0.056,r:0.12,i:0.57,f:3.45,core:false,label:"Furniture Design & Fabrication"},
-    {id:uid(),x:0.948,y:-0.247,r:0.075,i:0.13,f:3.7,core:false,label:""}]},
-  {id:uid(),code:'P-06',name:"SELECTED ARCADE",tier:'medium',colors:{edge:[254,205,194],core:[249,249,11]},nodes:[
-    {id:uid(),x:1,y:-0.998,r:0.16,i:0.85,f:3.05,core:true,label:"Engineering & Fabrication"},
-    {id:uid(),x:0.855,y:-0.803,r:0.075,i:0.23,f:3,core:false,label:""},
-    {id:uid(),x:0.754,y:-0.927,r:0.185,i:0.33,f:3.05,core:false,label:"Cabinet Design"},
-    {id:uid(),x:0.692,y:-0.623,r:0.12,i:0.28,f:2,core:false,label:"Graphic Design"},
-    {id:uid(),x:0.566,y:-0.93,r:0.065,i:0.22,f:3.45,core:false,label:"Interface Design"}]},
+  {id:uid(),code:'P-01',name:"EYEKNOW MANOR",tier:'wide',colors:{edge:[221,218,252],core:[215,3,89]},nodes:[
+    {id:uid(),x:0.168,y:0.426,r:0.4,i:0.88,f:2.25,core:true,label:"Experiential Design"},
+    {id:uid(),x:-0.475,y:0.015,r:0.203,i:0.3,f:2.9,core:false,label:"Integrated Facial Recognition AI system"},
+    {id:uid(),x:0.372,y:-0.302,r:0.22,i:0.88,f:2,core:false,label:"Installation design",la:-1.032},
+    {id:uid(),x:0.192,y:-0.52,r:0.12,i:0.31,f:2.5,core:false,label:""},
+    {id:uid(),x:-0.287,y:-0.396,r:0.123,i:0.37,f:4,core:false,label:"Living portraits"},
+    {id:uid(),x:-0.022,y:-0.876,r:0.15,i:0.32,f:3.25,core:false,label:"Pepper's Ghost Fortune Teller"},
+    {id:uid(),x:-0.074,y:-0.134,r:0.205,i:0.5,f:2.5,core:false,label:""},
+    {id:uid(),x:0.553,y:0.525,r:0.225,i:0.8,f:2,core:false,label:"Interior Design"},
+    {id:uid(),x:-0.346,y:0.66,r:0.205,i:0.38,f:3.25,core:false,label:"Event visual system"},
+    {id:uid(),x:-0.111,y:0.852,r:0.12,i:0.31,f:2,core:false,label:"Sound Design"},
+    {id:uid(),x:0.633,y:-0.04,r:0.144,i:0.33,f:3.65,core:false,label:"Environmental Sigange"},
+    {id:uid(),x:0.799,y:-0.45,r:0.12,i:0.8,f:2,core:false,label:"Custom Tarot Card Deck"},
+    {id:uid(),x:-0.579,y:0.847,r:0.12,i:0.11,f:3.6,core:false,label:"Social & Digital Extensions"},
+    {id:uid(),x:0.657,y:0.964,r:0.12,i:0.16,f:3.65,core:false,label:""},
+    {id:uid(),x:0.042,y:-0.52,r:0.12,i:0.5,f:2.35,core:false,label:"CRT Array Streaming Display"}]},
+  {id:uid(),code:'P-07',name:"BG",tier:'medium',colors:{edge:[239,244,239],core:[225,227,222]},nodes:[
+    {id:uid(),x:-0.651,y:-0.6,r:0.08,i:0.85,f:3.45,core:true,label:""},
+    {id:uid(),x:-0.532,y:-0.635,r:0.12,i:0.8,f:2,core:false,label:""},
+    {id:uid(),x:-0.437,y:-0.471,r:0.055,i:0.8,f:2,core:false,label:""},
+    {id:uid(),x:-0.393,y:-0.841,r:0.12,i:0.55,f:3.85,core:false,label:""},
+    {id:uid(),x:-0.941,y:0.755,r:0.12,i:0.42,f:3,core:false,label:""},
+    {id:uid(),x:-0.825,y:0.957,r:0.07,i:0.64,f:2.9,core:false,label:""},
+    {id:uid(),x:-0.798,y:0.623,r:0.065,i:0.47,f:3.2,core:false,label:""},
+    {id:uid(),x:-0.658,y:0.693,r:0.12,i:0.43,f:3.65,core:false,label:""},
+    {id:uid(),x:-0.025,y:-0.564,r:0.12,i:0.67,f:2.3,core:false,label:""},
+    {id:uid(),x:-0.897,y:-0.943,r:0.075,i:0.26,f:2,core:false,label:""},
+    {id:uid(),x:-0.743,y:-0.855,r:0.17,i:0.59,f:3.9,core:false,label:""},
+    {id:uid(),x:0.399,y:0.826,r:0.095,i:0.69,f:4,core:false,label:""},
+    {id:uid(),x:0.32,y:0.942,r:0.055,i:0.42,f:3.65,core:false,label:""},
+    {id:uid(),x:0.492,y:0.935,r:0.07,i:0.92,f:3.25,core:false,label:""},
+    {id:uid(),x:-0.146,y:-0.367,r:0.095,i:0.8,f:3.5,core:false,label:""},
+    {id:uid(),x:1,y:-0.11,r:0.09,i:0.61,f:3.1,core:false,label:""},
+    {id:uid(),x:0.88,y:-0.233,r:0.12,i:0.8,f:2.6,core:false,label:""},
+    {id:uid(),x:0.745,y:-0.015,r:0.09,i:0.91,f:2.6,core:false,label:""}]},
 ];}
-let projects=seed(), selProj=projects[0].id, selNode=null, mode='edit', activeSwatch='core', wheelHSV=[0,1,1], blendMode='overlay';
+let projects=seed(), selProj=projects[0].id, selNode=null, mode='edit', activeSwatch='core', wheelHSV=[0,1,1], blendMode='color-burn';
 
 /* storage */
-const store={async save(){const s=JSON.stringify(projects);
+const store={async save(){const s=JSON.stringify({v:2,projects,fx,blend:blendMode});
   try{if(window.storage&&window.storage.set){await window.storage.set('mm_field_v2',s,false);return;}}catch(e){}
   try{localStorage.setItem('mm_field_v2',s);}catch(e){}},
   async load(){try{if(window.storage&&window.storage.get){const r=await window.storage.get('mm_field_v2',false);if(r&&r.value)return JSON.parse(r.value);}}catch(e){}
@@ -292,7 +312,7 @@ let DPR=1,cssW=0,cssH=0,fL,fT,fW,fH,mfd,lowW,lowH,scl;
 const buf={}; let pl={canvas:null,ctx:null}; let alpha={}; let live={}; let dirty=true, lastField=0; let heightBuf=null;
 let pert={}; const ANIM_FPS=26;   // per-node render-time animation deltas (not persisted) + field recompute throttle while animating
 let gaCur={}, boostCur={}, lastT=0, globalTab=false, dragFrom=null;   // focus-fade easing (per-project alpha+boost), GLOBAL-tab flag, project drag-reorder index
-let mag={}, lastMx=-1, lastMy=-1, magWasActive=false;   // cursor-magnet per-node pull offsets + mouse-move / active-edge tracking
+let mag={}, magCur={}, lastMagT=0, magWasActive=false;   // cursor-magnet eased per-node pull offsets (magCur = persistent eased state)
 let hover=null, lock=null, mouse={x:-9999,y:-9999,inside:false};
 const PANEL_W=316;
 
@@ -357,16 +377,26 @@ function computePert(t){ pert={}; if(!animEnabled())return; projects.forEach(p=>
    undulation, frozen while dragging. Pull = proximity^2 (ramps near centre) x node intensity x user strength, capped so
    it never overshoots the cursor. Moving the field naturally shifts colour too (the enticing part). Returns whether
    any node is affected so the render loop knows to recompute. */
-function computeMagnet(){ mag={}; const m=fx.magnet;
-  if(!m||!m.on||drag||!mouse.inside) return false;
-  const R=m.radius, R2=R*R, str=clamp(m.strength,0,1); if(R<=0||str<=0) return false;
-  const MAX=R*0.20; let any=false;
-  projects.forEach(p=>{ const lp=live[p.id]; if(!lp)return; p.nodes.forEach((n,j)=>{
-    const dx=mouse.x-lp[j][0], dy=mouse.y-lp[j][1], d2=dx*dx+dy*dy; if(d2>=R2)return;
-    const d=Math.sqrt(d2)||1e-4, prox=1-d/R;
-    let amt=prox*prox*str*(0.3+n.i*0.9)*MAX; if(amt>d*0.85)amt=d*0.85;
-    mag[n.id]={ox:(dx/d)*amt, oy:(dy/d)*amt}; any=true;
-  });});
+function computeMagnet(t){ const m=fx.magnet;
+  const active=!!(m&&m.on)&&!drag&&mouse.inside;
+  const targets={};
+  if(active){ const R=m.radius, R2=R*R, str=clamp(m.strength,0,1), MAX=R*0.20;
+    if(R>0&&str>0){ projects.forEach(p=>{ const lp=live[p.id]; if(!lp)return; p.nodes.forEach((n,j)=>{
+      const dx=mouse.x-lp[j][0], dy=mouse.y-lp[j][1], d2=dx*dx+dy*dy; if(d2>=R2)return;
+      const d=Math.sqrt(d2)||1e-4, prox=1-d/R; let amt=prox*prox*str*(0.3+n.i*0.9)*MAX; if(amt>d*0.85)amt=d*0.85;
+      targets[n.id]={ox:(dx/d)*amt, oy:(dy/d)*amt};
+    });}); } }
+  // asymmetric ease: fast attack (responsive gooey follow), slow release (no snap-back when leaving the radius)
+  const dt=Math.min(0.05,(lastMagT?(t-lastMagT):0)/1000); lastMagT=t;
+  const kA=1-Math.exp(-dt/0.045), kR=1-Math.exp(-dt/Math.max(0.001,m&&m.ease!=null?m.ease:0.18));
+  mag={}; let any=false;
+  const ids=new Set([...Object.keys(magCur),...Object.keys(targets)]);
+  ids.forEach(id=>{ const tg=targets[id]||{ox:0,oy:0}, cur=magCur[id]||{ox:0,oy:0};
+    const tmag=Math.hypot(tg.ox,tg.oy), cmag=Math.hypot(cur.ox,cur.oy), k=(tmag>=cmag)?kA:kR;
+    const nx=cur.ox+(tg.ox-cur.ox)*k, ny=cur.oy+(tg.oy-cur.oy)*k;
+    if(Math.abs(nx)<0.04&&Math.abs(ny)<0.04&&!targets[id]){ delete magCur[id]; }
+    else { magCur[id]={ox:nx,oy:ny}; mag[id]=magCur[id]; any=true; }
+  });
   return any;
 }
 
@@ -450,8 +480,7 @@ function render(t){
   if(fi!==lastFi){ dirty=true; lastFi=fi; }
   const dark=fx.bg==='black';
   const animOn=animEnabled();
-  const magOn=computeMagnet();                       // cursor magnet: fill mag{}, returns whether any node is being pulled
-  const mouseMoved=(mouse.x!==lastMx||mouse.y!==lastMy); lastMx=mouse.x; lastMy=mouse.y;
+  const magOn=computeMagnet(t);                      // cursor magnet (eased): returns whether any node has an active or easing offset
   // ---- ease each project's composite alpha + intensity boost toward target (smooth hover de-intensify, no snap) ----
   const dimA=clamp(fx.unfocus!=null?fx.unfocus:0.4,0,1);   // opacity unfocused projects fade to (lower = fainter)
   const dt=Math.min(0.05,(lastT?(t-lastT):0)/1000); lastT=t;
@@ -465,8 +494,8 @@ function render(t){
     if(Math.abs(tgA-gaCur[p.id])>0.002||Math.abs(tgB-boostCur[p.id])>0.0015)easing=true; else{gaCur[p.id]=tgA;boostCur[p.id]=tgB;} });
   let need = dirty || fxChanged || easing;
   if(animOn && (t-lastField)>=1000/ANIM_FPS) need=true;   // re-introduce a throttled per-frame field recompute while animating
-  if(magOn && (mouseMoved||animOn) && (t-lastField)>=1000/ANIM_FPS) need=true;   // recompute while the magnet pulls and the cursor moves
-  if(magWasActive && !magOn) need=true;   // one recompute to release the pull when the cursor leaves reach
+  if(magOn && (t-lastField)>=1000/ANIM_FPS) need=true;   // recompute while the magnet has active/easing offsets
+  if(magWasActive && !magOn) need=true;   // final recompute to land offsets at zero
   magWasActive=magOn;
   if(need){
     const _t0=performance.now();
@@ -633,7 +662,7 @@ document.getElementById('resetBtn').onclick=()=>{ if(!confirm('Reset to default 
 /* blend selector */
 const blendRow=document.getElementById('blendRow');
 function syncBlend(){ blendRow.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.b===blendMode)); }
-blendRow.querySelectorAll('button').forEach(b=>b.onclick=()=>{ blendMode=b.dataset.b; syncBlend(); dirty=true; });
+blendRow.querySelectorAll('button').forEach(b=>b.onclick=()=>{ blendMode=b.dataset.b; syncBlend(); dirty=true; persist(); });
 
 /* color wheel */
 let wheelCanvas,wheelCtx,wheelR=58,wheelC=60,wheelV=1;
@@ -731,21 +760,21 @@ document.getElementById('loadBtn').onclick=()=>{try{ let parsed=JSON.parse(jsonA
 /* ===================== EFFECTS ENGINE ===================== */
 const fx={
   bg:'light',
-  unfocus:0.4,               // opacity unfocused projects fade to in present (lower = fainter; full 0–100% range)
-  hoverFade:0.15,            // present-mode focus de-intensify transition (seconds)
-  curve:0.64,               // global metaball curvature: maps to spread falloff exponent (0.64 -> SE 1.0, the prior look)
+  unfocus:0.3,               // unfocused opacity in present (from the tuned export's dim 0.7)
+  hoverFade:0.33,
+  curve:0.16,                // global metaball curvature (low = blobs merge / round out)
   oglow:{on:false,size:46,op:0.35},
   iglow:{on:false,size:8,op:0.6},
-  perlin:{on:false,scale:10,op:0.08},
-  grain:{on:false,size:1,op:0.05},
+  perlin:{on:true,scale:18.5,op:0.11},
+  grain:{on:true,size:2.5,op:0.058},
   grad:{mode:'off',low:[10,10,14],high:[244,244,238]},
-  ht:{on:false,fillMode:'overlay',density:22,pointSize:1.2,depth:0.5,edgeSoft:0.35,scatter:0.45,
-      breathe:0.2,speed:1.0,shimmer:4,links:0,colorMix:0.85,color:[42,114,160],
-      glow:0,soft:0.4,additive:true,curR:200,curI:1.4,repel:14,mode:'both'},
-  flow:{on:false,count:1400,speed:1.1,trail:0.9,swirl:0.12,width:1,colorMix:0.9,color:[120,180,230],glow:0,additive:true},
-  label:{style:'black',size:10,dist:10,bg:false},
-  anim:{on:false,amount:0.5,walk:0.03,breathe:0.15,intens:0.2,fall:0.15,speed:1.0,variance:0.6},
-  magnet:{on:true,radius:180,strength:0.5}
+  ht:{on:false,fillMode:'fill',density:120,pointSize:0.5,depth:0.6,edgeSoft:0.44,scatter:0.22,
+      breathe:0.24,speed:1,shimmer:5,links:0,colorMix:1,color:[42,114,160],
+      glow:0.1,soft:0.2,additive:true,curR:320,curI:0.6,repel:14,mode:'inflate'},
+  flow:{on:false,count:3450,speed:1.1,trail:0.9,swirl:0.22,width:0.6,colorMix:0.9,color:[120,180,230],glow:0,additive:true},
+  label:{style:'black',size:10,dist:16,bg:false},
+  anim:{on:true,amount:0.74,walk:0.045,breathe:0.15,intens:0.2,fall:0.15,speed:0.6,variance:0.92},
+  magnet:{on:true,radius:180,strength:0.5,ease:0.18}
 };
 let noiseC,noiseX,glowC,glowX,sceneC,sceneX,bloomC,bloomX,maskTexC,maskTexX,grainC=[],grainX=[],noiseDirty=true,htSrc=null,sceneDirty=true,fxChanged=true;
 let dynC,dynX,dynBloomC,dynBloomX,flowC,flowX,flowP=null,flowReady=false,RS=1;
@@ -901,7 +930,8 @@ const FXG=[
  {id:'magnet',title:'CURSOR MAGNET',c:[
    {t:'tog',p:'magnet.on',l:'Pull nodes toward cursor'},
    {t:'sl',p:'magnet.radius',l:'Reach',mn:40,mx:400,st:5,f:v=>v.toFixed(0)},
-   {t:'sl',p:'magnet.strength',l:'Strength',mn:0,mx:1,st:0.02,f:v=>(v*100).toFixed(0)+'%'} ]},
+   {t:'sl',p:'magnet.strength',l:'Strength',mn:0,mx:1,st:0.02,f:v=>(v*100).toFixed(0)+'%'},
+   {t:'sl',p:'magnet.ease',l:'Snap-back ease',mn:0,mx:0.5,st:0.01,f:v=>v.toFixed(2)+'s'} ]},
  {id:'shape',title:'METABALL FIELD',c:[
    {t:'sl',p:'curve',l:'Curvature / merge',mn:0,mx:1,st:0.02,f:v=>(v*100).toFixed(0)+'%'} ]},
  {id:'anim',title:'NODE ANIMATION',c:[
@@ -969,13 +999,13 @@ function renderEffects(){ const root=document.getElementById('fxGroups');
   if(renderEffects._bound) return; renderEffects._bound=true;   // delegated listeners bind once; innerHTML refresh above re-syncs control values on import
   root.addEventListener('click',e=>{
     const head=e.target.closest('.fx-head'); if(head){const b=document.getElementById('fxb-'+head.dataset.g);const open=b.classList.toggle('open');head.querySelector('.tw').textContent=open?'\u2013':'+';return;}
-    const seg=e.target.closest('.fx-seg button'); if(seg){const path=seg.parentNode.dataset.path;setP(fx,path,seg.dataset.val);seg.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===seg));if(path==='bg')applyBg();fxChanged=true;return;}
-    const tog=e.target.closest('.fx-toggle'); if(tog){const path=tog.dataset.path;const nv=!getP(fx,path);setP(fx,path,nv);tog.querySelector('.box').classList.toggle('on',nv);fxChanged=true;return;}
+    const seg=e.target.closest('.fx-seg button'); if(seg){const path=seg.parentNode.dataset.path;setP(fx,path,seg.dataset.val);seg.parentNode.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b===seg));if(path==='bg')applyBg();fxChanged=true;persist();return;}
+    const tog=e.target.closest('.fx-toggle'); if(tog){const path=tog.dataset.path;const nv=!getP(fx,path);setP(fx,path,nv);tog.querySelector('.box').classList.toggle('on',nv);fxChanged=true;persist();return;}
   });
   root.addEventListener('input',e=>{ const el=e.target;
     if(el.type==='range'){const path=el.dataset.path;setP(fx,path,+el.value);const vs=root.querySelector('[data-vfor="'+path+'"]');const c=fxFind(path);if(vs&&c)vs.textContent=c.f(+el.value);
-      if(el.dataset.regen==='noise')noiseDirty=true; if(el.dataset.regen==='grain')genGrain(); fxChanged=true;}
-    else if(el.type==='color'){setP(fx,el.dataset.path,hex2rgb(el.value));fxChanged=true;}
+      if(el.dataset.regen==='noise')noiseDirty=true; if(el.dataset.regen==='grain')genGrain(); fxChanged=true;persist();}
+    else if(el.type==='color'){setP(fx,el.dataset.path,hex2rgb(el.value));fxChanged=true;persist();}
   });
 }
 
@@ -992,7 +1022,9 @@ function sanitizeProjects(){ projects.forEach(p=>{
     n.core=!!n.core; if(n.label==null)n.label=''; n.la=num(n.la,0); }); }); }
 
 (async function(){ const saved=await store.load();
-  if(saved&&Array.isArray(saved)&&saved.length){ try{ projects=saved.map(p=>({id:p.id||uid(),code:p.code,name:p.name,tier:p.tier||'medium',colors:p.colors,
+  const sp=Array.isArray(saved)?saved:(saved&&saved.projects?saved.projects:null);   // v1 = bare projects array; v2 = {projects,fx,blend}
+  if(saved&&!Array.isArray(saved)){ if(saved.blend)blendMode=saved.blend; if(saved.fx)applyFx(saved.fx); }
+  if(sp&&sp.length){ try{ projects=sp.map(p=>({id:p.id||uid(),code:p.code,name:p.name,tier:p.tier||'medium',colors:p.colors,
     nodes:p.nodes.map(n=>({id:n.id||uid(),x:n.x,y:n.y,r:n.r!=null?n.r:n.radius,i:n.i!=null?n.i:n.intensity,f:n.f!=null?n.f:n.falloff,core:!!n.core,label:n.label||'',la:n.la!=null?n.la:(n.labelAngle!=null?n.labelAngle:0)}))})); selProj=projects[0].id; }catch(e){} }
   sanitizeProjects();
   layout(); renderInspector(); renderEffects(); computeLive(); projects.forEach(p=>computeField(p));
