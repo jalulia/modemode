@@ -1,4 +1,5 @@
 {
+  "_note": "SCAFFOLD / test fixture for the page template — not final content. KNOWN (verifiable): id/code/name, colors, and every node's label + geometry come from the live roster export (modemode-withbgnodes.txt). Collaborators, the PROPERTIES copy, and the MATERIAL CONDITIONS labels come from the mockup (docs/mockups/mode-mode.pdf). EVERYTHING ELSE — all other body copy, captions, image filenames, the Vimeo id, and which nodes have content vs not — is PLACEHOLDER for Matt to supply. prev/next are the mockup's values, not a confirmed nav order.",
   "id": "nightmare-kart",
   "code": "P-04",
   "name": "NIGHTMARE KART",
@@ -8,18 +9,19 @@
   "prev": "massive",
   "next": "gif",
   "classification": {
-    "hero": "assets/nightmare-kart/cabinet-front.jpg",
+    "hero": "assets/nightmare-kart/PLACEHOLDER-hero.jpg",
     "intro": [
       {
         "type": "text",
         "title": "CLASSIFICATION",
-        "body": "Realistic reproduction of mechanical keyboard f8 key, appx 15x scale. Freestanding, float mounted to base with actuator rods and return springs. Realistic reproduction of mechanical keyboard f8 key, appx 15x scale. Freestanding, float mounted to base with actuator rods and return springs."
+        "body": "Realistic reproduction of mechanical keyboard f8 key, appx 15x scale. Freestanding, float mounted to base with actuator rods and return springs.",
+        "_source": "mockup"
       }
     ],
     "collaborators": [
-      { "name": "LWMedia", "role": "Developer", "url": "https://b0tster.carrd.co" },
-      { "name": "Arcade Commons", "role": "Indie Arcade Non-Profit", "url": "https://arcadecommons.org" },
-      { "name": "Wonderville", "role": "Indie Arcade venue", "url": "https://wonderville.nyc" }
+      { "name": "LWMedia", "role": "Developer", "url": "https://b0tster.carrd.co", "_source": "mockup" },
+      { "name": "Arcade Commons", "role": "Indie Arcade Non-Profit", "url": "https://arcadecommons.org", "_source": "mockup" },
+      { "name": "Wonderville", "role": "Indie Arcade venue", "url": "https://wonderville.nyc", "_source": "mockup" }
     ]
   },
   "nodes": [
@@ -28,13 +30,14 @@
       "label": "Cabinet Design & Fabrication",
       "geom": { "x": 0.556, "y": -0.691, "r": 0.25, "i": 0.85, "f": 2, "core": true },
       "content": {
-        "cover": "assets/nightmare-kart/cabinet.jpg",
+        "cover": "assets/nightmare-kart/PLACEHOLDER-cabinet.jpg",
         "hidden": false,
         "order": 1,
         "blocks": [
           {
             "type": "column",
             "title": "PROPERTIES",
+            "_source": "mockup",
             "columns": [
               { "title": "W x L x H", "body": "12\" x 12\" x 9\" (12\" tall including base)\n\nRealistic reproduction of mechanical keyboard f8 key, appx 15x scale. Freestanding, float mounted to base with actuator rods and return springs." },
               { "title": "W x L x H", "body": "12\" x 12\" x 9\" (12\" tall including base)\n\nRealistic reproduction of mechanical keyboard f8 key, appx 15x scale. Freestanding, float mounted to base with actuator rods and return springs." }
@@ -43,9 +46,10 @@
           {
             "type": "imagePara",
             "title": "MATERIAL CONDITIONS",
+            "_source": "mockup labels; body + images are placeholder",
             "rows": [
-              { "title": "Faux Stained Glass Marquee", "body": "Talk about what it is how it was made and the effect it had", "image": "assets/nightmare-kart/marquee.jpg" },
-              { "title": "Shou Sugi Ban", "body": "Talk about what it is how it was made and the effect it had", "image": "assets/nightmare-kart/shou-sugi-ban.jpg" }
+              { "title": "Faux Stained Glass Marquee", "body": "[placeholder — copy TBD]", "image": "assets/nightmare-kart/PLACEHOLDER-marquee.jpg" },
+              { "title": "Shou Sugi Ban", "body": "[placeholder — copy TBD]", "image": "assets/nightmare-kart/PLACEHOLDER-shousugiban.jpg" }
             ]
           }
         ]
@@ -56,13 +60,13 @@
       "label": "Interactive Lighting System",
       "geom": { "x": 0.124, "y": -0.348, "r": 0.12, "i": 0.4, "f": 2.6, "core": false },
       "content": {
-        "cover": "assets/nightmare-kart/lighting.jpg",
+        "cover": "assets/nightmare-kart/PLACEHOLDER-lighting.jpg",
         "hidden": false,
         "order": 2,
         "blocks": [
-          { "type": "text", "title": "OVERVIEW", "body": "Addressable LED arrays under cast-resin buttons; reacts to game state and idle attract mode." },
-          { "type": "media", "kind": "image", "title": "", "src": "assets/nightmare-kart/lighting-closeup.jpg", "fullbleed": false, "caption": "Close-up: button light pipes" },
-          { "type": "media", "kind": "video", "title": "", "embed": "https://player.vimeo.com/video/000000000", "fullbleed": true, "caption": "Attract-mode lighting loop" }
+          { "type": "text", "title": "[section title TBD]", "body": "[placeholder — copy TBD]" },
+          { "type": "media", "kind": "image", "title": "", "src": "assets/nightmare-kart/PLACEHOLDER-lighting-closeup.jpg", "fullbleed": false, "caption": "" },
+          { "type": "media", "kind": "video", "title": "", "embed": "PLACEHOLDER-vimeo-id", "fullbleed": true, "caption": "" }
         ]
       }
     },
@@ -71,11 +75,11 @@
       "label": "3D Modeling & Printing",
       "geom": { "x": 0.426, "y": -0.619, "r": 0.12, "i": 0.17, "f": 4, "core": false },
       "content": {
-        "cover": "assets/nightmare-kart/print.jpg",
+        "cover": "assets/nightmare-kart/PLACEHOLDER-print.jpg",
         "hidden": false,
         "order": 3,
         "blocks": [
-          { "type": "text", "title": "PROCESS", "body": "FDM + resin parts for control surfaces and trim; print-in-place actuator housings." }
+          { "type": "text", "title": "[section title TBD]", "body": "[placeholder — copy TBD]" }
         ]
       }
     },

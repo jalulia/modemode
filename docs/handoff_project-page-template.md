@@ -1,6 +1,6 @@
 # Handoff — Project page template (Phase 1)
 
-For a fresh Cowork instance. Goal: build the case-study/project page as a static template that renders a project from its JSON, matching the mockup. Start with **NIGHTMARE KART** — its data is authored and ready.
+For a fresh Cowork instance. Goal: build the case-study/project page as a static template that renders a project from its JSON, matching the mockup. Start with **NIGHTMARE KART** — `content/nightmare-kart.json` is a **scaffold/test fixture**: node geometry + colours are real (from the live roster) and the collaborators / PROPERTIES / MATERIAL-CONDITIONS labels are from the mockup, but all other copy, captions, images, and the Vimeo id are placeholders for Matt to fill. Build the renderer against the structure; don't treat the placeholder copy as final.
 
 ## Read first
 - `docs/project-pages_architecture_2026-06-26.md` — the architecture + IA + data model + rules.

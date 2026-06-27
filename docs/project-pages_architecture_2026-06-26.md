@@ -89,7 +89,7 @@ classification { hero, intro:[Block], collaborators:[{name, role, url}] }
 
 **Phase 4 — Media pipeline.** Image handling (in-repo, sized) + video embeds (external host). Decide host.
 
-**Phase 5 — Polish + ship.** `normalo.studio` domain, transitions/fades, responsive/mobile, prev-next, SEO/meta/OG.
+**Phase 5 — Polish + ship.** Custom domain (TBD), transitions/fades, responsive/mobile, prev-next, SEO/meta/OG.
 
 **Phase 6 — (optional) hosted CMS.** If/when you want no-git editing or a second editor, migrate the data + media to Supabase or Sanity. The schema from Phase 0 ports directly.
 
@@ -127,4 +127,4 @@ For a solo operator, *sequential* focused instances beat many parallel ones (les
 5. **Project page scope** — full case study (content blocks) with the hero + node focal-image-swap sitting **on top of** the block content.
 
 ### Still open
-- **Domain** — `normalo.studio`: confirm it's purchased and where (registrar), so we can point it at Pages in Phase 5.
+- **Domain** — not yet decided. What domain should the site live on (and is it registered / where)? Needed only for the Phase 5 deploy. Until then it runs on the GitHub Pages URL.
