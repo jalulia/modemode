@@ -1,0 +1,50 @@
+# Handoff — Project page template (Phase 1)
+
+For a fresh Cowork instance. Goal: build the case-study/project page as a static template that renders a project from its JSON, matching the mockup. Start with **NIGHTMARE KART** — its data is authored and ready.
+
+## Read first
+- `docs/project-pages_architecture_2026-06-26.md` — the architecture + IA + data model + rules.
+- `docs/mockups/mode-mode.pdf` — the 3-zone layout + inline notes (NIGHTMARE KART).
+- `content/nightmare-kart.json` — the sample data to render (real node geometry + mockup content).
+- `index.html` — the homepage field studio. **Reuse its metaball renderer read-only** for the minimap; do not refactor it.
+
+## Build (Phase 1, read-only template)
+A single `project.html` that takes `?p=<slug>` (or hash), fetches `content/<slug>.json`, and renders the 3-zone layout:
+
+- **Left — anchored side nav:** project name in the **accent colour** (`colors.core`); a **minimap** of the project's node constellation (render `nodes[].geom` with the field renderer, scaled to fit — start with a direct resize, refine later); coord readout; **section nav** = `CLASSIFICATION` + one entry per node **that has content**; `Back to main MODE MODE`.
+- **Middle — content blocks** for the active section.
+- **Right — focal image** = the active section's cover (or hero for CLASSIFICATION).
+- **Footer** — `Previous Project` / `Next Project` (`prev` / `next` slugs).
+
+### Section rule
+Render a node as a section **iff** `content && content.blocks.length > 0 && !content.hidden`. `CLASSIFICATION` always renders first. (Sample: 5 nodes → 3 sections + CLASSIFICATION; the two empty/unwritten nodes show nothing.)
+
+### Block renderers (each has an optional `title`)
+- `text` — title + `body` (newline-aware).
+- `column` — title + `columns[]` of `{title, body}` (2-up).
+- `imagePara` — title + `rows[]` of `{title, body, image}` (text left, thumb right).
+- `image` — `{src, caption}`.
+- `media` — `kind:"image"` (`src`) or `kind:"video"` (`embed` → Vimeo iframe); `fullbleed` flag; `caption`.
+- `collaborators` (in `classification`) — `{name, role, url}` list.
+
+### Interactions
+- Hovering/clicking a node in the side nav or minimap swaps the **focal image** to that node's `cover` and activates its section (this is the homepage hover effect carried onto the page).
+- Accent colour drives section headers, the title, active-nav state, hairlines.
+
+### Routing / media / constraints
+- **Routing:** one `project.html`, `?p=<slug>`, client-side fetch of the JSON. No build step for now. (Later: a small prerender script can emit static `/<slug>/index.html` for SEO.)
+- **Media:** images at `assets/<slug>/…` in the repo; **video = Vimeo embeds** (`media.embed`). Keep video out of the repo.
+- Keep the **iOS light-render workaround** on all output (`<meta name="color-scheme" content="light">` + explicit light bg on html/body).
+- Match the homepage's type/palette/hairline system (JetBrains Mono, the greys, the corner marks).
+
+## Acceptance
+NIGHTMARE KART page reads like the mockup: 3 zones, red accent (`[196,0,33]`), CLASSIFICATION + the 3 content sections in the side nav, real minimap constellation, working focal-image swap, prev/next, back-to-home. Zero console errors. Test headless (Playwright is installed in the sandbox; run with `LD_LIBRARY_PATH=$HOME/xdlibs` — libXdamage is staged there; measure JS self-time, not headless FPS; `file://` localStorage doesn't persist across reload in headless — not a bug).
+
+## Port-readiness (do this so the backend swap is trivial later)
+**Recommended target when we flip the switch: Supabase** (Postgres + Storage + Auth in one; matches the studio's instinct; generous free tier). Design rule that makes the port a one-function change:
+
+- **Each project is ONE self-contained JSON document** (`content/<slug>.json`) = one future `projects` table row (`slug` + `data jsonb`). No cross-file joins.
+- **All data access goes through a single boundary:** `loadProject(slug)` (and later `saveProject`). Today it `fetch()`es the file; the port replaces only that function with a Supabase query. Nothing else in the renderer knows where data comes from.
+- **Media is referenced by path/URL, never inlined.** Today `assets/<slug>/…`; the port repoints the base to Supabase Storage. Video already external (Vimeo).
+
+Keep these three invariants and the migration is: create the table, upload the JSON rows + media, swap `loadProject`. No renderer rewrite.
