@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- iOS light-render workaround: force light scheme + explicit light bg on html/body -->
+<meta name="color-scheme" content="light">
+<title>MODE MODE — Project</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{ color-scheme:light;
+    --ground:#F3F3F0; --panel:#FBFBF9; --ink:#16160F; --grey:#8C8C86; --grey-2:#B4B4AE;
+    --hair:rgba(22,22,15,.14); --hair-2:rgba(22,22,15,.07); --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+    --accent:#C40021; --accent-soft:rgba(196,0,33,.10); }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:#F3F3F0;}            /* explicit light bg (iOS) */
+  body{font-family:var(--mono);color:var(--ink);background:var(--ground);-webkit-font-smoothing:antialiased;
+    font-size:13px;line-height:1.5;}
+  a{color:inherit;text-decoration:none;}
+  /* viewport corner marks — homepage brand system */
+  .corner{position:fixed;width:14px;height:14px;border:1px solid var(--grey-2);pointer-events:none;opacity:.7;z-index:50;}
+  .corner.tl{top:14px;left:14px;border-right:0;border-bottom:0;}
+  .corner.tr{top:14px;right:14px;border-left:0;border-bottom:0;}
+  .corner.bl{bottom:14px;left:14px;border-right:0;border-top:0;}
+  .corner.br{bottom:14px;right:14px;border-left:0;border-top:0;}
+  .wordmark{position:fixed;top:22px;left:30px;z-index:40;user-select:none;font-weight:700;font-size:13px;letter-spacing:.30em;line-height:1.05;}
+  .wordmark .colon{color:var(--grey-2);font-weight:400;}
+
+  .page{display:grid;grid-template-columns:minmax(300px,360px) minmax(0,1fr) minmax(320px,400px);
+    gap:22px;max-width:1640px;margin:0 auto;padding:64px 36px 40px;align-items:start;}
+
+  /* ---------- panels (shared hairline system) ---------- */
+  .panel{background:var(--panel);border:1px solid var(--hair);}
+  .panel + .panel{margin-top:22px;}
+  .panel-h{display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:13px 18px;border-bottom:1px solid var(--hair);
+    font-size:9.5px;letter-spacing:.20em;color:var(--accent);text-transform:uppercase;}
+  .panel-h .meta{color:var(--grey-2);letter-spacing:.12em;}
+  .panel-b{padding:18px;}
+
+  /* ---------- left: side nav ---------- */
+  .side{position:sticky;top:64px;display:flex;flex-direction:column;gap:18px;}
+  .backlink{display:flex;align-items:center;gap:10px;padding:13px 18px;border:1px solid var(--hair);background:var(--panel);
+    font-size:10px;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;transition:background .15s;}
+  .backlink:hover{background:var(--accent-soft);}
+  .backlink .dia{width:9px;height:9px;border:1.4px solid var(--accent);transform:rotate(45deg);flex:none;}
+  .titleblock .code{font-size:11px;letter-spacing:.22em;color:var(--accent);margin-bottom:6px;}
+  .titleblock .name{font-weight:700;font-size:clamp(30px,3.4vw,46px);line-height:.95;letter-spacing:-.01em;
+    color:var(--accent);margin:0 0 16px;word-break:break-word;}
+
+  .readout{border:1px solid var(--hair);background:var(--panel);padding:13px 15px;}
+  .readout .r-row{display:flex;justify-content:space-between;gap:14px;font-size:10.5px;padding:4px 0;color:var(--ink);}
+  .readout .r-row + .r-row{border-top:1px solid var(--hair-2);}
+  .readout .r-row .k{color:var(--grey);letter-spacing:.06em;}
+  .readout .r-row .k em{font-style:normal;color:var(--grey-2);}
+  .readout .r-row .v{color:var(--ink);white-space:nowrap;}
+
+  .minimap-wrap{position:relative;border:1px solid var(--hair);background:var(--panel);padding:14px 14px 10px;}
+  #minimap{display:block;width:100%;height:auto;cursor:default;}
+  .minimap-addr{font-size:8px;letter-spacing:.18em;color:var(--grey-2);margin-top:8px;}
+
+  .nav{display:flex;flex-direction:column;}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:13px 16px;border:1px solid var(--hair);
+    cursor:pointer;background:var(--panel);transition:background .15s,color .15s;margin-top:-1px;}
+  .nav-item:first-child{margin-top:0;}
+  .nav-item .mk{width:10px;height:10px;border-radius:50%;border:1.4px solid var(--accent);flex:none;transition:background .15s;}
+  .nav-item .lab{font-size:11px;letter-spacing:.04em;color:var(--accent);}
+  .nav-item:hover{background:var(--accent-soft);}
+  .nav-item.active{background:var(--accent-soft);}
+  .nav-item.active .mk{background:var(--accent);}
+  .nav-item.active .lab{font-weight:700;}
+
+  /* ---------- middle: content blocks ---------- */
+  .blk-title{font-size:13px;font-weight:700;letter-spacing:.01em;margin:0 0 10px;color:var(--ink);}
+  .blk-body p{margin:0 0 12px;font-size:12.5px;line-height:1.65;color:var(--ink);}
+  .blk-body p:last-child{margin-bottom:0;}
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  @media (max-width:520px){ .cols{grid-template-columns:1fr;} }
+  .col-sub{font-size:12px;font-weight:700;margin:0 0 9px;color:var(--ink);}
+  .imgpara-row{display:grid;grid-template-columns:1fr 220px;gap:20px;align-items:start;}
+  .imgpara-row + .imgpara-row{margin-top:20px;padding-top:20px;border-top:1px solid var(--hair-2);}
+  .imgpara-row .accentbar{border-left:2px solid var(--accent);padding-left:12px;}
+  .imgpara-row h4{font-size:12px;font-weight:700;margin:0 0 7px;}
+  .imgpara-row p{font-size:11.5px;line-height:1.55;color:var(--grey);margin:0;}
+  .thumb{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border:1px solid var(--hair);background:#1a1a1a;}
+  .thumb.missing{display:flex;align-items:center;justify-content:center;color:var(--grey-2);font-size:9px;
+    letter-spacing:.14em;background:repeating-linear-gradient(45deg,#f0f0ec,#f0f0ec 7px,#e9e9e4 7px,#e9e9e4 14px);}
+  @media (max-width:520px){ .imgpara-row{grid-template-columns:1fr;} }
+  .blk-img{width:100%;height:auto;display:block;border:1px solid var(--hair);}
+  .blk-cap{font-size:10px;letter-spacing:.04em;color:var(--grey);margin-top:9px;}
+  .media-embed{position:relative;width:100%;aspect-ratio:16/9;background:#0a0a0c;border:1px solid var(--hair);}
+  .media-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .collab{display:flex;flex-direction:column;}
+  .collab-row{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;padding:11px 0;font-size:11.5px;}
+  .collab-row + .collab-row{border-top:1px solid var(--hair-2);}
+  .collab-row .nm{font-weight:700;color:var(--ink);}
+  .collab-row .ro{color:var(--grey);}
+  .collab-row a{color:var(--accent);border-bottom:1px solid transparent;}
+  .collab-row a:hover{border-bottom-color:var(--accent);}
+
+  /* ---------- right: focal image ---------- */
+  .focal{position:sticky;top:64px;}
+  .focal .panel-b{padding:0;background:#101014;}
+  #focalImg{width:100%;height:auto;display:block;}
+
+  /* ---------- footer: prev / next ---------- */
+  .footer{grid-column:1 / -1;display:flex;justify-content:space-between;gap:22px;margin-top:30px;}
+  .navproj{display:flex;align-items:center;gap:12px;padding:15px 20px;border:1px solid var(--hair);background:var(--panel);
+    font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:var(--grey);transition:background .15s;min-width:200px;}
+  .navproj:hover{background:var(--accent-soft);}
+  .navproj.next{margin-left:auto;justify-content:flex-end;text-align:right;}
+  .navproj .dia{width:9px;height:9px;border:1.4px solid var(--accent);transform:rotate(45deg);flex:none;}
+  .navproj .pn{color:var(--accent);font-weight:700;letter-spacing:.06em;}
+  .navproj.disabled{opacity:.35;pointer-events:none;}
+
+  .errbox{grid-column:1 / -1;border:1px solid var(--hair);background:var(--panel);padding:40px;text-align:center;color:var(--grey);}
+
+  @media (max-width:960px){
+    .page{grid-template-columns:1fr;}
+    .side,.focal{position:static;}
+  }
+</style>
+</head>
+<body>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <div class="wordmark">MODE<span class="colon">:</span>MODE</div>
+  <main class="page" id="page"><!-- rendered by JS --></main>
+
+<script>
+(function(){
+"use strict";
+
+/* ============================================================
+   util
+   ============================================================ */
+const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t;
+const rgbStr=a=>`rgb(${a[0]},${a[1]},${a[2]})`;
+const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;};
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function slugName(slug){return String(slug||'').replace(/[-_]+/g,' ').toUpperCase();}
+function paras(body){ // newline-aware: blank line -> paragraph, single \n -> <br>
+  return String(body==null?'':body).split(/\n{2,}/).map(p=>'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>').join('');
+}
+function vimeoSrc(embed){ // accept full url, /video/ url, or bare id
+  const s=String(embed||'').trim(); if(!s) return '';
+  const m=s.match(/(?:vimeo\.com\/(?:video\/)?)?(\d{6,})/);
+  return m ? `https://player.vimeo.com/video/${m[1]}` : (s.startsWith('http')?s:'');
+}
+
+/* ============================================================
+   DATA BOUNDARY — the single point all project data flows through.
+   Today: fetch the in-repo JSON. Supabase port = replace ONLY this
+   function with a query; nothing else in the renderer knows the source.
+   Media stays referenced by URL (assets/<slug>/…) — never inlined.
+   ============================================================ */
+async function loadProject(slug){
+  const res=await fetch(`content/${slug}.json`,{cache:'no-cache'});
+  if(!res.ok) throw new Error(`content/${slug}.json → HTTP ${res.status}`);
+  return await res.json();
+}
+
+/* ============================================================
+   minimap metaball renderer
+   Mirrors index.html's two-field renderer (read-only port — index.html
+   is untouched): S = spread/silhouette (curvature-controlled), H =
+   intensity-weighted height -> edge→core colour; smoothstep alpha.
+   Rendered once into an offscreen buffer at virtual res, then the
+   constellation's alpha bounding box is fit-to-contain in the minimap.
+   ============================================================ */
+const MM={ A_MAX:0.86, S_LO:0.16, S_HI:0.42, H_REF:1.0, T_EXP:0.8, SE:1.6 }; // SE = 1.8 - curve(0.16)*1.25
+function smoothstep(a,b,x){const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);}
+
+function computeMetaball(nodes, VW, VH, edge, core){
+  const mfd=Math.min(VW,VH);
+  const S=new Float32Array(VW*VH), H=new Float32Array(VW*VH);
+  const pts=nodes.map(n=>{ const g=n.geom; return [ (g.x+1)/2*VW, VH-(g.y+1)/2*VH ]; }); // y up
+  nodes.forEach((n,j)=>{ const g=n.geom; const px=pts[j][0],py=pts[j][1],R=g.r*mfd; if(R<=0)return;
+    const ir2=1/(R*R);
+    const x0=Math.max(0,Math.floor(px-R)),x1=Math.min(VW,Math.ceil(px+R));
+    const y0=Math.max(0,Math.floor(py-R)),y1=Math.min(VH,Math.ceil(py+R));
+    for(let y=y0;y<y1;y++){ const dy=y-py,dy2=dy*dy*ir2,row=y*VW;
+      for(let x=x0;x<x1;x++){ const dx=x-px,nd=dx*dx*ir2+dy2; if(nd>=1)continue; const u=1-nd;
+        S[row+x]+=Math.pow(u,MM.SE);
+        H[row+x]+=g.i*Math.pow(u,g.f);
+      }}});
+  const buf=document.createElement('canvas'); buf.width=VW; buf.height=VH;
+  const bx=buf.getContext('2d'); const img=bx.createImageData(VW,VH), d=img.data;
+  let minx=VW,miny=VH,maxx=0,maxy=0,any=false;
+  for(let k=0,q=0;k<S.length;k++,q+=4){ const s=S[k];
+    const a=smoothstep(MM.S_LO,MM.S_HI,s)*MM.A_MAX; if(a<=0.003){d[q+3]=0;continue;}
+    const t=Math.pow(clamp(H[k]/MM.H_REF,0,1),MM.T_EXP);
+    d[q]=lerp(edge[0],core[0],t); d[q+1]=lerp(edge[1],core[1],t); d[q+2]=lerp(edge[2],core[2],t); d[q+3]=a*255;
+    const x=k%VW, y=(k/VW)|0; if(x<minx)minx=x; if(x>maxx)maxx=x; if(y<miny)miny=y; if(y>maxy)maxy=y; any=true;
+  }
+  bx.putImageData(img,0,0);
+  if(!any){minx=0;miny=0;maxx=VW;maxy=VH;}
+  return { buf, pts, bbox:{minx,miny,maxx,maxy} };
+}
+
+/* ============================================================
+   app state + render
+   ============================================================ */
+const state={ project:null, sections:[], activeId:null, accent:[196,0,33], mm:null, hoverNodeId:null };
+
+function hasContent(node){
+  const c=node && node.content;
+  return !!(c && Array.isArray(c.blocks) && c.blocks.length>0 && !c.hidden);
+}
+
+function buildSections(p){
+  const hero = p.classification && p.classification.hero;
+  const out=[{
+    id:'classification', kind:'classification', title:'CLASSIFICATION',
+    cover: hero, nodeId:null,
+    blocks:(p.classification&&p.classification.intro)||[],
+    collaborators:(p.classification&&p.classification.collaborators)||[]
+  }];
+  // node -> section iff it has content (CLASSIFICATION always first). Honor content.order.
+  const withContent=p.nodes.filter(hasContent)
+    .sort((a,b)=>((a.content.order||0)-(b.content.order||0)));
+  withContent.forEach(n=>out.push({
+    id:n.id, kind:'node', title:n.label||'UNTITLED', nodeId:n.id,
+    cover:(n.content&&n.content.cover)||hero, blocks:n.content.blocks
+  }));
+  return out;
+}
+
+/* ---- block renderers ---- */
+function renderBlock(b){
+  const wrap=el('div','panel');
+  const type=b.type||'text';
+  const head=(label)=>{ const h=el('div','panel-h'); h.appendChild(el('span',null,esc(label||''))); wrap.appendChild(h); };
+  const body=el('div','panel-b');
+
+  if(type==='text'){
+    if(b.title) head(b.title);
+    body.innerHTML=`<div class="blk-body">${paras(b.body)}</div>`;
+  }
+  else if(type==='column'){
+    if(b.title) head(b.title);
+    const cols=el('div','cols');
+    (b.columns||[]).forEach(c=>{
+      const col=el('div');
+      col.innerHTML=`${c.title?`<div class="col-sub">${esc(c.title)}</div>`:''}<div class="blk-body">${paras(c.body)}</div>`;
+      cols.appendChild(col);
+    });
+    body.appendChild(cols);
+  }
+  else if(type==='imagePara'){
+    if(b.title) head(b.title);
+    (b.rows||[]).forEach(r=>{
+      const row=el('div','imgpara-row');
+      const txt=el('div','accentbar',`<h4>${esc(r.title)}</h4><p>${esc(r.body).replace(/\n/g,'<br>')}</p>`);
+      let thumb;
+      if(r.image){ thumb=el('img','thumb'); thumb.src=r.image; thumb.alt=r.title||''; thumb.loading='lazy'; }
+      else { thumb=el('div','thumb missing','AWAITING IMAGE'); }
+      row.appendChild(txt); row.appendChild(thumb);
+      body.appendChild(row);
+    });
+  }
+  else if(type==='image'){
+    if(b.title) head(b.title);
+    body.innerHTML=`<img class="blk-img" src="${esc(b.src)}" alt="${esc(b.caption||'')}" loading="lazy">${b.caption?`<div class="blk-cap">${esc(b.caption)}</div>`:''}`;
+  }
+  else if(type==='media'){
+    if(b.title) head(b.title);
+    if(b.kind==='video'){
+      const src=vimeoSrc(b.embed);
+      body.innerHTML = src
+        ? `<div class="media-embed"><iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`
+        : `<div class="thumb missing" style="aspect-ratio:16/9">AWAITING VIDEO</div>`;
+    } else {
+      if(b.fullbleed) body.style.padding='0';
+      body.innerHTML=`<img class="blk-img" src="${esc(b.src)}" alt="${esc(b.caption||'')}" loading="lazy">${b.caption?`<div class="blk-cap" style="${b.fullbleed?'padding:9px 14px 12px':''}">${esc(b.caption)}</div>`:''}`;
+    }
+  }
+  else { // unknown block: skip gracefully
+    if(b.title) head(b.title);
+    body.innerHTML=`<div class="blk-body">${paras(b.body||'')}</div>`;
+  }
+  wrap.appendChild(body);
+  return wrap;
+}
+
+function renderCollaborators(list){
+  const wrap=el('div','panel');
+  wrap.appendChild(el('div','panel-h','<span>COLLABORATORS</span>'));
+  const body=el('div','panel-b'); const c=el('div','collab');
+  (list||[]).forEach(p=>{
+    const row=el('div','collab-row');
+    const host=(p.url||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
+    row.innerHTML=`<span class="nm">${esc(p.name)}</span><span class="ro">— ${esc(p.role)}</span>`+
+      (p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(host)}</a>`:'');
+    c.appendChild(row);
+  });
+  body.appendChild(c); wrap.appendChild(body); return wrap;
+}
+
+/* ---- active-section swap (middle content + right focal + nav + minimap) ---- */
+function setActive(id){
+  const sec=state.sections.find(s=>s.id===id); if(!sec)return;
+  state.activeId=id;
+  // middle
+  const mid=document.getElementById('content'); mid.innerHTML='';
+  (sec.blocks||[]).forEach(b=>mid.appendChild(renderBlock(b)));
+  if(sec.kind==='classification' && sec.collaborators && sec.collaborators.length)
+    mid.appendChild(renderCollaborators(sec.collaborators));
+  // right focal
+  setFocal(sec.cover, sec.title);
+  // nav
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.id===id));
+  // minimap markers reflect active node
+  drawMinimap();
+}
+function setFocal(src,label){
+  const img=document.getElementById('focalImg'), h=document.getElementById('focalLabel');
+  if(h) h.textContent=label||'';
+  if(img){ if(src){img.src=src;img.style.display='';} else {img.removeAttribute('src');img.style.display='none';} }
+}
+// hover preview of a node's cover without committing the active section
+let _restoreSrc=null;
+function previewNode(nodeId){
+  const sec=state.sections.find(s=>s.nodeId===nodeId); if(!sec)return;
+  const img=document.getElementById('focalImg');
+  if(_restoreSrc==null) _restoreSrc=img.getAttribute('src')||'';
+  if(sec.cover){ img.src=sec.cover; img.style.display=''; }
+}
+function restoreFocal(){
+  if(_restoreSrc==null)return; const img=document.getElementById('focalImg');
+  if(_restoreSrc){img.src=_restoreSrc;img.style.display='';} else {img.removeAttribute('src');}
+  _restoreSrc=null;
+}
+
+/* ---- minimap draw (blob blit + interactive node markers) ---- */
+function drawMinimap(){
+  const mm=state.mm; if(!mm)return;
+  const cv=document.getElementById('minimap'); if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const DPR=Math.min(window.devicePixelRatio||1,2);
+  const cssW=cv.clientWidth||280; const {bbox}=mm; const bw=bbox.maxx-bbox.minx, bh=bbox.maxy-bbox.miny;
+  const pad=10; // virtual-space padding around constellation
+  const vbw=bw+pad*2, vbh=bh+pad*2;
+  const scale=cssW/vbw; const cssH=Math.round(vbh*scale);
+  cv.width=Math.round(cssW*DPR); cv.height=Math.round(cssH*DPR);
+  cv.style.height=cssH+'px';
+  ctx.setTransform(DPR,0,0,DPR,0,0); ctx.clearRect(0,0,cssW,cssH);
+  ctx.imageSmoothingEnabled=true; ctx.imageSmoothingQuality='high';
+  const sx=bbox.minx-pad, sy=bbox.miny-pad;
+  ctx.drawImage(mm.buf, sx,sy,vbw,vbh, 0,0,cssW,cssH);
+  // node markers + labels (all nodes; only content-nodes interactive)
+  mm.markers=[];
+  state.project.nodes.forEach((n,j)=>{
+    const vp=mm.pts[j]; const x=(vp[0]-sx)*scale, y=(vp[1]-sy)*scale;
+    const isSection=state.sections.some(s=>s.nodeId===n.id);
+    const isActive=isSection && state.activeId===n.id;
+    const isHover=state.hoverNodeId===n.id;
+    const accent=rgbStr(state.accent);
+    ctx.beginPath(); ctx.arc(x,y,isActive?4.2:3.4,0,6.283);
+    ctx.fillStyle=(isActive||isHover)?accent:'#FBFBF9'; ctx.fill();
+    ctx.lineWidth=isActive?1.8:1.3; ctx.strokeStyle=accent; ctx.stroke();
+    if(n.label){
+      ctx.font='8px JetBrains Mono, monospace'; ctx.textBaseline='middle'; ctx.textAlign='left';
+      const tx=x+8, ty=y;
+      const tw=ctx.measureText(n.label).width;
+      ctx.fillStyle='rgba(251,251,249,.82)'; ctx.fillRect(tx-2,ty-6,tw+4,12); // legibility chip
+      ctx.fillStyle=isSection?'#16160F':'#8C8C86'; ctx.fillText(n.label,tx,ty);
+    }
+    mm.markers.push({id:n.id,x,y,isSection});
+  });
+}
+
+function bindMinimap(){
+  const cv=document.getElementById('minimap');
+  const pick=(e)=>{ const r=cv.getBoundingClientRect(); const mx=e.clientX-r.left, my=e.clientY-r.top;
+    let best=null,bd=18; (state.mm.markers||[]).forEach(m=>{ if(!m.isSection)return;
+      const d=Math.hypot(mx-m.x,my-m.y); if(d<bd){bd=d;best=m;} }); return best; };
+  cv.addEventListener('pointermove',e=>{ const m=pick(e);
+    const id=m?m.id:null; if(id!==state.hoverNodeId){ state.hoverNodeId=id; drawMinimap();
+      cv.style.cursor=id?'pointer':'default'; if(id)previewNode(id); else restoreFocal(); } });
+  cv.addEventListener('pointerleave',()=>{ if(state.hoverNodeId){state.hoverNodeId=null;drawMinimap();} restoreFocal(); });
+  cv.addEventListener('click',e=>{ const m=pick(e); if(m){ restoreFocal(); setActive(m.id); } });
+}
+
+/* ---- page scaffold ---- */
+function buildReadout(p){
+  let xmin=9,xmax=-9,ymin=9,ymax=-9;
+  p.nodes.forEach(n=>{const g=n.geom;xmin=Math.min(xmin,g.x);xmax=Math.max(xmax,g.x);ymin=Math.min(ymin,g.y);ymax=Math.max(ymax,g.y);});
+  const f=v=>(v>=0?'+':'')+v.toFixed(2);
+  return `<div class="readout">
+    <div class="r-row"><span class="k">DIGITAL <em>⟷</em> PHYSICAL</span><span class="v">${f(xmin)} … ${f(xmax)}</span></div>
+    <div class="r-row"><span class="k">OBJECT <em>⟷</em> SPATIAL</span><span class="v">${f(ymin)} … ${f(ymax)}</span></div>
+    <div class="r-row"><span class="k">NODES</span><span class="v">${p.nodes.length}</span></div>
+  </div>`;
+}
+
+function render(p){
+  state.project=p;
+  state.accent=(p.colors&&p.colors.core)||p.accent||[196,0,33]; // accent = colors.core (single source of truth)
+  document.documentElement.style.setProperty('--accent',rgbStr(state.accent));
+  document.documentElement.style.setProperty('--accent-soft',`rgba(${state.accent[0]},${state.accent[1]},${state.accent[2]},.10)`);
+  document.title=`${p.name} — MODE MODE`;
+  state.sections=buildSections(p);
+
+  const page=document.getElementById('page'); page.innerHTML='';
+
+  /* LEFT */
+  const side=el('aside','side');
+  const back=el('a','backlink','<span class="dia"></span><span>Back to main MODE MODE</span>'); back.href='index.html';
+  side.appendChild(back);
+  const tb=el('div','titleblock',`<div class="code">${esc(p.code||'')}</div><h1 class="name">${esc(p.name||'')}</h1>`);
+  side.appendChild(tb);
+  side.appendChild(el('div',null,buildReadout(p)).firstChild);
+  const mmWrap=el('div','minimap-wrap','<canvas id="minimap"></canvas><div class="minimap-addr">ADDR · OBJECT</div>');
+  side.appendChild(mmWrap);
+  const nav=el('nav','nav');
+  state.sections.forEach(s=>{
+    const it=el('div','nav-item'); it.dataset.id=s.id;
+    it.innerHTML=`<span class="mk"></span><span class="lab">${esc(s.title)}</span>`;
+    it.addEventListener('click',()=>setActive(s.id));
+    if(s.nodeId){
+      it.addEventListener('pointerenter',()=>{ state.hoverNodeId=s.nodeId; drawMinimap(); previewNode(s.nodeId); });
+      it.addEventListener('pointerleave',()=>{ state.hoverNodeId=null; drawMinimap(); restoreFocal(); });
+    }
+    nav.appendChild(it);
+  });
+  side.appendChild(nav);
+  page.appendChild(side);
+
+  /* MIDDLE */
+  const content=el('section','content'); content.id='content'; page.appendChild(content);
+
+  /* RIGHT (focal) */
+  const focal=el('div','focal');
+  focal.innerHTML=`<div class="panel"><div class="panel-h"><span id="focalLabel"></span><span class="meta">IMG</span></div>
+    <div class="panel-b"><img id="focalImg" alt=""></div></div>`;
+  page.appendChild(focal);
+
+  /* FOOTER prev/next */
+  const foot=el('div','footer');
+  const mk=(slug,dir)=>{
+    const label=dir==='prev'?'Previous Project':'Next Project';
+    if(!slug){ return el('span','navproj '+dir+' disabled',`<span>${label}</span>`); }
+    const a=el('a','navproj '+dir, dir==='prev'
+      ? `<span class="dia"></span><span><span style="color:var(--grey)">${label}</span><br><span class="pn">${esc(slugName(slug))}</span></span>`
+      : `<span><span style="color:var(--grey)">${label}</span><br><span class="pn">${esc(slugName(slug))}</span></span><span class="dia"></span>`);
+    a.href=`project.html?p=${encodeURIComponent(slug)}`; return a;
+  };
+  foot.appendChild(mk(p.prev,'prev')); foot.appendChild(mk(p.next,'next'));
+  page.appendChild(foot);
+
+  /* minimap compute (virtual 16:9 field) + first paint */
+  const edge=(p.colors&&p.colors.edge)||[255,210,51];
+  state.mm=computeMetaball(p.nodes,640,360,edge,state.accent);
+  drawMinimap(); bindMinimap();
+
+  setActive('classification');
+}
+
+function fail(msg){
+  const page=document.getElementById('page');
+  page.innerHTML=`<div class="errbox">Could not load project.<br><br><span style="font-size:11px">${esc(msg)}</span><br><br>
+    <a href="index.html" style="color:var(--accent)">← Back to MODE MODE</a></div>`;
+}
+
+/* ---- routing: ?p=<slug> (or #slug); default nightmare-kart ---- */
+function getSlug(){
+  const q=new URLSearchParams(location.search).get('p');
+  const h=location.hash?location.hash.replace(/^#/,''):'';
+  return (q||h||'nightmare-kart').trim();
+}
+
+let _rz=null;
+window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setTimeout(()=>{ if(state.mm)drawMinimap(); },120); });
+
+(async function init(){
+  const slug=getSlug();
+  try{ const p=await loadProject(slug); render(p); }
+  catch(err){ fail(err && err.message ? err.message : String(err)); }
+})();
+})();
+</script>
+</body>
+</html>
