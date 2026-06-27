@@ -14,7 +14,7 @@ How the build runs across focused Cowork instances: who owns what, how work stay
 - Auto-memory bridges sessions.
 
 ## Workstreams (roadmap)
-- [ ] **W1 — Project page template** — `handoff_project-page-template.md`. Render `project.html` from a project JSON (NIGHTMARE KART first). **Next / kicking off.**
+- [x] **W1 — Project page template** — `handoff_project-page-template.md`. `project.html` renders NIGHTMARE KART from JSON. **Built + Nexus-reviewed 2026-06-27; passes acceptance + port invariants.**
 - [ ] **W2 — Content editor (CMS layer)** — per-node block editor in the studio; export full content JSON; the "only-if-content" rule; reorder + hide/show.
 - [ ] **W3 — Homepage ↔ project wiring** — click/lock a project → its page; node hover swaps focal image; minimap reuse.
 - [ ] **W4 — Media + deploy** — image sizing, Vimeo embeds, optional prerender for SEO, domain (TBD).

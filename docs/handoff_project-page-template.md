@@ -17,7 +17,7 @@ A single `project.html` that takes `?p=<slug>` (or hash), fetches `content/<slug
 - **Footer** — `Previous Project` / `Next Project` (`prev` / `next` slugs).
 
 ### Section rule
-Render a node as a section **iff** `content && content.blocks.length > 0 && !content.hidden`. `CLASSIFICATION` always renders first. (Sample: 5 nodes → 3 sections + CLASSIFICATION; the two empty/unwritten nodes show nothing.)
+Render a node as a section **iff** `content && content.blocks.length > 0 && !content.hidden`. `CLASSIFICATION` always renders first. (Sample: 5 nodes → **2 sections + CLASSIFICATION** — `nk-cabinet` (2 blocks) and `nk-lighting` (1 block) render; `nk-3d` + `nk-interface` have empty `blocks:[]` and `nk-welding` has `content:null`, so all three show nothing. The expected NIGHTMARE KART nav is exactly: CLASSIFICATION · Cabinet Design & Fabrication · Interactive Lighting System.)
 
 ### Block renderers (each has an optional `title`)
 - `text` — title + `body` (newline-aware).

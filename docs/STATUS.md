@@ -16,10 +16,12 @@ Provenance is labeled. **Verified** = I read it from the live file/git or tested
 - Present mode: unfocused-opacity full range, **black labels no outline**, **view-only** (no label drag), unlabeled nodes show no dot.
 - Drag-reorder projects, GLOBAL-tab de-focus, metaball curvature, hover fade.
 
-## Project pages (Phase 0 done — Phase 1/W1 not started)
+## Project pages (W1 built + Nexus-reviewed — 2026-06-27)
+- **Verified (source-reviewed + worker headless 21/21, zero console errors):** `project.html` renders NIGHTMARE KART in the 3-zone layout from `content/nightmare-kart.json` via a single `loadProject()` boundary. Section rule live → CLASSIFICATION + Cabinet + Lighting; the three empty/null nodes suppressed. Accent = `colors.core`; minimap is a read-only port of the homepage metaball (`index.html` untouched, git-confirmed); focal-image swap on nav/minimap hover+click; prev/next (massive→gif); back→index.html; iOS workaround + brand system intact. Port invariants honored (one boundary, media-by-URL, Vimeo).
+- **Follow-ups (content/polish, not blockers):** CLASSIFICATION hero `cabinet-hero.png` is a mockup screenshot → swap for a real photo; bare `image`-block empty-`src` guard (cosmetic); Matt's real copy/images for the empty nodes.
 - **Decided:** data-in-repo CMS now, engineered to port to **Supabase** later (my recommendation); **focused Cowork instances** per workstream; **NIGHTMARE KART** page first; **Vimeo** for video.
 - **Known (from mockup `mode-mode.pdf`):** the 3-zone layout; block types (text, column, image+paragraph, image, media); the rules (homepage dictates sections, node→section only if it has content, accent = core-node colour, anchored left side-nav, drag-reorder + hide/show per page, prev/next); collaborators, PROPERTIES copy, MATERIAL-CONDITIONS labels.
-- **Known (from live roster):** NIGHTMARE KART = `P-04`, accent `[196,0,33]`, 5 nodes with real labels + geometry. Scaffold renders to **CLASSIFICATION + 3 sections** (cabinet, lighting have content; 3d, interface empty; welding null).
+- **Known (from live roster):** NIGHTMARE KART = `P-04`, accent `[196,0,33]`, 5 nodes with real labels + geometry. Scaffold renders to **CLASSIFICATION + 2 sections** (cabinet = 2 blocks, lighting = 1 block; 3d + interface have empty `blocks:[]`; welding `content:null`). A 3rd section appears only when Matt adds copy to one of the empty nodes.
 - **Placeholder (in `content/nightmare-kart.json`, flagged in its `_note`):** all non-mockup body copy, captions, the Vimeo id, prev/next order, and which nodes have content. Matt supplies the real values. **No `project.html` / renderer exists yet** — only the scaffold data + the W1 build handoff. W1 is the immediate next workstream.
 
 ## Schema coherence (frozen — Nexus-owned)
