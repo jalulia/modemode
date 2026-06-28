@@ -62,6 +62,16 @@
   #minimap{display:block;width:100%;height:auto;cursor:default;}
   .blob-cap{font-size:9px;letter-spacing:.26em;color:var(--grey-2);margin-top:6px;}
 
+  /* node "portrait" — reveals on hover, falls back to the section you're reading */
+  .portrait{margin-top:16px;border-top:1px solid var(--hair);padding-top:15px;min-height:90px;}
+  .portrait .p-prompt{font-size:11.5px;line-height:1.55;color:var(--grey-2);letter-spacing:.02em;max-width:30ch;}
+  .portrait .p-lab{font-family:var(--disp);font-size:17px;color:var(--ink);line-height:1.06;margin-bottom:8px;}
+  .portrait .p-blurb{font-size:12.5px;line-height:1.55;color:var(--grey);margin-bottom:10px;}
+  .portrait .p-status{font-size:10px;letter-spacing:.16em;text-transform:uppercase;}
+  .portrait .p-status.live{color:var(--accent);cursor:pointer;display:inline-block;}
+  .portrait .p-status.live:hover{opacity:.6;}
+  .portrait .p-status.idle{color:var(--grey-2);}
+
   .nav{margin-top:26px;border-top:1px solid var(--hair);}
   .nav-item{display:flex;align-items:center;gap:13px;padding:15px 2px;border-bottom:1px solid var(--hair-2);
     font-size:13.5px;letter-spacing:.02em;transition:padding-left .16s ease,color .16s;}
@@ -296,8 +306,8 @@ function bindMinimap(){ const cv=document.getElementById('minimap');
   const pick=e=>{ const r=cv.getBoundingClientRect(); const mx=e.clientX-r.left, my=e.clientY-r.top; let best=null,bd=22;
     (state.mm.markers||[]).forEach(m=>{ const d=Math.hypot(mx-m.x,my-m.y); if(d<bd){bd=d;best=m;} }); return best; };
   cv.addEventListener('pointermove',e=>{ const m=pick(e); const id=m?m.id:null;
-    if(id!==state.hoverNodeId){ state.hoverNodeId=id; drawMinimap(); cv.style.cursor=(m&&m.live)?'pointer':'default'; } });
-  cv.addEventListener('pointerleave',()=>{ if(state.hoverNodeId){state.hoverNodeId=null;drawMinimap();} });
+    if(id!==state.hoverNodeId){ state.hoverNodeId=id; drawMinimap(); updatePortrait(); cv.style.cursor=(m&&m.live)?'pointer':'default'; } });
+  cv.addEventListener('pointerleave',()=>{ if(state.hoverNodeId){state.hoverNodeId=null;drawMinimap();updatePortrait();} });
   cv.addEventListener('click',e=>{ const m=pick(e); if(m&&m.live) scrollToSection(m.id); });
 }
 
@@ -305,7 +315,18 @@ function bindMinimap(){ const cv=document.getElementById('minimap');
 function scrollToSection(key){ const t=document.querySelector(`.card[data-section="${key}"]`);
   if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); }
 function setActiveKey(key){ if(state.activeKey===key)return; state.activeKey=key;
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.key===key)); drawMinimap(); }
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.key===key)); drawMinimap(); updatePortrait(); }
+function updatePortrait(){
+  const elp=document.getElementById('portrait'); if(!elp)return;
+  const hov = (state.hoverNodeId && state.nodes.find(n=>n.id===state.hoverNodeId)) ? state.hoverNodeId : null;
+  const id = hov || (state.activeKey && state.activeKey!=='classification' ? state.activeKey : null);
+  const n = id ? state.nodes.find(x=>x.id===id) : null;
+  if(!n){ elp.innerHTML='<div class="p-prompt">Hover the field — each node opens its portrait.</div>'; return; }
+  const live=hasContent(n);
+  elp.innerHTML=`<div class="p-lab">${esc(n.label)}</div>`+(n.blurb?`<div class="p-blurb">${esc(n.blurb)}</div>`:'')+
+    `<div class="p-status ${live?'live':'idle'}">${live?'Case study — open ▸':'Discipline · mapped, no case study yet'}</div>`;
+  if(live){ const st=elp.querySelector('.p-status.live'); if(st) st.addEventListener('click',()=>scrollToSection(n.id)); }
+}
 
 /* ============================================================ scaffold ============================================================ */
 function buildReadout(p){
@@ -321,6 +342,7 @@ function buildReadout(p){
 }
 function render(p){
   state.project=p; state.nodes=p.nodes||[]; state.accent=(p.colors&&p.colors.core)||p.accent||[196,0,33]; state.imgN=0;
+  state.activeKey=''; state.hoverNodeId=null;
   state.contentNodes=state.nodes.filter(hasContent).sort((a,b)=>((a.content.order||0)-(b.content.order||0)));
   document.documentElement.style.setProperty('--accent',rgbStr(state.accent));
   document.title=`${p.name} — MODE MODE`;
@@ -335,12 +357,13 @@ function render(p){
   rail.appendChild(el('div','ident',`<div class="code">${esc(p.code||'')}</div><h1 class="name">${esc(p.name||'')}</h1>`));
   rail.appendChild(el('div',null,buildReadout(p)).firstChild);
   rail.appendChild(el('figure','blob','<canvas id="minimap"></canvas><figcaption class="blob-cap">MODE · OBJECT</figcaption>'));
+  const portrait=el('div','portrait'); portrait.id='portrait'; rail.appendChild(portrait);
   const nav=el('nav','nav');
   const navRow=(key,label,live,kicker)=>{ const it=el('div','nav-item'+(live?' live':' muted')+(kicker?' kicker':'')); it.dataset.key=key;
     it.innerHTML=`<span class="mk"></span><span class="lab">${esc(label)}</span>`;
-    if(live){ it.addEventListener('click',()=>scrollToSection(key));
-      if(key!=='classification'){ it.addEventListener('pointerenter',()=>{state.hoverNodeId=key;drawMinimap();});
-        it.addEventListener('pointerleave',()=>{state.hoverNodeId=null;drawMinimap();}); } }
+    if(live) it.addEventListener('click',()=>scrollToSection(key));
+    if(key!=='classification'){ it.addEventListener('pointerenter',()=>{state.hoverNodeId=key;drawMinimap();updatePortrait();});
+      it.addEventListener('pointerleave',()=>{state.hoverNodeId=null;drawMinimap();updatePortrait();}); }
     nav.appendChild(it); };
   navRow('classification','CLASSIFICATION',true,true);
   state.nodes.forEach(n=>navRow(n.id, n.label||'UNTITLED', hasContent(n), false));

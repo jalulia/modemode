@@ -26,6 +26,7 @@
     {
       "id": "nk-cabinet",
       "label": "Cabinet Design & Fabrication",
+      "blurb": "The enclosure itself — CNC carcass, charred-cedar cladding, marquee housing, control deck.",
       "geom": { "x": 0.556, "y": -0.691, "r": 0.25, "i": 0.85, "f": 2, "core": true },
       "content": {
         "hidden": false,
@@ -54,24 +55,28 @@
     {
       "id": "nk-lighting",
       "label": "Interactive Lighting System",
+      "blurb": "Programmable rig keyed to in-game state — the marquee pulses on event.",
       "geom": { "x": 0.124, "y": -0.348, "r": 0.12, "i": 0.4, "f": 2.6, "core": false },
       "content": { "hidden": false, "order": 2, "blocks": [] }
     },
     {
       "id": "nk-3d",
       "label": "3D Modeling & Printing",
+      "blurb": "Printed parts — button housings, fixtures, the small bespoke geometry.",
       "geom": { "x": 0.426, "y": -0.619, "r": 0.12, "i": 0.17, "f": 4, "core": false },
       "content": { "hidden": false, "order": 3, "blocks": [] }
     },
     {
       "id": "nk-interface",
       "label": "Interface Feedback System",
+      "blurb": "Physical controls wired to game feedback — actuator rods, return springs, LEDs.",
       "geom": { "x": 0.233, "y": -0.729, "r": 0.192, "i": 0.3, "f": 4, "core": false },
       "content": { "hidden": false, "order": 4, "blocks": [] }
     },
     {
       "id": "nk-welding",
       "label": "Welding, Fabrics, Blood",
+      "blurb": "The structural and soft trades — steel, upholstery, and the messy parts.",
       "geom": { "x": 0.652, "y": -0.266, "r": 0.12, "i": 0.34, "f": 4, "core": false },
       "content": null
     }
