@@ -114,10 +114,33 @@
   .spec .sp-n{font-family:var(--disp);font-size:15px;color:var(--ink);margin:12px 0 8px;}
   .spec .sp-b{font-size:13px;line-height:1.62;color:var(--grey);}
 
-  /* stat card — at-a-glance figures */
-  .statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:26px 22px;}
+  /* hero — full-width header above the grid */
+  .hero-head{margin:0 0 22px;border:1px solid var(--hair);border-radius:var(--r);overflow:hidden;background:var(--paper);
+    opacity:0;transform:translateY(9px);animation:rise .55s cubic-bezier(.2,.7,.2,1) forwards;}
+  .hero-head img{display:block;width:100%;height:auto;max-height:480px;object-fit:cover;object-position:center;}
+  .hero-head .cap2{border-top:1px solid var(--hair-2);}
+  @media (prefers-reduced-motion:reduce){ .hero-head{opacity:1;transform:none;animation:none;} }
+
+  /* stat card — at-a-glance figures: full-width row of N columns; stacked list when narrow */
+  .statgrid{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:26px 22px;}
   .stat .sv{font-family:var(--disp);font-size:21px;color:var(--ink);line-height:1.05;}
   .stat .sk{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);margin-top:7px;}
+  @media (max-width:720px){
+    .statcard .statgrid{display:flex;flex-direction:column;gap:0;}
+    .statcard .stat{display:flex;justify-content:space-between;align-items:baseline;gap:18px;padding:13px 0;border-top:1px solid var(--hair-2);}
+    .statcard .stat:first-child{border-top:0;padding-top:0;}
+    .statcard .stat .sv{font-size:18px;} .statcard .stat .sk{margin-top:0;text-align:right;}
+  }
+
+  /* portrait card gallery (e.g. tarot deck) — full cards, no crop, tactile hover */
+  .cardgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:24px 18px;align-items:start;}
+  .cardtile{display:flex;flex-direction:column;gap:10px;}
+  .cardtile .ct-img{display:block;width:100%;height:auto;border-radius:7px;border:1px solid var(--hair);background:var(--paper);
+    box-shadow:0 1px 3px rgba(18,16,12,.10);transition:transform .24s cubic-bezier(.2,.7,.2,1),box-shadow .24s;}
+  .cardtile:hover .ct-img{transform:translateY(-6px) rotate(-1.4deg);box-shadow:0 14px 30px rgba(18,16,12,.22);}
+  .cardtile .ct-cap{font-size:10.5px;letter-spacing:.06em;color:var(--grey);text-align:center;}
+  @media (prefers-reduced-motion:reduce){ .cardtile:hover .ct-img{transform:none;} }
+  @media (max-width:560px){ .cardgrid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));} }
 
   /* image + paragraph rows */
   .mc-row{display:grid;grid-template-columns:1fr;gap:16px;}
@@ -290,8 +313,9 @@ function carouselCard(sectionKey, b){
   c.appendChild(wrap); return c;
 }
 function statsCard(sectionKey,b){
-  const c=card(sectionKey,b.title||'AT A GLANCE'); const g=el('div','statgrid');
-  (b.items||[]).forEach(it=>{ const s=el('div','stat'); s.innerHTML=`<div class="sv">${esc(it.v)}</div><div class="sk">${esc(it.k)}</div>`; g.appendChild(s); });
+  const items=b.items||[]; const c=card(sectionKey,b.title||'AT A GLANCE'); c.classList.add('wide','statcard');
+  const g=el('div','statgrid'); g.style.setProperty('--n', Math.max(1,items.length));
+  items.forEach(it=>{ const s=el('div','stat'); s.innerHTML=`<div class="sv">${esc(it.v)}</div><div class="sk">${esc(it.k)}</div>`; g.appendChild(s); });
   c._b.appendChild(g); return c;
 }
 function blockCards(sectionKey, b){
@@ -300,6 +324,13 @@ function blockCards(sectionKey, b){
     c._b.appendChild(el('div','body'+(b.layout==='two'?' two':''),paras(b.body))); out.push(c); }
   else if(type==='stats'){ out.push(statsCard(sectionKey,b)); }
   else if(type==='carousel'){ const c=carouselCard(sectionKey,b); if(c)out.push(c); }
+  else if(type==='cardgrid'){ const imgs=(b.images||[]).filter(im=>real(im.src));
+    if(imgs.length){ const c=card(sectionKey, b.title||'GALLERY', String(imgs.length).padStart(2,'0')+' CARDS'); c.classList.add('wide','cardgridcard');
+      const g=el('div','cardgrid');
+      imgs.forEach(im=>{ const t=el('div','cardtile');
+        t.innerHTML=`<img class="ct-img" src="${esc(im.src)}" alt="${esc(im.alt||im.caption||'')}" loading="lazy">`+(real(im.caption)?`<div class="ct-cap">${esc(im.caption)}</div>`:'');
+        g.appendChild(t); });
+      c._b.appendChild(g); out.push(c); } }
   else if(type==='column'){ const c=card(sectionKey,b.title); if(b.wide)c.classList.add('wide'); const g=el('div','specs');
     (b.columns||[]).forEach(col=>{ const s=el('div','spec');
       s.innerHTML=(col.spec?`<div class="sp-k">${esc(col.spec)}</div>`:'')+
@@ -431,11 +462,14 @@ function render(p){
   page.appendChild(rail);
 
   /* MAIN */
-  const main=el('div','main'); const cards=el('div','cards'); cards.id='cards'; main.appendChild(cards);
+  const main=el('div','main');
+  const heroData=p.classification&&p.classification.hero;
+  if(heroData&&real(heroData.src)){ const hh=el('figure','hero-head');
+    hh.innerHTML=`<img src="${esc(heroData.src)}" alt="${esc(heroData.alt||'Cover image')}" loading="eager">`+(real(heroData.caption)?`<figcaption class="cap2">${esc(heroData.caption)}</figcaption>`:'');
+    main.appendChild(hh); }
+  const cards=el('div','cards'); cards.id='cards'; main.appendChild(cards);
   const all=[];
   ((p.classification&&p.classification.intro)||[]).forEach(b=>blockCards('classification',b).forEach(c=>{ if(!c)return; if((b.type||'text')==='text'&&!b.layout) c.classList.add('lead'); all.push(c); }));
-  const hero=p.classification&&p.classification.hero;
-  if(hero) all.push(imageCard('classification', hero.src, hero.alt||'Cover image', true, {wide:true, tag:'COVER', caption:hero.caption}));
   if(p.classification&&p.classification.collaborators&&p.classification.collaborators.length) all.push(collaboratorsCard(p.classification.collaborators));
   state.contentNodes.forEach(n=>{ (n.content.blocks||[]).forEach(b=>blockCards(n.id,b).forEach(c=>c&&all.push(c))); });
   all.forEach((c,i)=>{ c.style.animationDelay=Math.min(i*45,500)+'ms'; cards.appendChild(c); });

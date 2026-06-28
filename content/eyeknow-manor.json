@@ -21,14 +21,6 @@
         { "k": "Format", "v": "Multi-room manor" },
         { "k": "Path", "v": "Self-guided hunt" }
       ] }
-    ],
-    "collaborators": [
-      { "name": "Kyle Calian", "role": "Senior Producer", "url": "https://www.kyleacalian.com/home/fernet-halloween-2024" },
-      { "name": "Millwright", "role": "Fabrication", "url": "https://www.millwrightprojects.com/" },
-      { "name": "Madwell", "role": "Code & Development", "url": "https://madwell.com" },
-      { "name": "Diego Patiño", "role": "Tarot illustration", "url": "https://diegopatino.com/" },
-      { "name": "Wlabs", "role": "Vintage TV array" },
-      { "name": "Event Marketer", "role": "Press", "url": "https://www.eventmarketer.com/article/halloween-2024-experiential/" }
     ]
   },
   "nodes": [
@@ -103,7 +95,7 @@
       "geom": { "x": 0.799, "y": -0.45, "r": 0.12, "i": 0.8, "f": 2, "core": false },
       "content": { "hidden": false, "order": 12, "blocks": [
         { "type": "text", "title": "THE DECK", "body": "A custom-illustrated major arcana — twenty-two cards plus a back design — dealt by the fortune teller. Illustrated by Diego Patiño." },
-        { "type": "carousel", "title": "MAJOR ARCANA", "images": [
+        { "type": "cardgrid", "title": "MAJOR ARCANA", "aspect": "portrait", "images": [
           { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000113093-WYS1G38GDXOLZXSOYMYD/000-The-Fool.jpg", "caption": "0 · The Fool" },
           { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000113075-ZELLT07ED1RM6UV4H6MC/001-The-Magician.jpg", "caption": "I · The Magician" },
           { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000119505-BSH38GDJHLO14SG1XBBB/013-Death.jpg", "caption": "XIII · Death" },
