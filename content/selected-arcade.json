@@ -1,0 +1,109 @@
+{
+  "_note": "Rough buildout from mattfryed.com/hoverburger + mattfryed.com/arcade-games. A selected run of in-studio arcade cabinets (HOVERBURGER, Hair Nah, Kung Fu Kickball). Copy + credits are Matt's own; images referenced by URL from his Squarespace CDN (swap to repo/own-host later). Node geometry + colours match the live homepage roster (P-06). Sample-grade pending Matt's review.",
+  "id": "selected-arcade",
+  "code": "P-06",
+  "name": "SELECTED ARCADE",
+  "slug": "selected-arcade",
+  "colors": { "edge": [254, 205, 194], "core": [249, 249, 11] },
+  "prev": "65porter",
+  "next": "massive",
+  "classification": {
+    "hero": { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/59d5dffe-567b-4c10-83dc-ee30fe12e1d8/cab-photoshoot-521.png", "alt": "HOVERBURGER arcade cabinet" },
+    "intro": [
+      {
+        "type": "text",
+        "title": "CLASSIFICATION",
+        "body": "A selected run of arcade cabinets designed and fabricated in-studio — HOVERBURGER, Hair Nah, and Kung Fu Kickball. Each is a ground-up enclosure built around another studio's game, tuned to its world and the venue it lives in.\n\nThe through-line is the cabinet as a designed object: form, graphics, controls, and secondary screens integrated into a single piece that has to hold a crowd."
+      },
+      { "type": "stats", "title": "AT A GLANCE", "items": [
+        { "k": "Titles", "v": "3" },
+        { "k": "Years", "v": "2021–2023" },
+        { "k": "Venues", "v": "Wonderville · Smithsonian · Moxy" },
+        { "k": "Honor", "v": "A MAZE 2023" }
+      ] }
+    ],
+    "collaborators": [
+      { "name": "Nick Santaniello", "role": "Game Dev & Concept · Hoverburger", "url": "https://robysoft.net" },
+      { "name": "Chris Hernandez", "role": "Art & Game Design · Hoverburger" },
+      { "name": "Karl Hohn", "role": "Music & Sound · Hoverburger" },
+      { "name": "Momo Pixel", "role": "Game Art & Concept · Hair Nah", "url": "https://www.momopixel.com/hair-nah-arcade" },
+      { "name": "Whalefood Games", "role": "Game Development · Kung Fu Kickball", "url": "https://whalefoodgames.com/" },
+      { "name": "Wonderville", "role": "Arcade venue", "url": "https://www.wonderville.nyc/events/hoverburger-launch-party" }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "arc-eng",
+      "label": "Engineering & Fabrication",
+      "blurb": "The in-studio cabinet practice — three ground-up enclosures across three years.",
+      "geom": { "x": 1, "y": -0.998, "r": 0.16, "i": 0.85, "f": 3.05, "core": true },
+      "content": {
+        "hidden": false,
+        "order": 1,
+        "blocks": [
+          {
+            "type": "column",
+            "title": "PROPERTIES",
+            "columns": [
+              { "spec": "TITLES", "value": "3", "valueNote": "2021–2023", "name": "Hoverburger", "body": "Original two-screen upright. Arcade cabinet 2023 · cabinet design, fabrication & game design. A MAZE Awards Berlin honoree, 2023." },
+              { "spec": "FORM", "value": "Ground-up", "valueNote": "per game", "name": "Hair Nah · Kung Fu Kickball", "body": "Hair Nah (2021–2023) now at the Smithsonian and the Video Game Hall of Fame at The Strong. Kung Fu Kickball — an alternate cabinet for the Moxy Hotel, Williamsburg." }
+            ]
+          },
+          { "type": "text", "title": "THE PRACTICE", "body": "Each cabinet is fabricated in-studio as a one-off: CNC carcass, custom panels, marquee, and control deck, built around whatever the game needs. Integrating secondary screens into the form — without breaking the silhouette — is the recurring design problem these builds solve." },
+          { "type": "carousel", "title": "SELECTED CABINETS", "images": [
+            { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/900898d2-ae15-4386-ac17-07ddd35ce2e2/cleaned_cab-photoshoot-545.jpg", "caption": "Hoverburger — two-screen upright." },
+            { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/b320878c-80b8-4bc0-9d40-3902b6587efe/kfk-moxy2.jpg", "caption": "Kung Fu Kickball — Moxy Hotel, Williamsburg." },
+            { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/127b37a7-8556-4150-b664-33a858aaa1bc/moxywilliamsburg_1709661918_3317206930470432931_48152968393.jpg", "caption": "Kung Fu Kickball in the lobby." }
+          ] },
+          { "type": "image", "title": null, "wide": true, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/067b6805-3f2c-49a1-bd93-5ac2e1382090/hoverburger-launch-23.jpg", "alt": "HOVERBURGER launch", "caption": "Hoverburger launch party at Wonderville." }
+        ]
+      }
+    },
+    {
+      "id": "arc-cabinet",
+      "label": "Cabinet Design",
+      "blurb": "HOVERBURGER — drawn from Tempest and VEC9, with a foldable Burglet version.",
+      "geom": { "x": 0.754, "y": -0.927, "r": 0.185, "i": 0.33, "f": 3.05, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 2,
+        "blocks": [
+          { "type": "text", "title": "HOVERBURGER", "body": "You operate a burger-styled spacecraft in a bid to lure the Space Ram away from devouring Earth. The cabinet was drawn with influence from Tempest, Solar Jetman (the in-game craft), and VEC9 — getting the secondary screens to integrate with the form and the dev work was the main goal and the main challenge. It also comes in a foldable, overhead-compartment-sized Burglet version." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/ebf1119c-fedf-4e50-977d-0b7e3a11c09e/one-sheeter-cfa3AADS.png", "alt": "HOVERBURGER one-sheet", "caption": "Hoverburger one-sheet." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/cc0c7cf6-4b9e-4761-8e0a-a71d54631a24/burglet1.jpg", "alt": "The foldable Burglet version", "caption": "The foldable, overhead-compartment-sized Burglet." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/4bfbfaf6-dceb-4bbd-9dc9-fb14ebde1a61/hb-master-gif.gif", "alt": "HOVERBURGER gameplay (animated)" }
+        ]
+      }
+    },
+    {
+      "id": "arc-graphic",
+      "label": "Graphic Design",
+      "blurb": "Marquee art, one-sheets, and cabinet graphics tuned to each title.",
+      "geom": { "x": 0.692, "y": -0.623, "r": 0.12, "i": 0.28, "f": 2, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 3,
+        "blocks": [
+          { "type": "text", "title": "CABINET GRAPHICS", "body": "Marquees, one-sheets, and side art carry each game's world onto its enclosure. Hair Nah pairs Momo Pixel's art and concept with a cabinet built to put it in front of museum audiences." },
+          { "type": "image", "title": "HAIR NAH", "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/e8f28131-3cdc-4f22-a9df-5f56ba5185b3/Screenshot+2024-08-23+at+1.38.08%E2%80%AFPM.png", "alt": "Hair Nah — game art by Momo Pixel", "caption": "Hair Nah — art & concept by Momo Pixel. Now at the Smithsonian and The Strong." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/106af56a-05d3-4dcf-8b5f-ad7c22681a27/kfk-moxy3.jpg", "alt": "Kung Fu Kickball cabinet graphics", "caption": "Kung Fu Kickball — cabinet for the Moxy." }
+        ]
+      }
+    },
+    {
+      "id": "arc-interface",
+      "label": "Interface Design",
+      "blurb": "Control layouts and the secondary-screen integration that signs these builds.",
+      "geom": { "x": 0.566, "y": -0.93, "r": 0.065, "i": 0.22, "f": 3.45, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 4,
+        "blocks": [
+          { "type": "text", "title": "CONTROLS & SCREENS", "body": "Control decks are laid out per game and wired to the cabinet's secondary screens — the integration of those extra displays into the form, design, and dev work is the detail that defines the Hoverburger build." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/20f00d43-b2d6-4b16-9f5f-b96f834d550c/hoverburger-launch-14.jpg", "alt": "HOVERBURGER controls and secondary screens", "caption": "Hoverburger — controls and integrated secondary screens." }
+        ]
+      }
+    },
+    { "id": "arc-f1", "label": "", "geom": { "x": 0.855, "y": -0.803, "r": 0.075, "i": 0.23, "f": 3, "core": false }, "content": null }
+  ]
+}

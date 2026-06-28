@@ -1,0 +1,114 @@
+{
+  "_note": "Rough buildout from mattfryed.com/massive. Copy + credits are Matt's own; images referenced by URL from his Squarespace CDN (swap to repo/own-host later). Node geometry + colours match the live homepage roster (P-02). Sample-grade structure pending Matt's review.",
+  "id": "massive",
+  "code": "P-02",
+  "name": "MASSIVE",
+  "slug": "massive",
+  "colors": { "edge": [139, 255, 204], "core": [30, 111, 224] },
+  "prev": "selected-arcade",
+  "next": "nightmare-kart",
+  "classification": {
+    "hero": { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/53e770ab-11fd-4e59-ba67-13442feda437/massive-main.png", "alt": "MASSIVE — two-player arcade cabinet" },
+    "intro": [
+      {
+        "type": "text",
+        "title": "CLASSIFICATION",
+        "body": "MASSIVE is a two-player arcade game about the transfer of matter between the environment and the players. The goal is to transfer the most matter to your goal — by absorbing it from your opponent and collecting free-floating nuggets.\n\nA freestanding cabinet designed, fabricated, and developed in-studio. Built 2020; currently residing at Wonderville, Brooklyn."
+      },
+      { "type": "stats", "title": "AT A GLANCE", "items": [
+        { "k": "Year", "v": "2020" },
+        { "k": "Players", "v": "2" },
+        { "k": "Format", "v": "Arcade cabinet" },
+        { "k": "Venue", "v": "Wonderville" }
+      ] }
+    ],
+    "collaborators": [
+      { "name": "Nick Santaniello", "role": "Game Development", "url": "https://robysoft.net" },
+      { "name": "Devin Curry / Grand Atrium", "role": "Music", "url": "https://www.instagram.com/grandatrium/?hl=en" },
+      { "name": "Wonderville", "role": "Arcade venue", "url": "https://www.wonderville.nyc/events/massivelaunchparty" },
+      { "name": "Complex × Puma", "role": "Press", "url": "https://www.complex.com/sneakers/2020/02/puma-future-rider-sneaker" }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "msv-game",
+      "label": "Game Design & Development",
+      "blurb": "The two-player matter-transfer game — absorb, collect, and feed your goal.",
+      "geom": { "x": -0.934, "y": -0.515, "r": 0.195, "i": 0.96, "f": 2, "core": true },
+      "content": {
+        "hidden": false,
+        "order": 1,
+        "blocks": [
+          {
+            "type": "column",
+            "title": "PROPERTIES",
+            "columns": [
+              { "spec": "FORMAT", "value": "2-player", "valueNote": "head-to-head", "name": "Build", "body": "2020 · Design, fabrication & game development in-studio." },
+              { "spec": "MECHANIC", "value": "Absorb → goal", "valueNote": "matter economy", "name": "Loop", "body": "Pull matter off your opponent, sweep up free-floating nuggets, and bank the most into your goal to win the round." }
+            ]
+          },
+          { "type": "text", "title": "THE GAME", "body": "Two players fight over a shared pool of matter. Everything on screen is mass that can be moved — taken from the other player, scavenged from the field, and carried home. The cabinet was built around that simple, greedy loop and the crowd it draws." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588877184725-OQM8HWDE7YCTCX60T3IA/ezgif.com-optimize.gif", "alt": "MASSIVE gameplay (animated)" }
+        ]
+      }
+    },
+    {
+      "id": "msv-physics",
+      "label": "Quantum & Macro Physics Simulations",
+      "blurb": "Matter as the medium — every pixel on screen is mass you can move.",
+      "geom": { "x": -1, "y": -0.071, "r": 0.19, "i": 0.48, "f": 3.6, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 2,
+        "blocks": [
+          { "type": "text", "title": "MATTER MODEL", "body": "The whole field is a matter economy — particles flow, clump, and get pulled between goals under a continuous simulation. Absorbing your opponent grows your reach; over-extending leaves you thin and exposed." },
+          { "type": "carousel", "title": "IN MOTION", "images": [
+            { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588871396457-WT9GSAWXAPBF3FGCJ51W/nova-clip+%281%29.gif", "caption": "Matter transfer, mid-round." },
+            { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588810943606-DL8YED0FAB8V58SPCTY7/Screen+Shot+2020-05-06+at+8.21.51+PM.png", "caption": "On-screen state — two goals, one shared pool." },
+            { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588883884069-GM9N4UIMI1MYI1LV0WEL/ezgif.com-video-to-gif.gif", "caption": "Free-floating nuggets in play." }
+          ] }
+        ]
+      }
+    },
+    {
+      "id": "msv-cabinet",
+      "label": "Cabinet fabrication & Design",
+      "blurb": "The freestanding enclosure — built in-studio, toured to MAGFest.",
+      "geom": { "x": 0.416, "y": -1, "r": 0.19, "i": 0.8, "f": 2, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 3,
+        "blocks": [
+          { "type": "text", "title": "THE CABINET", "body": "A freestanding two-player upright, designed and fabricated in-studio around the game's shared-screen layout. Built to take a crowd and travel — shown at MAGFest 2020 and now resident at Wonderville." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/fa59cbe6-9acb-4390-a5a7-2b252827d91a/IMG_0869.jpg", "alt": "MASSIVE cabinet" },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588884115686-5Y78LVA6DVNMNV4HALWI/magfest2020.jpg", "alt": "MASSIVE at MAGFest 2020", "caption": "On the floor at MAGFest 2020." }
+        ]
+      }
+    },
+    {
+      "id": "msv-identity",
+      "label": "Visual Identity System",
+      "blurb": "Title treatment and event artwork around the cabinet.",
+      "geom": { "x": -0.852, "y": 0.257, "r": 0.12, "i": 0.8, "f": 2, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 4,
+        "blocks": [
+          { "type": "image", "title": "EVENT ARTWORK", "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588885335913-XWVJ6GIBOZEMP33G02P9/MASSIVE-event-posters-facebook.jpg", "alt": "MASSIVE launch event poster", "caption": "Launch artwork — the title system carried onto event posters." }
+        ]
+      }
+    },
+    {
+      "id": "msv-audio",
+      "label": "SFX & BGM",
+      "blurb": "Original score and sound by Devin Curry / Grand Atrium.",
+      "geom": { "x": -1, "y": 0.259, "r": 0.12, "i": 0.44, "f": 2.8, "core": false },
+      "content": { "hidden": false, "order": 5, "blocks": [] }
+    },
+    { "id": "msv-f1", "label": "", "geom": { "x": 0.26, "y": -0.943, "r": 0.12, "i": 0.51, "f": 2, "core": false }, "content": null },
+    { "id": "msv-f2", "label": "", "geom": { "x": -1, "y": -0.859, "r": 0.095, "i": 0.25, "f": 3.8, "core": false }, "content": null },
+    { "id": "msv-f3", "label": "", "geom": { "x": -0.75, "y": -0.667, "r": 0.055, "i": 0.12, "f": 3.3, "core": false }, "content": null },
+    { "id": "msv-f4", "label": "", "geom": { "x": -0.775, "y": -0.219, "r": 0.195, "i": 0.33, "f": 2, "core": false }, "content": null },
+    { "id": "msv-f5", "label": "", "geom": { "x": -1, "y": 0.452, "r": 0.075, "i": 0.18, "f": 3.7, "core": false }, "content": null }
+  ]
+}

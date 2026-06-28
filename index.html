@@ -298,13 +298,15 @@ function seed(){return [
 ];}
 let projects=seed(), selProj=projects[0].id, selNode=null, mode='edit', activeSwatch='core', wheelHSV=[0,1,1], blendMode='color-burn';
 /* projects with a built case-study page (project.html?p=slug), keyed by code. Extend as pages ship. */
-const PAGES={'P-04':'nightmare-kart','P-03':'gif','P-01':'eyeknow-manor','P-05':'65porter'};
+const PAGES={'P-04':'nightmare-kart','P-03':'gif','P-01':'eyeknow-manor','P-05':'65porter','P-02':'massive','P-06':'selected-arcade'};
 /* hover-image preview by code (one example wired; extend per project) */
 const PREVIEW={
   'P-04':{src:'assets/nightmare-kart/marquee.jpg',cap:'NIGHTMARE KART'},
   'P-03':{src:'https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588815859685-U3I5M1YA2P3REM1W4NOS/gif-angle.jpg',cap:'GIF'},
   'P-01':{src:'https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/bd7a2039-4642-4a64-bfd7-6d0a0cb50e93/fernet_day_one226.jpg',cap:'EYEKNOW MANOR'},
-  'P-05':{src:'https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1732580661448-EC64TJEZAADXSZJQGWST/_8504017.jpg',cap:'65 PORTER'}
+  'P-05':{src:'https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1732580661448-EC64TJEZAADXSZJQGWST/_8504017.jpg',cap:'65 PORTER'},
+  'P-02':{src:'https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/53e770ab-11fd-4e59-ba67-13442feda437/massive-main.png',cap:'MASSIVE'},
+  'P-06':{src:'https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/59d5dffe-567b-4c10-83dc-ee30fe12e1d8/cab-photoshoot-521.png',cap:'SELECTED ARCADE'}
 };
 
 /* storage */
