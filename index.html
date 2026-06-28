@@ -1038,6 +1038,9 @@ function sanitizeProjects(){ projects.forEach(p=>{
   const ub=document.getElementById('undoBtn'),rb=document.getElementById('redoBtn');
   if(ub)ub.onclick=undo; if(rb)rb.onclick=redo; updateUndoUI();
   requestAnimationFrame(render);
+  // wiring: ?focus=<code> (from a project-page back-link) → open in present mode, locked on that project
+  try{ const fc=new URLSearchParams(location.search).get('focus');
+    if(fc){ const fp=projects.find(x=>x.code===fc); if(fp){ setMode('present'); lock=fp.id; hover=fp.id; syncLegend(); updateReadout(); } } }catch(e){}
 })();
 })();
 </script>

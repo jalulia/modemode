@@ -107,6 +107,13 @@
   .card-h .tag{font-size:9.5px;letter-spacing:.18em;color:var(--grey-2);}
   .card-b{padding:24px 22px;}
 
+  /* lead card — full-width opening statement, gives the masonry a strong top beat */
+  .card.lead{column-span:all;margin-bottom:26px;}
+  .card.lead .card-b{padding:32px 30px;}
+  .card.lead .body{max-width:64ch;}
+  .card.lead .body p{font-size:15.5px;line-height:1.74;}
+  .card.lead .body p:first-child{font-size:20px;line-height:1.56;color:var(--ink);margin-bottom:16px;letter-spacing:.002em;}
+
   .body p{margin:0 0 14px;font-size:14px;line-height:1.78;color:var(--ink);}
   .body p:last-child{margin-bottom:0;}
 
@@ -353,7 +360,8 @@ function render(p){
   /* LEFT RAIL */
   const rail=el('aside','rail');
   rail.appendChild(el('div','wordmark','MODE<span class="colon">:</span>MODE<span class="sub">Field studio — two-layer<br>topographic metaballs</span>'));
-  const back=el('a','back','<span class="dia"></span><span>Back to MODE MODE</span>'); back.href='index.html'; rail.appendChild(back);
+  const back=el('a','back','<span class="dia"></span><span>Back to MODE MODE</span>');
+  back.href = p.code ? `index.html?focus=${encodeURIComponent(p.code)}` : 'index.html'; rail.appendChild(back);
   rail.appendChild(el('div','ident',`<div class="code">${esc(p.code||'')}</div><h1 class="name">${esc(p.name||'')}</h1>`));
   rail.appendChild(el('div',null,buildReadout(p)).firstChild);
   rail.appendChild(el('figure','blob','<canvas id="minimap"></canvas><figcaption class="blob-cap">MODE · OBJECT</figcaption>'));
@@ -378,7 +386,7 @@ function render(p){
   /* MAIN — masonry of cards */
   const main=el('div','main'); const cards=el('div','cards'); cards.id='cards'; main.appendChild(cards);
   const all=[];
-  ((p.classification&&p.classification.intro)||[]).forEach(b=>blockCards('classification',b).forEach(c=>c&&all.push(c)));
+  ((p.classification&&p.classification.intro)||[]).forEach(b=>blockCards('classification',b).forEach(c=>{ if(!c)return; if((b.type||'text')==='text') c.classList.add('lead'); all.push(c); }));
   const hero=p.classification&&p.classification.hero;
   if(hero) all.push(imageCard('classification', hero.src, hero.alt||'Cover image', true));
   if(p.classification&&p.classification.collaborators&&p.classification.collaborators.length) all.push(collaboratorsCard(p.classification.collaborators));

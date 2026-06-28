@@ -18,8 +18,8 @@ A single `project.html` renders a project from its JSON as a masonry **card-grid
 - **2b. Assets (in-house)** 🟡 — I produce on-brand stand-ins (technical elevations/detail drawings, material studies) so every slot is designed, not "pending"; real photos swap in by URL when available. **I never wait on Matt.**
 - **2c. Refinement** 🟡 — tighten against the original notes: hover-to-expand node info ("portraits"), focal/preview interaction carried from the homepage, type hierarchy, spacing, motion, full responsive/mobile.
 
-## Phase 3 — Homepage ↔ project wiring (W3)
-Make the two halves one site: lock/click a project on the homepage → its page (the CASE STUDY link is the seed); node hover on the page previews/!jumps; minimap is the shared constellation. Reverse path (page → homepage with that project focused).
+## Phase 3 — Homepage ↔ project wiring (W3) · 🟡 started
+Make the two halves one site. **Done:** the round-trip — homepage (present) lock → CASE STUDY → project page → back-link → `index.html?focus=<code>` reopens the homepage in present mode locked on that project. **Remaining:** node-hover cross-preview, a more discoverable CASE STUDY affordance, shared constellation polish.
 
 ## Phase 4 — Content editor / CMS layer (W2)
 Extend the studio into the authoring tool: per-node block editor (text/column/image/image+paragraph/media), node cover, collaborators, classification overview; the only-if-content rule; drag-reorder + hide/show per page; export full content JSON. (Removes hand-editing JSON.)
