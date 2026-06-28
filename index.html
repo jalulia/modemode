@@ -116,10 +116,10 @@
     border-top:1px solid var(--hair);font-size:10px;letter-spacing:.14em;font-weight:700;text-decoration:none;pointer-events:auto;}
   .readout .r-open:hover{opacity:.6;}
   /* hover-image preview — appears when a project with a page is focused (present mode) */
-  #hoverPreview{position:absolute;left:36px;top:300px;width:232px;z-index:6;opacity:0;transform:translateY(6px);
+  #hoverPreview{position:absolute;left:36px;top:300px;width:232px;z-index:8;opacity:0;transform:translateY(6px);
     transition:opacity .3s,transform .3s;pointer-events:none;background:var(--panel);border:1px solid var(--hair);}
   #hoverPreview.show{opacity:1;transform:translateY(0);}
-  #hoverPreview img{display:block;width:100%;height:auto;}
+  #hoverPreview img{display:block;width:100%;height:auto;max-height:42vh;object-fit:cover;object-position:center top;}
   #hoverPreview .cap{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);padding:8px 11px;display:flex;justify-content:space-between;gap:8px;}
   #hoverPreview .cap .go{color:var(--accent,#C40021);}
   body.darkbg #hoverPreview{background:#131318;border-color:#2C2C32;}
@@ -727,7 +727,11 @@ function buildLegend(){ const vis=projects.filter(p=>p.code!=='P-07'); legendEl.
 function syncLegend(){const fi=lock||hover;legendEl.querySelectorAll('.lg-row').forEach(r=>{r.classList.toggle('active',r.dataset.id===fi);r.classList.toggle('dim',fi&&r.dataset.id!==fi);});}
 function updateReadout(){const fi=lock||hover;const pv=document.getElementById('hoverPreview');
   if(!fi){readoutEl.classList.remove('show');if(pv)pv.classList.remove('show');return;}const p=getProj(fi);if(!p)return;
-  if(pv){ const e=PREVIEW[p.code]; if(e){ pv.querySelector('img').src=e.src; pv.querySelector('.lab').textContent=e.cap||p.name||''; pv.classList.add('show'); } else pv.classList.remove('show'); }
+  if(pv){ const e=PREVIEW[p.code], slug=PAGES[p.code];
+    if(e){ pv.querySelector('img').src=e.src; pv.querySelector('.lab').textContent=e.cap||p.name||''; pv.classList.add('show');
+      if(slug){ pv.style.cursor='pointer'; pv.style.pointerEvents='auto'; pv.title='Open case study'; pv.onclick=()=>{ location.href='project.html?p='+slug; }; }
+      else { pv.style.cursor=''; pv.style.pointerEvents='none'; pv.removeAttribute('title'); pv.onclick=null; } }
+    else pv.classList.remove('show'); }
   let xmin=9,xmax=-9,ymin=9,ymax=-9;p.nodes.forEach(n=>{xmin=Math.min(xmin,n.x);xmax=Math.max(xmax,n.x);ymin=Math.min(ymin,n.y);ymax=Math.max(ymax,n.y);});
   const f=v=>(v>=0?'+':'')+v.toFixed(2);
   readoutEl.innerHTML=`<div class="r-code">${p.code}${lock===fi?' · LOCKED':''}</div>`+
@@ -737,7 +741,11 @@ function updateReadout(){const fi=lock||hover;const pv=document.getElementById('
     `<div class="r-row"><span>NODES</span><span>${p.nodes.length}</span></div>`+
     (PAGES[p.code] ? `<a class="r-open" href="project.html?p=${PAGES[p.code]}" style="color:${rgbStr(p.colors.core)}"><span>CASE STUDY</span><span>&rarr;</span></a>` : '');
   readoutEl.classList.add('show');
-  if(pv&&pv.classList.contains('show')) pv.style.top=(readoutEl.offsetTop+readoutEl.offsetHeight+14)+'px';}
+  if(pv&&pv.classList.contains('show')){ const topPx=readoutEl.offsetTop+readoutEl.offsetHeight+14; pv.style.top=topPx+'px';
+    // cap the preview image so the popup always clears the INDEX legend (no overlap, any project / viewport)
+    const lg=document.getElementById('legend'); const floor=(lg&&lg.offsetParent!==null)?lg.getBoundingClientRect().top:window.innerHeight;
+    const img=pv.querySelector('img'), cap=pv.querySelector('.cap'); if(img){ const capH=cap?cap.offsetHeight:28;
+      img.style.maxHeight=Math.max(96, floor-topPx-18-capH)+'px'; } }}
 
 /* mode toggle */
 const mEdit=document.getElementById('mEdit'),mPresent=document.getElementById('mPresent');
