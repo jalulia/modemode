@@ -9,7 +9,7 @@
   "prev": "massive",
   "next": "gif",
   "classification": {
-    "hero": "assets/nightmare-kart/cabinet-hero.png",
+    "hero": null,
     "intro": [
       {
         "type": "text",
@@ -29,7 +29,7 @@
       "label": "Cabinet Design & Fabrication",
       "geom": { "x": 0.556, "y": -0.691, "r": 0.25, "i": 0.85, "f": 2, "core": true },
       "content": {
-        "cover": "assets/nightmare-kart/cabinet.png",
+        "cover": null,
         "hidden": false,
         "order": 1,
         "blocks": [
@@ -57,12 +57,10 @@
       "label": "Interactive Lighting System",
       "geom": { "x": 0.124, "y": -0.348, "r": 0.12, "i": 0.4, "f": 2.6, "core": false },
       "content": {
-        "cover": "assets/nightmare-kart/lighting.png",
+        "cover": null,
         "hidden": false,
         "order": 2,
-        "blocks": [
-          { "type": "media", "kind": "image", "title": "", "src": "assets/nightmare-kart/lighting.png", "fullbleed": false, "caption": "" }
-        ]
+        "blocks": []
       }
     },
     {
