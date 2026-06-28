@@ -28,16 +28,17 @@
   img{max-width:100%;}
 
   .corner{position:fixed;width:14px;height:14px;border:1px solid var(--grey-2);pointer-events:none;opacity:.5;z-index:60;}
-  .corner.tl{top:16px;left:16px;border-right:0;border-bottom:0;} .corner.tr{top:16px;right:16px;border-left:0;border-bottom:0;}
-  .corner.bl{bottom:16px;left:16px;border-right:0;border-top:0;} .corner.br{bottom:16px;right:16px;border-left:0;border-top:0;}
+  .corner.tl{top:18px;left:18px;border-right:0;border-bottom:0;} .corner.tr{top:18px;right:18px;border-left:0;border-bottom:0;}
+  .corner.bl{bottom:18px;left:18px;border-right:0;border-top:0;} .corner.br{bottom:18px;right:18px;border-left:0;border-top:0;}
 
   .stage{max-width:1720px;margin:0 auto;padding:0 54px;}
   .page{display:grid;grid-template-columns:368px minmax(0,1fr);gap:60px;align-items:start;}
 
   /* ===================== LEFT RAIL — anchored, locked, ALWAYS fits (never scrolls) ===================== */
   .rail{position:sticky;top:0;height:100vh;height:100dvh;overflow:visible;
-    display:flex;flex-direction:column;padding:30px 14px 22px 0;}
-  .wordmark{margin-bottom:54px;flex:0 0 auto;color:var(--ink);}
+    display:flex;flex-direction:column;padding:96px 14px 22px 0;}
+  /* one fixed logo lockup — identical viewport position on every page, never jumps */
+  .wordmark{position:fixed;top:30px;left:36px;width:94px;z-index:60;color:var(--ink);}
   .mm-logo{display:block;width:94px;height:auto;}
   .back{position:absolute;left:-38px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;color:var(--grey-2);opacity:.7;transition:color .15s,opacity .15s;}
   .back svg{display:block;}
@@ -190,9 +191,9 @@
   .errbox a{color:var(--accent);}
 
   @media (max-width:880px){
-    .stage{padding:0 26px;}
+    .stage{padding:0 36px;}
     .page{grid-template-columns:1fr;gap:8px;}
-    .rail{position:static;height:auto;overflow:visible;padding:54px 0 8px;}
+    .rail{position:static;height:auto;overflow:visible;padding:84px 0 8px;}
     .back{position:static;transform:none;margin:0 0 12px;} .code-row{display:block;}
     .nav-item{max-height:none;padding:14px 2px;}
     .blob{max-width:380px;}
