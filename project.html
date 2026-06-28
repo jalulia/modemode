@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- iOS light-render workaround: force light scheme + explicit white bg on html/body -->
+<!-- iOS light-render workaround: force light scheme + explicit white bg -->
 <meta name="color-scheme" content="light">
-<link rel="icon" href="data:,"><!-- suppress favicon request (no 404) -->
+<link rel="icon" href="data:,">
 <title>MODE MODE — Project</title>
 <style>
   /* ===================== brand type — BB Strata (self-hosted) ===================== */
@@ -15,126 +15,134 @@
     url('assets/fonts/BBStrata-MLRegular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap;}
 
   :root{ color-scheme:light;
-    --paper:#FFFFFF; --ink:#15150F; --grey:#86867F; --grey-2:#C2C2BB;
-    --hair:rgba(18,18,14,.16); --hair-2:rgba(18,18,14,.07);
-    --disp:'BB Strata Pro','Arial Narrow',sans-serif;        /* display — bold only */
-    --text:'BB Strata ML',ui-monospace,'SFMono-Regular',Menlo,monospace; /* body / labels */
-    --accent:#C40021; }                                       /* overwritten from data (colors.core) */
+    --paper:#FFFFFF; --ink:#15140F; --grey:#86857D; --grey-2:#BBBAB2;
+    --hair:rgba(18,16,12,.16); --hair-2:rgba(18,16,12,.075);
+    --disp:'BB Strata Pro','Arial Narrow',sans-serif;
+    --text:'BB Strata ML',ui-monospace,'SFMono-Regular',Menlo,monospace;
+    --accent:#C40021; --accent-08:rgba(196,0,33,.07);
+    --r:2px; }
 
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;background:#FFFFFF;}            /* white — explicit for iOS */
+  html,body{margin:0;padding:0;background:#FFFFFF;}
   body{font-family:var(--text);color:var(--ink);background:var(--paper);
-    -webkit-font-smoothing:antialiased;font-size:13px;line-height:1.6;}
+    -webkit-font-smoothing:antialiased;font-size:12.5px;line-height:1.62;}
   a{color:inherit;text-decoration:none;}
   img{max-width:100%;}
 
-  /* viewport corner marks + wordmark — homepage brand system */
-  .corner{position:fixed;width:13px;height:13px;border:1px solid var(--grey-2);pointer-events:none;opacity:.65;z-index:50;}
+  .corner{position:fixed;width:13px;height:13px;border:1px solid var(--grey-2);pointer-events:none;opacity:.6;z-index:50;}
   .corner.tl{top:14px;left:14px;border-right:0;border-bottom:0;}
   .corner.tr{top:14px;right:14px;border-left:0;border-bottom:0;}
   .corner.bl{bottom:14px;left:14px;border-right:0;border-top:0;}
   .corner.br{bottom:14px;right:14px;border-left:0;border-top:0;}
-  .wordmark{position:fixed;top:20px;left:32px;z-index:40;user-select:none;font-family:var(--disp);
-    font-size:13px;letter-spacing:.26em;line-height:1;}
+  .wordmark{position:fixed;top:20px;left:30px;z-index:40;user-select:none;font-family:var(--disp);
+    font-size:13px;letter-spacing:.12em;line-height:.92;}
   .wordmark .colon{color:var(--grey-2);}
 
-  .stage{max-width:1640px;margin:0 auto;padding:60px 46px 44px;}
-  .page{display:grid;grid-template-columns:minmax(280px,344px) minmax(0,1fr);gap:60px;align-items:start;}
+  .stage{max-width:1640px;margin:0 auto;padding:62px 40px 40px;}
+  .page{display:grid;grid-template-columns:312px minmax(0,1fr);gap:44px;align-items:start;}
 
-  /* ===================== LEFT RAIL — identity + constellation, persistent ===================== */
-  .rail{position:sticky;top:44px;display:flex;flex-direction:column;}
+  /* ===================== LEFT RAIL — persistent identity + index ===================== */
+  .rail{position:sticky;top:42px;display:flex;flex-direction:column;}
   .back{display:inline-flex;align-items:center;gap:9px;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;
-    color:var(--grey);margin-bottom:34px;align-self:flex-start;}
+    color:var(--grey);margin-bottom:30px;align-self:flex-start;transition:color .15s;}
   .back .dia{width:7px;height:7px;border:1.3px solid var(--accent);transform:rotate(45deg);flex:none;}
   .back:hover{color:var(--ink);}
-  .ident .code{font-family:var(--text);font-size:10.5px;letter-spacing:.26em;color:var(--accent);margin-bottom:9px;}
-  .ident .name{font-family:var(--disp);font-size:clamp(33px,3.7vw,52px);line-height:.9;letter-spacing:-.005em;
-    color:var(--accent);margin:0 0 22px;word-break:break-word;text-transform:uppercase;}
+  .ident .code{font-size:10.5px;letter-spacing:.26em;color:var(--accent);margin-bottom:9px;}
+  .ident .name{font-family:var(--disp);font-size:clamp(38px,4.4vw,62px);line-height:.86;letter-spacing:.002em;
+    color:var(--accent);margin:0 0 22px;text-transform:uppercase;}
 
-  .readout{border-top:1px solid var(--hair);border-bottom:1px solid var(--hair);padding:12px 0;}
-  .readout .r-row{display:flex;justify-content:space-between;gap:14px;font-size:9.5px;padding:3px 0;letter-spacing:.02em;}
-  .readout .r-row .k{color:var(--grey);}
-  .readout .r-row .k em{font-style:normal;color:var(--grey-2);padding:0 2px;}
-  .readout .r-row .v{color:var(--ink);white-space:nowrap;}
+  .readout{border:1px solid var(--hair);border-radius:var(--r);padding:11px 14px;}
+  .readout .r-row{display:flex;justify-content:space-between;gap:12px;font-size:9.5px;padding:3px 0;letter-spacing:.03em;color:var(--grey);}
+  .readout .r-row .v{color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums;}
+  .readout .r-div{border-top:1px solid var(--hair-2);margin:5px 0;}
 
-  /* the constellation: large, borderless — the identity of the rail (pulled from the homepage) */
-  .blob{margin:10px 0 18px;}
+  .blob{margin:18px 0 4px;}
   #minimap{display:block;width:100%;height:auto;cursor:default;}
+  .blob-cap{font-size:8px;letter-spacing:.24em;color:var(--grey-2);margin-top:4px;}
 
-  /* section nav — hairline rows, no cards */
-  .nav{display:flex;flex-direction:column;border-top:1px solid var(--hair);}
-  .nav-item{display:flex;align-items:center;gap:12px;padding:13px 1px;border-bottom:1px solid var(--hair-2);
-    cursor:pointer;transition:padding-left .16s ease;}
+  .nav{margin-top:22px;border-top:1px solid var(--hair);}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:11px 1px;border-bottom:1px solid var(--hair-2);
+    font-size:11px;letter-spacing:.05em;transition:padding-left .16s ease,color .16s;}
   .nav-item .mk{width:8px;height:8px;border-radius:50%;border:1.3px solid var(--accent);flex:none;transition:background .16s;}
-  .nav-item .lab{font-size:11px;letter-spacing:.06em;color:var(--grey);text-transform:uppercase;transition:color .16s;}
-  .nav-item:hover{padding-left:7px;} .nav-item:hover .lab{color:var(--ink);}
+  .nav-item .lab{color:var(--accent);}
+  .nav-item.kicker .lab{letter-spacing:.2em;}
+  .nav-item.live{cursor:pointer;}
+  .nav-item.live:hover{padding-left:7px;}
+  .nav-item.muted{color:var(--grey-2);}
+  .nav-item.muted .mk{border-color:var(--grey-2);}
+  .nav-item.muted .lab{color:var(--grey-2);}
   .nav-item.active .mk{background:var(--accent);}
-  .nav-item.active .lab{color:var(--accent);}
+  .nav-item.active .lab{font-family:var(--disp);}
 
-  /* ===================== MAIN — content-driven composition ===================== */
-  /* A section composes its content blocks with its lead image (only when a real image exists).
-     No lead image => the section is text-led at reading measure. No filler is ever drawn. */
-  .section{min-width:0;}
-  .section.has-lead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.04fr);gap:56px;align-items:start;}
-  .section.text-led .col-text{max-width:640px;}
-  .col-text{min-width:0;}
-  .col-lead{position:sticky;top:44px;margin:0;}
-  .col-lead img{width:100%;height:auto;display:block;}
-  .col-lead figcaption{font-size:9.5px;letter-spacing:.04em;color:var(--grey);margin-top:11px;}
+  .pager{display:flex;justify-content:space-between;gap:10px;margin-top:24px;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2);}
+  .pager a{color:var(--grey);transition:color .15s;} .pager a:hover{color:var(--accent);}
+  .pager .here{color:var(--accent);}
 
-  /* blocks: a small red label over plain body, separated by space + hairline. No boxes. */
-  .block + .block{margin-top:38px;padding-top:38px;border-top:1px solid var(--hair-2);}
-  .lbl{font-family:var(--text);font-size:10px;letter-spacing:.22em;color:var(--accent);text-transform:uppercase;margin:0 0 18px;}
-  .lead-para{font-size:15px;line-height:1.62;color:var(--ink);margin:0 0 14px;max-width:34em;}
-  .body p{margin:0 0 13px;font-size:13px;line-height:1.72;color:var(--ink);}
+  /* ===================== MAIN — masonry of labeled cards ===================== */
+  .cards{column-count:2;column-gap:18px;}
+  @media (max-width:1180px){ .cards{column-count:1;} }
+  .card{break-inside:avoid;margin:0 0 18px;border:1px solid var(--hair);border-radius:var(--r);background:var(--paper);
+    scroll-margin-top:38px;transition:border-color .18s,box-shadow .18s;
+    opacity:0;transform:translateY(8px);animation:rise .5s cubic-bezier(.2,.7,.2,1) forwards;}
+  .card:hover{border-color:rgba(18,16,12,.32);}
+  @keyframes rise{to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){ .card{opacity:1;transform:none;animation:none;} }
+
+  .card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;border-bottom:1px solid var(--hair-2);}
+  .card-h .lbl{font-size:9.5px;letter-spacing:.24em;color:var(--accent);text-transform:uppercase;}
+  .card-h .tag{font-size:8.5px;letter-spacing:.18em;color:var(--grey-2);}
+  .card-b{padding:18px 16px;}
+
+  .body p{margin:0 0 12px;font-size:12.5px;line-height:1.72;color:var(--ink);}
   .body p:last-child{margin-bottom:0;}
 
-  .cols{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
-  @media (max-width:560px){ .cols{grid-template-columns:1fr;} }
-  .col-sub{font-family:var(--disp);font-size:12px;letter-spacing:.02em;margin:0 0 10px;color:var(--ink);text-transform:uppercase;}
+  /* PROPERTIES — spec columns */
+  .specs{display:grid;grid-template-columns:1fr 1fr;gap:26px 30px;}
+  @media (max-width:540px){ .specs{grid-template-columns:1fr;} }
+  .spec .sp-k{font-size:9.5px;letter-spacing:.18em;color:var(--grey);text-transform:uppercase;margin-bottom:6px;}
+  .spec .sp-v{font-family:var(--disp);font-size:17px;letter-spacing:.005em;color:var(--ink);}
+  .spec .sp-v em{font-style:normal;font-family:var(--text);font-size:11px;color:var(--grey);margin-left:5px;letter-spacing:0;}
+  .spec .sp-n{font-family:var(--disp);font-size:12.5px;color:var(--ink);margin:9px 0 6px;}
+  .spec .sp-b{font-size:11.5px;line-height:1.6;color:var(--grey);}
 
-  /* image + paragraph rows: text + (real) thumb. Missing image => text spans full width, no box. */
-  .mc-row{display:grid;grid-template-columns:1fr;gap:8px 28px;align-items:start;}
-  .mc-row.has-img{grid-template-columns:1fr 232px;}
-  .mc-row + .mc-row{margin-top:26px;padding-top:26px;border-top:1px solid var(--hair-2);}
-  .mc-row .t{border-left:2px solid var(--accent);padding-left:14px;}
-  .mc-row h4{font-family:var(--disp);font-size:12.5px;letter-spacing:.01em;margin:0 0 8px;text-transform:uppercase;}
-  .mc-row p{font-size:12px;line-height:1.62;color:var(--grey);margin:0;}
-  .mc-row .thumb{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;}
-  @media (max-width:560px){ .mc-row.has-img{grid-template-columns:1fr;} }
+  /* MATERIAL CONDITIONS — title + body + (real) thumb */
+  .mc-row{display:grid;grid-template-columns:1fr;gap:14px;}
+  .mc-row.has-img{grid-template-columns:1fr 168px;align-items:start;}
+  .mc-row + .mc-row{margin-top:20px;padding-top:20px;border-top:1px solid var(--hair-2);}
+  .mc-row h4{font-family:var(--disp);font-size:13px;letter-spacing:.005em;margin:0 0 7px;color:var(--ink);}
+  .mc-row p{font-size:11.5px;line-height:1.62;color:var(--grey);margin:0;}
+  .mc-row .thumb{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border-radius:1px;}
+  @media (max-width:540px){ .mc-row.has-img{grid-template-columns:1fr;} }
 
-  .blk-img{width:100%;height:auto;display:block;}
-  .blk-cap{font-size:9.5px;letter-spacing:.04em;color:var(--grey);margin-top:10px;}
-  .media-embed{position:relative;width:100%;aspect-ratio:16/9;background:#0a0a0c;}
-  .media-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  /* IMG slots — a real photo, or a designed placeholder describing the needed shot (no void) */
+  .img-real{display:block;width:100%;height:auto;}
+  .slot{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:11px;
+    min-height:230px;padding:30px 26px;border-top:1px solid var(--hair-2);}
+  .slot.tall{min-height:430px;}
+  .slot .ic{width:30px;height:30px;border:1.4px solid var(--grey-2);border-radius:50%;position:relative;}
+  .slot .ic::before,.slot .ic::after{content:"";position:absolute;background:var(--grey-2);}
+  .slot .ic::before{width:13px;height:1.4px;top:50%;left:50%;transform:translate(-50%,-50%);}
+  .slot .ic::after{width:1.4px;height:13px;top:50%;left:50%;transform:translate(-50%,-50%);}
+  .slot .desc{font-size:11px;line-height:1.5;color:var(--grey);max-width:30ch;}
+  .slot .pending{font-size:8px;letter-spacing:.22em;color:var(--grey-2);}
 
-  .collab .crow{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 11px;padding:13px 0;font-size:12px;
-    border-top:1px solid var(--hair-2);}
-  .collab .crow:first-child{border-top:0;padding-top:0;}
-  .collab .nm{font-family:var(--disp);color:var(--ink);text-transform:uppercase;letter-spacing:.01em;}
+  /* COLLABORATORS */
+  .collab .crow{display:grid;grid-template-columns:1fr 1fr auto;align-items:baseline;gap:6px 14px;
+    padding:11px 0;font-size:11.5px;border-top:1px solid var(--hair-2);}
+  .collab .crow:first-child{border-top:0;padding-top:2px;}
+  .collab .nm{font-family:var(--disp);color:var(--ink);}
   .collab .ro{color:var(--grey);}
-  .collab a{color:var(--accent);border-bottom:1px solid transparent;}
-  .collab a:hover{border-bottom-color:var(--accent);}
+  .collab a{color:var(--accent);justify-self:end;text-align:right;letter-spacing:.02em;transition:opacity .15s;}
+  .collab a:hover{opacity:.6;}
 
-  /* ===================== FOOTER — prev / next ===================== */
-  .foot{display:flex;justify-content:space-between;gap:24px;margin-top:64px;padding-top:20px;border-top:1px solid var(--hair);}
-  .navproj{display:flex;align-items:center;gap:12px;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);}
-  .navproj.next{margin-left:auto;text-align:right;}
-  .navproj .dia{width:7px;height:7px;border:1.3px solid var(--accent);transform:rotate(45deg);flex:none;}
-  .navproj .pn{font-family:var(--disp);color:var(--accent);letter-spacing:.02em;display:block;margin-top:4px;font-size:11px;}
-  .navproj:hover{color:var(--ink);}
-  .navproj.disabled{opacity:.3;pointer-events:none;}
-
-  .errbox{max-width:560px;margin:8vh auto 0;border-top:2px solid var(--accent);padding:28px 0 0;color:var(--grey);
+  .errbox{max-width:560px;margin:9vh auto 0;border-top:2px solid var(--accent);padding:26px 0 0;color:var(--grey);
     font-size:13px;line-height:1.7;}
   .errbox a{color:var(--accent);}
 
-  @media (max-width:980px){
-    .page{grid-template-columns:1fr;gap:38px;}
-    .rail,.col-lead{position:static;}
-    .section.has-lead{grid-template-columns:1fr;gap:34px;}
-    .col-lead{order:-1;}
-    .blob{max-width:360px;}
+  @media (max-width:880px){
+    .page{grid-template-columns:1fr;gap:34px;}
+    .rail{position:static;}
+    .blob{max-width:340px;}
   }
 </style>
 </head>
@@ -152,7 +160,7 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v, lerp=(a,b,t)=>a+(b-a)*t;
 const rgbStr=a=>`rgb(${a[0]},${a[1]},${a[2]})`;
 const el=(tag,cls,html)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e;};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const real=s=>typeof s==='string'&&s.trim().length>0;   // a usable media reference (never a placeholder)
+const real=s=>typeof s==='string'&&s.trim().length>0;
 function slugName(slug){return String(slug||'').replace(/[-_]+/g,' ').toUpperCase();}
 function paras(body){ return String(body==null?'':body).split(/\n{2,}/).map(p=>'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>').join(''); }
 function vimeoSrc(embed){ const s=String(embed||'').trim(); if(!s)return '';
@@ -160,9 +168,8 @@ function vimeoSrc(embed){ const s=String(embed||'').trim(); if(!s)return '';
 
 /* ============================================================
    DATA BOUNDARY — single point all project data flows through.
-   Today: fetch the in-repo JSON. Supabase port = replace ONLY this
-   function; nothing else in the renderer knows the source. Media is
-   referenced by URL (assets/<slug>/…) — never inlined.
+   Today: fetch the in-repo JSON. Supabase port = swap ONLY this fn.
+   Media referenced by URL — never inlined.
    ============================================================ */
 async function loadProject(slug){
   const res=await fetch(`content/${slug}.json`,{cache:'no-cache'});
@@ -170,11 +177,7 @@ async function loadProject(slug){
   return await res.json();
 }
 
-/* ============================================================
-   constellation renderer — mirrors index.html's two-field metaball
-   read-only (index.html untouched): S = spread/silhouette, H =
-   intensity-weighted height → edge→core lerp; smoothstep alpha.
-   ============================================================ */
+/* ============================================================ constellation (read-only port of index.html metaball) ============================================================ */
 const MM={ A_MAX:0.86, S_LO:0.16, S_HI:0.42, H_REF:1.0, T_EXP:0.8, SE:1.6 };
 function smoothstep(a,b,x){const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);}
 function computeMetaball(nodes, VW, VH, edge, core){
@@ -204,74 +207,61 @@ function computeMetaball(nodes, VW, VH, edge, core){
 }
 
 /* ============================================================ state ============================================================ */
-const state={ project:null, sections:[], activeId:null, accent:[196,0,33], mm:null, hoverNodeId:null };
+const state={ project:null, nodes:[], contentNodes:[], accent:[196,0,33], mm:null, hoverNodeId:null, activeKey:'classification', imgN:0 };
 function hasContent(node){ const c=node&&node.content; return !!(c&&Array.isArray(c.blocks)&&c.blocks.length>0&&!c.hidden); }
-function leadImage(sec){ return real(sec.cover)?sec.cover:null; }   // only a real photo leads — never a placeholder
-function buildSections(p){
-  const hero=p.classification&&p.classification.hero;
-  const out=[{ id:'classification', kind:'classification', title:'CLASSIFICATION', cover:hero, nodeId:null,
-    blocks:(p.classification&&p.classification.intro)||[], collaborators:(p.classification&&p.classification.collaborators)||[] }];
-  p.nodes.filter(hasContent).sort((a,b)=>((a.content.order||0)-(b.content.order||0))).forEach(n=>out.push({
-    id:n.id, kind:'node', title:n.label||'UNTITLED', nodeId:n.id, cover:(n.content&&n.content.cover)||null, blocks:n.content.blocks }));
+function nextImg(){ state.imgN+=1; return 'IMG-'+String(state.imgN).padStart(2,'0'); }
+
+/* ============================================================ card builders ============================================================ */
+function card(sectionKey, labelText, tagText){
+  const c=el('div','card'); c.dataset.section=sectionKey;
+  const h=el('div','card-h'); h.appendChild(el('span','lbl',esc(labelText||'')));
+  if(tagText) h.appendChild(el('span','tag',esc(tagText)));
+  c.appendChild(h); const b=el('div','card-b'); c.appendChild(b); c._b=b; return c;
+}
+function imageCard(sectionKey, src, desc, tall){
+  const lab=nextImg(); const c=el('div','card'); c.dataset.section=sectionKey;
+  const h=el('div','card-h'); h.appendChild(el('span','lbl',lab));
+  if(desc) h.appendChild(el('span','tag', tall?'COVER':'DETAIL')); c.appendChild(h);
+  if(real(src)){ const im=el('img','img-real'); im.src=src; im.alt=desc||''; im.loading='lazy'; c.appendChild(im); }
+  else { const s=el('div','slot'+(tall?' tall':'')); s.appendChild(el('div','ic'));
+    if(desc) s.appendChild(el('div','desc',esc(desc)));
+    s.appendChild(el('div','pending','PHOTO PENDING')); c.appendChild(s); }
+  return c;
+}
+function blockCards(sectionKey, b){
+  const out=[]; const type=b.type||'text';
+  if(type==='text'){ const c=card(sectionKey,b.title); c._b.appendChild(el('div','body',paras(b.body))); out.push(c); }
+  else if(type==='column'){ const c=card(sectionKey,b.title); const g=el('div','specs');
+    (b.columns||[]).forEach(col=>{ const s=el('div','spec');
+      s.innerHTML=(col.spec?`<div class="sp-k">${esc(col.spec)}</div>`:'')+
+        (col.value?`<div class="sp-v">${esc(col.value)}${col.valueNote?` <em>${esc(col.valueNote)}</em>`:''}</div>`:'')+
+        (col.name?`<div class="sp-n">${esc(col.name)}</div>`:'')+
+        (col.body?`<div class="sp-b">${esc(col.body).replace(/\n/g,'<br>')}</div>`:'');
+      g.appendChild(s); });
+    c._b.appendChild(g); out.push(c); }
+  else if(type==='imagePara'){ const c=card(sectionKey,b.title);
+    (b.rows||[]).forEach(r=>{ const has=real(r.image); const row=el('div','mc-row'+(has?' has-img':''));
+      row.appendChild(el('div',null,`<h4>${esc(r.title)}</h4><p>${esc(r.body).replace(/\n/g,'<br>')}</p>`));
+      if(has){ const im=el('img','thumb'); im.src=r.image; im.alt=r.title||''; im.loading='lazy'; row.appendChild(im); }
+      c._b.appendChild(row); });
+    out.push(c); }
+  else if(type==='image'){ out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false)); }
+  else if(type==='media'){
+    if(b.kind==='video'){ const src=vimeoSrc(b.embed); const c=card(sectionKey,b.title||'VIDEO');
+      c._b.style.padding='0';
+      c._b.innerHTML = src ? `<div style="position:relative;aspect-ratio:16/9;background:#0a0a0c"><iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>`
+        : `<div class="slot"><div class="ic"></div><div class="desc">${esc(b.alt||'Video')}</div><div class="pending">VIDEO PENDING</div></div>`;
+      out.push(c); }
+    else out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false)); }
+  else { const c=card(sectionKey,b.title); c._b.appendChild(el('div','body',paras(b.body||''))); out.push(c); }
   return out;
 }
-
-/* ============================================================ block renderers — red label + plain body, no cards, no filler ============================================================ */
-function renderBlock(b, opts){
-  opts=opts||{};
-  const wrap=el('div','block'); const type=b.type||'text';
-  const label=t=>{ if(t) wrap.appendChild(el('div','lbl',esc(t))); };
-  if(type==='text'){ label(b.title);
-    const body=el('div','body',paras(b.body));
-    if(opts.lead && body.firstChild) body.firstChild.className='lead-para';   // first overview para reads as a lead statement
-    wrap.appendChild(body); }
-  else if(type==='column'){ label(b.title); const cols=el('div','cols');
-    (b.columns||[]).forEach(c=>{ const col=el('div');
-      col.innerHTML=`${c.title?`<div class="col-sub">${esc(c.title)}</div>`:''}<div class="body">${paras(c.body)}</div>`; cols.appendChild(col); });
-    wrap.appendChild(cols); }
-  else if(type==='imagePara'){ label(b.title);
-    (b.rows||[]).forEach(r=>{ const has=real(r.image); const row=el('div','mc-row'+(has?' has-img':''));
-      row.appendChild(el('div','t',`<h4>${esc(r.title)}</h4><p>${esc(r.body).replace(/\n/g,'<br>')}</p>`));
-      if(has){ const im=el('img','thumb'); im.src=r.image; im.alt=r.title||''; im.loading='lazy'; row.appendChild(im); }
-      wrap.appendChild(row); }); }                                  // no image => single-column text row, no box
-  else if(type==='image'){ if(!real(b.src))return null; label(b.title);
-    const im=el('img','blk-img'); im.src=b.src; im.alt=b.caption||''; im.loading='lazy'; wrap.appendChild(im);
-    if(b.caption)wrap.appendChild(el('div','blk-cap',esc(b.caption))); }
-  else if(type==='media'){
-    if(b.kind==='video'){ const src=vimeoSrc(b.embed); if(!src)return null; label(b.title);
-      wrap.appendChild(el('div','media-embed',`<iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>`)); }
-    else { if(!real(b.src))return null; label(b.title);
-      const im=el('img','blk-img'); im.src=b.src; im.alt=b.caption||''; im.loading='lazy'; wrap.appendChild(im);
-      if(b.caption)wrap.appendChild(el('div','blk-cap',esc(b.caption))); } }
-  else { label(b.title); wrap.appendChild(el('div','body',paras(b.body||''))); }
-  return wrap;
-}
-function renderCollaborators(list){
-  const wrap=el('div','block'); wrap.appendChild(el('div','lbl','COLLABORATORS'));
-  const c=el('div','collab');
+function collaboratorsCard(list){
+  const c=card('classification','COLLABORATORS'); const w=el('div','collab');
   (list||[]).forEach(p=>{ const host=(p.url||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
-    c.appendChild(el('div','crow',`<span class="nm">${esc(p.name)}</span><span class="ro">— ${esc(p.role)}</span>`+(p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(host)}</a>`:''))); });
-  wrap.appendChild(c); return wrap;
-}
-
-/* ============================================================ active section — compose blocks + lead image ============================================================ */
-function setActive(id){
-  const sec=state.sections.find(s=>s.id===id); if(!sec)return; state.activeId=id;
-  const lead=leadImage(sec);
-  const main=document.getElementById('main'); main.innerHTML='';
-  const secEl=el('section','section '+(lead?'has-lead':'text-led'));
-  const colText=el('div','col-text');
-  // drop any block whose image just repeats the lead, so the same photo never shows twice
-  let blocks=(sec.blocks||[]).slice();
-  if(lead) blocks=blocks.filter(b=>{ const s=(b.type==='image'||(b.type==='media'&&b.kind==='image'))?b.src:null; return !(real(s)&&s===lead); });
-  const isOverview=sec.kind==='classification';
-  blocks.forEach((b,i)=>{ const node=renderBlock(b,{lead:isOverview&&i===0&&b.type==='text'}); if(node) colText.appendChild(node); });
-  if(isOverview && sec.collaborators && sec.collaborators.length) colText.appendChild(renderCollaborators(sec.collaborators));
-  secEl.appendChild(colText);
-  if(lead){ const fig=el('figure','col-lead'); const im=el('img'); im.src=lead; im.alt=sec.title||''; fig.appendChild(im); secEl.appendChild(fig); }
-  main.appendChild(secEl);
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.id===id));
-  drawMinimap();
+    w.appendChild(el('div','crow',`<span class="nm">${esc(p.name)}</span><span class="ro">${esc(p.role)}</span>`+
+      (p.url?`<a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(host)} ↗</a>`:'<span></span>'))); });
+  c._b.appendChild(w); return c;
 }
 
 /* ============================================================ constellation draw + interaction ============================================================ */
@@ -286,41 +276,51 @@ function drawMinimap(){
   const sx=bbox.minx-pad, sy=bbox.miny-pad;
   ctx.drawImage(mm.buf, sx,sy,vbw,vbh, 0,0,cssW,cssH);
   mm.markers=[];
-  state.project.nodes.forEach((n,j)=>{ const vp=mm.pts[j]; const x=(vp[0]-sx)*scale, y=(vp[1]-sy)*scale;
-    const isSection=state.sections.some(s=>s.nodeId===n.id);
-    const isActive=isSection&&state.activeId===n.id, isHover=state.hoverNodeId===n.id, accent=rgbStr(state.accent);
-    ctx.beginPath(); ctx.arc(x,y,isActive?4.6:3.4,0,6.283);
-    ctx.fillStyle=(isActive||isHover)?accent:'#FFFFFF'; ctx.fill(); ctx.lineWidth=isActive?1.9:1.2; ctx.strokeStyle=accent; ctx.stroke();
+  state.nodes.forEach((n,j)=>{ const vp=mm.pts[j]; const x=(vp[0]-sx)*scale, y=(vp[1]-sy)*scale;
+    const live=hasContent(n);
+    const isActive=live&&state.activeKey===n.id, isHover=state.hoverNodeId===n.id, accent=rgbStr(state.accent);
+    ctx.beginPath(); ctx.arc(x,y,isActive?4.6:3.3,0,6.283);
+    ctx.fillStyle=(isActive||isHover)?accent:'#FFFFFF'; ctx.fill();
+    ctx.lineWidth=isActive?1.9:1.1; ctx.strokeStyle=live?accent:'rgba(150,148,140,.8)'; ctx.stroke();
     if(n.label){ ctx.font='8.5px "BB Strata ML", ui-monospace, monospace'; ctx.textBaseline='middle'; ctx.textAlign='left';
       const tx=x+9, ty=y, tw=ctx.measureText(n.label).width;
-      ctx.fillStyle='rgba(255,255,255,.82)'; ctx.fillRect(tx-2,ty-6,tw+4,12);
-      ctx.fillStyle=isSection?'#15150F':'#A6A69F'; ctx.fillText(n.label,tx,ty); }
-    mm.markers.push({id:n.id,x,y,isSection}); });
+      ctx.fillStyle='rgba(255,255,255,.84)'; ctx.fillRect(tx-2,ty-6,tw+4,12);
+      ctx.fillStyle=live?'#15140F':'#AEACA4'; ctx.fillText(n.label,tx,ty); }
+    mm.markers.push({id:n.id,x,y,live}); });
 }
 function bindMinimap(){ const cv=document.getElementById('minimap');
   const pick=e=>{ const r=cv.getBoundingClientRect(); const mx=e.clientX-r.left, my=e.clientY-r.top; let best=null,bd=20;
-    (state.mm.markers||[]).forEach(m=>{ if(!m.isSection)return; const d=Math.hypot(mx-m.x,my-m.y); if(d<bd){bd=d;best=m;} }); return best; };
+    (state.mm.markers||[]).forEach(m=>{ const d=Math.hypot(mx-m.x,my-m.y); if(d<bd){bd=d;best=m;} }); return best; };
   cv.addEventListener('pointermove',e=>{ const m=pick(e); const id=m?m.id:null;
-    if(id!==state.hoverNodeId){ state.hoverNodeId=id; drawMinimap(); cv.style.cursor=id?'pointer':'default'; } });
+    if(id!==state.hoverNodeId){ state.hoverNodeId=id; drawMinimap(); cv.style.cursor=(m&&m.live)?'pointer':'default'; } });
   cv.addEventListener('pointerleave',()=>{ if(state.hoverNodeId){state.hoverNodeId=null;drawMinimap();} });
-  cv.addEventListener('click',e=>{ const m=pick(e); if(m) setActive(m.id); });
+  cv.addEventListener('click',e=>{ const m=pick(e); if(m&&m.live) scrollToSection(m.id); });
 }
+
+/* ============================================================ nav + scroll wiring ============================================================ */
+function scrollToSection(key){ const t=document.querySelector(`.card[data-section="${key}"]`);
+  if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); }
+function setActiveKey(key){ if(state.activeKey===key)return; state.activeKey=key;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.key===key)); drawMinimap(); }
 
 /* ============================================================ scaffold ============================================================ */
 function buildReadout(p){
   let xmin=9,xmax=-9,ymin=9,ymax=-9;
   p.nodes.forEach(n=>{const g=n.geom;xmin=Math.min(xmin,g.x);xmax=Math.max(xmax,g.x);ymin=Math.min(ymin,g.y);ymax=Math.max(ymax,g.y);});
-  const f=v=>(v>=0?'+':'')+v.toFixed(2);
+  const f=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(2);
   return `<div class="readout">
-    <div class="r-row"><span class="k">DIGITAL <em>⟷</em> PHYSICAL</span><span class="v">${f(xmin)} … ${f(xmax)}</span></div>
-    <div class="r-row"><span class="k">OBJECT <em>⟷</em> SPATIAL</span><span class="v">${f(ymin)} … ${f(ymax)}</span></div>
-    <div class="r-row"><span class="k">NODES</span><span class="v">${p.nodes.length}</span></div></div>`;
+    <div class="r-row"><span>DIGITAL ⟶ PHYSICAL</span><span class="v">${f(xmin)} … ${f(xmax)}</span></div>
+    <div class="r-div"></div>
+    <div class="r-row"><span>OBJECT ⟶ SPATIAL</span><span class="v">${f(ymin)} … ${f(ymax)}</span></div>
+    <div class="r-div"></div>
+    <div class="r-row"><span>NODES</span><span class="v">${p.nodes.length}</span></div></div>`;
 }
 function render(p){
-  state.project=p; state.accent=(p.colors&&p.colors.core)||p.accent||[196,0,33];
+  state.project=p; state.nodes=p.nodes||[]; state.accent=(p.colors&&p.colors.core)||p.accent||[196,0,33]; state.imgN=0;
+  state.contentNodes=state.nodes.filter(hasContent).sort((a,b)=>((a.content.order||0)-(b.content.order||0)));
   document.documentElement.style.setProperty('--accent',rgbStr(state.accent));
+  document.documentElement.style.setProperty('--accent-08',`rgba(${state.accent[0]},${state.accent[1]},${state.accent[2]},.07)`);
   document.title=`${p.name} — MODE MODE`;
-  state.sections=buildSections(p);
 
   const root=document.getElementById('root'); root.innerHTML='';
   const page=el('div','page');
@@ -330,45 +330,59 @@ function render(p){
   const back=el('a','back','<span class="dia"></span><span>Back to MODE MODE</span>'); back.href='index.html'; rail.appendChild(back);
   rail.appendChild(el('div','ident',`<div class="code">${esc(p.code||'')}</div><h1 class="name">${esc(p.name||'')}</h1>`));
   rail.appendChild(el('div',null,buildReadout(p)).firstChild);
-  rail.appendChild(el('div','blob','<canvas id="minimap"></canvas>'));
+  rail.appendChild(el('figure','blob','<canvas id="minimap"></canvas><figcaption class="blob-cap">MODE · OBJECT</figcaption>'));
+  // nav: CLASSIFICATION + every labelled node (content nodes live; the rest muted)
   const nav=el('nav','nav');
-  state.sections.forEach(s=>{ const it=el('div','nav-item'); it.dataset.id=s.id;
-    it.innerHTML=`<span class="mk"></span><span class="lab">${esc(s.title)}</span>`;
-    it.addEventListener('click',()=>setActive(s.id));
-    if(s.nodeId){ it.addEventListener('pointerenter',()=>{ state.hoverNodeId=s.nodeId; drawMinimap(); });
-      it.addEventListener('pointerleave',()=>{ state.hoverNodeId=null; drawMinimap(); }); }
-    nav.appendChild(it); });
+  const navRow=(key,label,live,kicker)=>{ const it=el('div','nav-item'+(live?' live':' muted')+(kicker?' kicker':'')); it.dataset.key=key;
+    it.innerHTML=`<span class="mk"></span><span class="lab">${esc(label)}</span>`;
+    if(live){ it.addEventListener('click',()=>scrollToSection(key));
+      if(key!=='classification'){ it.addEventListener('pointerenter',()=>{state.hoverNodeId=key;drawMinimap();});
+        it.addEventListener('pointerleave',()=>{state.hoverNodeId=null;drawMinimap();}); } }
+    nav.appendChild(it); };
+  navRow('classification','CLASSIFICATION',true,true);
+  state.nodes.forEach(n=>navRow(n.id, n.label||'UNTITLED', hasContent(n), false));
   rail.appendChild(nav);
+  // pager
+  const pg=el('div','pager');
+  pg.innerHTML=`${p.prev?`<a href="project.html?p=${esc(p.prev)}">‹ ${esc(slugName(p.prev))}</a>`:'<span></span>'}`+
+    `<span class="here">${esc(p.code||'')}</span>`+
+    `${p.next?`<a href="project.html?p=${esc(p.next)}">${esc(slugName(p.next))} ›</a>`:'<span></span>'}`;
+  rail.appendChild(pg);
   page.appendChild(rail);
 
-  /* MAIN */
-  const main=el('section','main'); main.id='main';
-  page.appendChild(main);
+  /* MAIN — masonry of cards */
+  const cards=el('div','cards'); cards.id='cards';
+  const all=[];
+  // classification: overview text, hero image slot, collaborators
+  ((p.classification&&p.classification.intro)||[]).forEach(b=>blockCards('classification',b).forEach(c=>c&&all.push(c)));
+  const hero=p.classification&&p.classification.hero;
+  if(hero) all.push(imageCard('classification', hero.src, hero.alt||'Cover image', true));
+  if(p.classification&&p.classification.collaborators&&p.classification.collaborators.length) all.push(collaboratorsCard(p.classification.collaborators));
+  // each content node's blocks
+  state.contentNodes.forEach(n=>{ (n.content.blocks||[]).forEach(b=>blockCards(n.id,b).forEach(c=>c&&all.push(c))); });
+  all.forEach((c,i)=>{ c.style.animationDelay=(i*45)+'ms'; cards.appendChild(c); });
+  page.appendChild(cards);
   root.appendChild(page);
 
-  /* FOOTER */
-  const foot=el('footer','foot');
-  const mk=(slug,dir)=>{ const label=dir==='prev'?'Previous':'Next';
-    if(!slug) return el('span','navproj '+dir+' disabled',`<span>${label}</span>`);
-    const a=el('a','navproj '+dir, dir==='prev'
-      ? `<span class="dia"></span><span>${label}<span class="pn">${esc(slugName(slug))}</span></span>`
-      : `<span>${label}<span class="pn">${esc(slugName(slug))}</span></span><span class="dia"></span>`);
-    a.href=`project.html?p=${encodeURIComponent(slug)}`; return a; };
-  foot.appendChild(mk(p.prev,'prev')); foot.appendChild(mk(p.next,'next'));
-  root.appendChild(foot);
-
-  /* constellation compute (virtual 16:9 field) + first paint */
+  /* constellation */
   const edge=(p.colors&&p.colors.edge)||[255,210,51];
-  state.mm=computeMetaball(p.nodes,640,360,edge,state.accent);
+  state.mm=computeMetaball(state.nodes,640,360,edge,state.accent);
   drawMinimap(); bindMinimap();
   if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(state.mm)drawMinimap(); });
-  setActive('classification');
+
+  // active-section tracking on scroll
+  const seen=new Map();
+  const io=new IntersectionObserver(ents=>{ ents.forEach(e=>seen.set(e.target,e.intersectionRatio));
+    let bestKey=state.activeKey,bestR=0; document.querySelectorAll('.card').forEach(c=>{ const r=seen.get(c)||0; if(r>bestR){bestR=r;bestKey=c.dataset.section;} });
+    if(bestR>0) setActiveKey(bestKey);
+  },{rootMargin:'-15% 0px -55% 0px',threshold:[0,.25,.5,.75,1]});
+  document.querySelectorAll('.card').forEach(c=>io.observe(c));
+  setActiveKey('classification');
 }
 function fail(msg){ document.getElementById('root').innerHTML=
   `<div class="errbox"><strong style="color:var(--ink)">Could not load this project.</strong><br><br>${esc(msg)}<br><br>
    <a href="index.html">← Back to MODE MODE</a></div>`; }
 
-/* routing: ?p=<slug> (or #slug); default nightmare-kart */
 function getSlug(){ const q=new URLSearchParams(location.search).get('p'); const h=location.hash?location.hash.replace(/^#/,''):'';
   return (q||h||'nightmare-kart').trim(); }
 let _rz=null; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setTimeout(()=>{ if(state.mm)drawMinimap(); },120); });

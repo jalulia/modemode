@@ -16,7 +16,7 @@ How the build runs across focused Cowork instances: who owns what, how work stay
 - Auto-memory bridges sessions.
 
 ## Workstreams (roadmap)
-- [x] **W1 — Project page template** — `handoff_project-page-template.md`. `project.html` rebuilt to Julia's direction: white bg, self-hosted BB Strata type, content-driven layout (lead image only when a real photo exists, else text-led — no filler). Screenshot assets dropped; only `marquee.jpg` is real. Passes acceptance + port invariants. Fills out when Matt supplies real photos.
+- [x] **W1 — Project page template** — `handoff_project-page-template.md`. `project.html` = masonry **card-grid** (structure per Julia's Lovable reference; BB Strata type, white). Labeled cards + `IMG-NN` slots (designed shot-described placeholders, not filler); constellation index w/ scroll-synced nav; richer content in JSON. Only `marquee.jpg` is a real photo. Passes port invariants; `index.html` untouched.
 - [ ] **W2 — Content editor (CMS layer)** — per-node block editor in the studio; export full content JSON; the "only-if-content" rule; reorder + hide/show.
 - [ ] **W3 — Homepage ↔ project wiring** — click/lock a project → its page; node hover swaps focal image; minimap reuse.
 - [ ] **W4 — Media + deploy** — image sizing, Vimeo embeds, optional prerender for SEO, domain (TBD).

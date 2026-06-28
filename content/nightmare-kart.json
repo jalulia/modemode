@@ -1,20 +1,19 @@
 {
-  "_note": "SCAFFOLD / test fixture for the page template — not final content. Geometry + colours are from the live roster export. Images are pulled from the provided mockup (docs/mockups/mode-mode.pdf): cabinet-hero, cabinet, marquee (Faux Stained Glass), lighting close-up. Body copy is the mockup's own text where it exists (CLASSIFICATION, PROPERTIES, MATERIAL CONDITIONS, collaborators). Sections the mockup didn't detail (Shou Sugi Ban image, 3D Modeling, Interface Feedback, Welding) are left empty/placeholder — waiting on official copy + images from Matt. prev/next are the mockup's values, not a confirmed nav order.",
+  "_note": "Content adopted from Julia's Lovable reference (richer copy sourced from project notes) + the one real photo (marquee.jpg). Image slots carry a shot description with src:null — designed placeholders until Matt supplies photos. code P-04 + node geometry match the live homepage roster. Specs/copy are sample-grade pending Matt's confirmation.",
   "id": "nightmare-kart",
   "code": "P-04",
   "name": "NIGHTMARE KART",
   "slug": "nightmare-kart",
   "colors": { "edge": [255, 210, 51], "core": [196, 0, 33] },
-  "accent": [196, 0, 33],
   "prev": "massive",
   "next": "gif",
   "classification": {
-    "hero": null,
+    "hero": { "src": null, "alt": "Full-length view of the Nightmare Kart arcade cabinet" },
     "intro": [
       {
         "type": "text",
         "title": "CLASSIFICATION",
-        "body": "Realistic reproduction of mechanical keyboard f8 key, appx 15x scale. Freestanding, float mounted to base with actuator rods and return springs."
+        "body": "Nightmare Kart is a freestanding indie arcade cabinet built for Wonderville (Brooklyn) — a custom enclosure for an original kart racer developed with LWMedia. The form is a love letter to the uneasy basement-arcade objects of the late nineties, scaled and materialized for a contemporary venue.\n\nFabricated in-studio over twelve weeks: shou sugi ban panels around a CNC carcass, a faux stained glass marquee, a programmable interactive lighting rig, and a feedback layer that links physical controls to in-game state. The result is an object that reads as both shrine and machine."
       }
     ],
     "collaborators": [
@@ -29,7 +28,6 @@
       "label": "Cabinet Design & Fabrication",
       "geom": { "x": 0.556, "y": -0.691, "r": 0.25, "i": 0.85, "f": 2, "core": true },
       "content": {
-        "cover": null,
         "hidden": false,
         "order": 1,
         "blocks": [
@@ -37,16 +35,17 @@
             "type": "column",
             "title": "PROPERTIES",
             "columns": [
-              { "title": "W x L x H", "body": "12\" x 12\" x 9\" (12\" tall including base)\n\nRealistic reproduction of mechanical keyboard f8 key, appx 15x scale. Freestanding, float mounted to base with actuator rods and return springs." },
-              { "title": "W x L x H", "body": "12\" x 12\" x 9\" (12\" tall including base)\n\nRealistic reproduction of mechanical keyboard f8 key, appx 15x scale. Freestanding, float mounted to base with actuator rods and return springs." }
+              { "spec": "W × L × H", "value": "32″ × 28″ × 72″", "valueNote": "(incl. base)", "name": "Cabinet", "body": "Freestanding upright cabinet. CNC-cut Baltic birch carcass clad in charred cedar panels. 24″ CRT-style LCD, custom marquee housing, recessed coin door." },
+              { "spec": "W × L × H", "value": "28″ × 14″ × 4″", "valueNote": "control deck", "name": "Control deck", "body": "Two-player layout, Sanwa joysticks, custom resin-cast buttons with embedded LEDs. Float-mounted with actuator rods and return springs for tactile response." }
             ]
           },
+          { "type": "image", "title": null, "src": null, "alt": "Detail view — control deck and faux stained glass marquee" },
           {
             "type": "imagePara",
             "title": "MATERIAL CONDITIONS",
             "rows": [
-              { "title": "Faux Stained Glass Marquee", "body": "Talk about what it is how it was made and the effect it had", "image": "assets/nightmare-kart/marquee.jpg" },
-              { "title": "Shou Sugi Ban", "body": "Talk about what it is how it was made and the effect it had", "image": "" }
+              { "title": "Faux Stained Glass Marquee", "body": "Hand-cut 3mm acrylic flooded with tinted two-part epoxy and outlined in black foil. Reads as cathedral glass at distance and as resin up close — the uncanny register the cabinet wants. Backlit by a warm bulb the lighting system can pulse on event.", "image": "assets/nightmare-kart/marquee.jpg" },
+              { "title": "Shou Sugi Ban", "body": "Western red cedar panels charred with a propane torch, wire-brushed back to expose grain, then sealed in raw tung oil. Matte black at a glance and warm-grained in the hand. Holds fingerprints poorly — ideal for a venue object that gets touched constantly.", "image": null }
             ]
           }
         ]
@@ -56,24 +55,19 @@
       "id": "nk-lighting",
       "label": "Interactive Lighting System",
       "geom": { "x": 0.124, "y": -0.348, "r": 0.12, "i": 0.4, "f": 2.6, "core": false },
-      "content": {
-        "cover": null,
-        "hidden": false,
-        "order": 2,
-        "blocks": []
-      }
+      "content": { "hidden": false, "order": 2, "blocks": [] }
     },
     {
       "id": "nk-3d",
       "label": "3D Modeling & Printing",
       "geom": { "x": 0.426, "y": -0.619, "r": 0.12, "i": 0.17, "f": 4, "core": false },
-      "content": { "cover": null, "hidden": false, "order": 3, "blocks": [] }
+      "content": { "hidden": false, "order": 3, "blocks": [] }
     },
     {
       "id": "nk-interface",
       "label": "Interface Feedback System",
       "geom": { "x": 0.233, "y": -0.729, "r": 0.192, "i": 0.3, "f": 4, "core": false },
-      "content": { "cover": null, "hidden": false, "order": 4, "blocks": [] }
+      "content": { "hidden": false, "order": 4, "blocks": [] }
     },
     {
       "id": "nk-welding",
