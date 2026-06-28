@@ -48,3 +48,20 @@ NIGHTMARE KART page reads like the mockup: 3 zones, red accent (`[196,0,33]`), C
 - **Media is referenced by path/URL, never inlined.** Today `assets/<slug>/…`; the port repoints the base to Supabase Storage. Video already external (Vimeo).
 
 Keep these three invariants and the migration is: create the table, upload the JSON rows + media, swap `loadProject`. No renderer rewrite.
+
+---
+
+## Revision B — visual interpretation corrections (Nexus, 2026-06-27)
+The first pass (`project.html`) is **structurally correct and passes the port invariants**, but it **misreads the mockup's visual language**. Keep the data layer / `loadProject` / routing / block model as-is; redo the layout + styling against `docs/mockups/mode-mode.pdf` (all 5 pages — page 4 is the annotation page; pages 1–3 are the real comps). Side-by-side renders are in the Nexus session. The misread is consistent: **an airy editorial layout was turned into a boxed dashboard, and the signature element was shrunk.** Fix, in priority order:
+
+1. **The field-map blob is the hero of the left rail, not a thumbnail.** The mockup makes the constellation LARGE, soft, and *borderless* — it fills most of the left column and the node labels sit on it. It IS the nav (annotation: "essentially a side nav, always anchored on the left"). The first pass boxed it into a small `.minimap-wrap` panel with an `ADDR · OBJECT` caption. Make it big, borderless, dominant; drop the caption chrome. Reuse the homepage metaball math (already ported).
+2. **Strip the panel/dashboard chrome — go editorial.** No bordered cards with filled accent header bars around every block. The mockup uses small **uppercase red section labels** (PROPERTIES, MATERIAL CONDITIONS, CLASSIFICATION, COLLABORATORS) over plain body text, separated by whitespace and at most hairline rules. Remove the `panel`/`panel-h`/`IMG` chrome.
+3. **The section image is a large, clean, borderless hero — not a small boxed thumb.** First pass shows a tiny right-rail image with an `IMG` header chip (made worse because `cabinet-hero.png` is itself a screenshot of the mockup — swap that asset). The cabinet/section image should occupy major real estate.
+4. **CLASSIFICATION matches mockup page 2:** large hero image with intro copy beside it and COLLABORATORS below — not a near-empty middle column with a thumbnail on the right.
+5. **Rebalance proportions.** It's not a rigid equal 3-column grid; the image gets major space, content breathes. Eliminate the dead whitespace the first pass leaves on CLASSIFICATION.
+
+**Keep:** `loadProject()` boundary, media-by-URL, Vimeo, accent = `colors.core`, the section "only-if-content" rule, prev/next, back-to-home, iOS workaround, JetBrains Mono + grey/hairline palette.
+
+**Data note (decide separately — not a renderer bug):** the mockup's nav shows CLASSIFICATION · Cabinet · **3D Modeling** · **Interface Feedback** (3 content nodes). The fixture instead put content on Cabinet + **Interactive Lighting**, so the render shows Cabinet + Lighting. The "only-if-content" rule is working correctly — the *data* is what diverges from the comp. For a faithful demo, move the placeholder content onto the same nodes the mockup populates (or accept Lighting). This is placeholder pending Matt's real copy; flag for Julia.
+
+**Also fix:** the first pass logs one `404` (a missing asset → not "zero console errors"); add the empty-`src` guard to the bare `image` block to match the graceful handling in `imagePara`/`media`.

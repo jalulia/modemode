@@ -2,6 +2,8 @@
 
 How the build runs across focused Cowork instances: who owns what, how work stays consistent and non-overlapping. **The Nexus instance maintains this file.**
 
+> **Current mode (2026-06-27): consolidated.** Julia is running build + coordination in a single chat for now (the multi-instance fork felt heavier than it was worth at this stage). The roles/handoffs below stay valid and we re-fork when a workstream is big enough to be worth isolating — Julia calls it.
+
 ## Roles
 - **Nexus (orchestrator).** Standing coordinator. Owns the roadmap, `STATUS.md`, this file, the data schema, and consistency standards. Plans workstreams, writes/updates handoffs, reviews worker output against acceptance criteria, integrates, flags overlap/drift. Does **not** do heavy building. Julia's single point of contact for "where are we / what's next / is this right."
 - **Worker instances.** Focused, scoped builds — one workstream each. Read the repo + their handoff, build, test, report; hand changes to Julia to commit.
@@ -14,7 +16,7 @@ How the build runs across focused Cowork instances: who owns what, how work stay
 - Auto-memory bridges sessions.
 
 ## Workstreams (roadmap)
-- [x] **W1 — Project page template** — `handoff_project-page-template.md`. `project.html` renders NIGHTMARE KART from JSON. **Built + Nexus-reviewed 2026-06-27; passes acceptance + port invariants.**
+- [x] **W1 — Project page template** — `handoff_project-page-template.md`. `project.html` Rev-B editorial rebuild — Nexus-reviewed on render, passes acceptance + port invariants (`b5454f3`). Residual is placeholder assets (Matt's hero + lighting photos), not template.
 - [ ] **W2 — Content editor (CMS layer)** — per-node block editor in the studio; export full content JSON; the "only-if-content" rule; reorder + hide/show.
 - [ ] **W3 — Homepage ↔ project wiring** — click/lock a project → its page; node hover swaps focal image; minimap reuse.
 - [ ] **W4 — Media + deploy** — image sizing, Vimeo embeds, optional prerender for SEO, domain (TBD).

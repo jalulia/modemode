@@ -114,6 +114,9 @@
   .readout .r-row{display:flex;justify-content:space-between;font-size:10.5px;padding:4px 0;border-top:1px solid var(--hair-2);}
   .readout .r-row span:first-child{color:var(--grey);}
   .readout .r-sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;}
+  .readout .r-open{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:11px;
+    border-top:1px solid var(--hair);font-size:10px;letter-spacing:.14em;font-weight:700;text-decoration:none;pointer-events:auto;}
+  .readout .r-open:hover{opacity:.6;}
   .legend{position:absolute;left:36px;bottom:34px;display:flex;flex-direction:column;gap:1px;z-index:6;}
   .legend .lg-h{font-size:9.5px;letter-spacing:.2em;color:var(--grey-2);margin-bottom:8px;}
   .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;transition:.2s;}
@@ -288,6 +291,8 @@ function seed(){return [
     {id:uid(),x:0.745,y:-0.015,r:0.09,i:0.91,f:2.6,core:false,label:""}]},
 ];}
 let projects=seed(), selProj=projects[0].id, selNode=null, mode='edit', activeSwatch='core', wheelHSV=[0,1,1], blendMode='color-burn';
+/* projects with a built case-study page (project.html?p=slug), keyed by code. Extend as pages ship. */
+const PAGES={'P-04':'nightmare-kart'};
 
 /* storage */
 const store={async save(){const s=JSON.stringify({v:2,projects,fx,blend:blendMode});
@@ -712,7 +717,9 @@ function updateReadout(){const fi=lock||hover;if(!fi){readoutEl.classList.remove
     `<div class="r-name"><span class="r-sw" style="background:${rgbStr(p.colors.core)}"></span>${p.name}</div>`+
     `<div class="r-row"><span>DIGITAL ⟷ PHYSICAL</span><span>${f(xmin)} … ${f(xmax)}</span></div>`+
     `<div class="r-row"><span>OBJECT ⟷ SPATIAL</span><span>${f(ymin)} … ${f(ymax)}</span></div>`+
-    `<div class="r-row"><span>NODES</span><span>${p.nodes.length}</span></div>`; readoutEl.classList.add('show');}
+    `<div class="r-row"><span>NODES</span><span>${p.nodes.length}</span></div>`+
+    (lock===fi && PAGES[p.code] ? `<a class="r-open" href="project.html?p=${PAGES[p.code]}" style="color:${rgbStr(p.colors.core)}"><span>CASE STUDY</span><span>&rarr;</span></a>` : '');
+  readoutEl.classList.add('show');}
 
 /* mode toggle */
 const mEdit=document.getElementById('mEdit'),mPresent=document.getElementById('mPresent');
