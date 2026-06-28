@@ -117,6 +117,14 @@
   .readout .r-open{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:11px;
     border-top:1px solid var(--hair);font-size:10px;letter-spacing:.14em;font-weight:700;text-decoration:none;pointer-events:auto;}
   .readout .r-open:hover{opacity:.6;}
+  /* hover-image preview — appears when a project with a page is focused (present mode) */
+  #hoverPreview{position:absolute;left:36px;top:300px;width:232px;z-index:6;opacity:0;transform:translateY(6px);
+    transition:opacity .3s,transform .3s;pointer-events:none;background:var(--panel);border:1px solid var(--hair);}
+  #hoverPreview.show{opacity:1;transform:translateY(0);}
+  #hoverPreview img{display:block;width:100%;height:auto;}
+  #hoverPreview .cap{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);padding:8px 11px;display:flex;justify-content:space-between;gap:8px;}
+  #hoverPreview .cap .go{color:var(--accent,#C40021);}
+  body.darkbg #hoverPreview{background:#131318;border-color:#2C2C32;}
   .legend{position:absolute;left:36px;bottom:34px;display:flex;flex-direction:column;gap:1px;z-index:6;}
   .legend .lg-h{font-size:9.5px;letter-spacing:.2em;color:var(--grey-2);margin-bottom:8px;}
   .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;transition:.2s;}
@@ -177,6 +185,7 @@
   <div class="axis" id="ax-object"><span class="k">MODE:</span> OBJECT</div>
   <div class="hint edit-only" id="hint"><b>Pick a project</b> at right · <b>drag</b> its blobs to move · <b>ring</b> to resize · <b>click empty</b> to add a node · <b>⌘Z</b> undo</div>
   <div class="readout present-only" id="readout"></div>
+  <div id="hoverPreview" class="present-only"><img alt=""><div class="cap"><span class="lab"></span><span class="go">CASE STUDY ↗</span></div></div>
   <div class="legend present-only" id="legend"><div class="lg-h">INDEX</div></div>
   <aside class="inspector edit-only" id="inspector">
     <div class="insp-scroll">
@@ -293,6 +302,8 @@ function seed(){return [
 let projects=seed(), selProj=projects[0].id, selNode=null, mode='edit', activeSwatch='core', wheelHSV=[0,1,1], blendMode='color-burn';
 /* projects with a built case-study page (project.html?p=slug), keyed by code. Extend as pages ship. */
 const PAGES={'P-04':'nightmare-kart','P-03':'gif','P-01':'eyeknow-manor','P-05':'65porter'};
+/* hover-image preview by code (one example wired; extend per project) */
+const PREVIEW={'P-04':{src:'assets/nightmare-kart/marquee.jpg',cap:'NIGHTMARE KART'}};
 
 /* storage */
 const store={async save(){const s=JSON.stringify({v:2,projects,fx,blend:blendMode});
@@ -432,7 +443,7 @@ function spreadAt(p,mx,my){ const lp=live[p.id]||p.nodes.map(n=>d2p(n.x,n.y)); l
   const SE=1.8-clamp(fx.curve!=null?fx.curve:0.64,0,1)*1.25;
   p.nodes.forEach((n,j)=>{const R=n.r*mfd,R2=R*R,dx=mx-lp[j][0],dy=my-lp[j][1],r2=dx*dx+dy*dy; if(r2<R2){S+=Math.pow(1-r2/R2,SE);}});
   return S; }
-function projectAt(mx,my){ let best=null,bv=S_LO; projects.forEach(p=>{const s=spreadAt(p,mx,my); if(s>bv){bv=s;best=p.id;}}); return best; }
+function projectAt(mx,my){ let best=null,bv=S_LO; projects.forEach(p=>{if(p.code==='P-07')return; const s=spreadAt(p,mx,my); if(s>bv){bv=s;best=p.id;}}); return best; }
 function nearestNode(p,mx,my){ const lp=live[p.id]; let bi=0,bd=1e9; p.nodes.forEach((n,j)=>{const d=Math.hypot(mx-lp[j][0],my-lp[j][1]); if(d<bd){bd=d;bi=j;}}); return p.nodes[bi]; }
 
 /* draw helpers */
@@ -702,15 +713,17 @@ function bindWheelEvents(){ let dragging=false;
 
 /* present mode DOM */
 const legendEl=document.getElementById('legend'), readoutEl=document.getElementById('readout');
-function buildLegend(){ legendEl.innerHTML='<div class="lg-h">INDEX / '+String(projects.length).padStart(2,'0')+'</div>';
-  projects.forEach(p=>{const row=document.createElement('div');row.className='lg-row';row.dataset.id=p.id;
+function buildLegend(){ const vis=projects.filter(p=>p.code!=='P-07'); legendEl.innerHTML='<div class="lg-h">INDEX / '+String(vis.length).padStart(2,'0')+'</div>';
+  vis.forEach(p=>{const row=document.createElement('div');row.className='lg-row';row.dataset.id=p.id;
     row.innerHTML=`<span class="lg-dot" style="background:${rgbStr(p.colors.core)}"></span><span class="lg-code">${p.code}</span><span class="lg-name">${p.name}</span>`;
     row.onmouseenter=()=>{if(!lock){hover=p.id;syncLegend();updateReadout();}};
     row.onmouseleave=()=>{if(!lock){hover=null;syncLegend();updateReadout();}};
     row.onclick=()=>{lock=(lock===p.id)?null:p.id;hover=lock;syncLegend();updateReadout();};
     legendEl.appendChild(row);}); }
 function syncLegend(){const fi=lock||hover;legendEl.querySelectorAll('.lg-row').forEach(r=>{r.classList.toggle('active',r.dataset.id===fi);r.classList.toggle('dim',fi&&r.dataset.id!==fi);});}
-function updateReadout(){const fi=lock||hover;if(!fi){readoutEl.classList.remove('show');return;}const p=getProj(fi);if(!p)return;
+function updateReadout(){const fi=lock||hover;const pv=document.getElementById('hoverPreview');
+  if(!fi){readoutEl.classList.remove('show');if(pv)pv.classList.remove('show');return;}const p=getProj(fi);if(!p)return;
+  if(pv){ const e=PREVIEW[p.code]; if(e){ pv.querySelector('img').src=e.src; pv.querySelector('.lab').textContent=e.cap||p.name||''; pv.classList.add('show'); } else pv.classList.remove('show'); }
   let xmin=9,xmax=-9,ymin=9,ymax=-9;p.nodes.forEach(n=>{xmin=Math.min(xmin,n.x);xmax=Math.max(xmax,n.x);ymin=Math.min(ymin,n.y);ymax=Math.max(ymax,n.y);});
   const f=v=>(v>=0?'+':'')+v.toFixed(2);
   readoutEl.innerHTML=`<div class="r-code">${p.code}${lock===fi?' · LOCKED':''}</div>`+
@@ -719,7 +732,8 @@ function updateReadout(){const fi=lock||hover;if(!fi){readoutEl.classList.remove
     `<div class="r-row"><span>OBJECT ⟷ SPATIAL</span><span>${f(ymin)} … ${f(ymax)}</span></div>`+
     `<div class="r-row"><span>NODES</span><span>${p.nodes.length}</span></div>`+
     (lock===fi && PAGES[p.code] ? `<a class="r-open" href="project.html?p=${PAGES[p.code]}" style="color:${rgbStr(p.colors.core)}"><span>CASE STUDY</span><span>&rarr;</span></a>` : '');
-  readoutEl.classList.add('show');}
+  readoutEl.classList.add('show');
+  if(pv&&pv.classList.contains('show')) pv.style.top=(readoutEl.offsetTop+readoutEl.offsetHeight+14)+'px';}
 
 /* mode toggle */
 const mEdit=document.getElementById('mEdit'),mPresent=document.getElementById('mPresent');

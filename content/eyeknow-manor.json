@@ -1,5 +1,5 @@
 {
-  "_note": "Rough buildout from mattfryed.com/eyeknow-manor. NOTE: the source page's intro paragraph actually describes a different project (NYBG 'Wild Medicine' AR app) — looks like mis-pasted copy — so it was NOT used; the CLASSIFICATION here is a draft synthesis of the project's own disciplines, pending Matt's real copy. Tarot images are Matt's own, referenced by URL from his Squarespace CDN. Node geometry + colours match the live roster (P-01).",
+  "_note": "Built from mattfryed.com + kyleacalian.com/home/fernet-halloween-2024 (Kyle Calian, creative producer — permission granted). Project = Fernet Branca's 'Eyeknow Manor of Spirits & Astonishments', Halloween 2024, New Orleans. Copy/credits are from those sources; images referenced by URL from the Squarespace CDNs (tarot art on Matt's CDN, event/build photos on Kyle's). Node geometry + colours match the live roster (P-01). Tarot deck illustrated by Diego Patiño. Sample-grade pending Matt's review.",
   "id": "eyeknow-manor",
   "code": "P-01",
   "name": "EYEKNOW MANOR",
@@ -8,58 +8,126 @@
   "prev": "gif",
   "next": "65porter",
   "classification": {
-    "hero": { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000123813-UP0C2R5JALMFFJFUT0YB/022-back-design.jpg", "alt": "Custom tarot deck — back design" },
+    "hero": { "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/bd7a2039-4642-4a64-bfd7-6d0a0cb50e93/fernet_day_one226.jpg", "alt": "The Eyeknow Manor of Spirits & Astonishments, lit at night" },
     "intro": [
       {
         "type": "text",
         "title": "CLASSIFICATION",
-        "body": "The Eyeknow Manor of Spirits & Astonishments — an immersive experiential build that runs a haunted-house logic across real technology. Integrated facial-recognition watches the room; living portraits, a Pepper's Ghost fortune teller, a custom-illustrated tarot deck, and a live CRT array turn an interior into an apparatus for being seen.\n\n[Draft overview — to be replaced with Matt's final copy.]"
-      }
+        "body": "The Eyeknow Manor of Spirits & Astonishments — a haunted mansion in New Orleans, a block from Bourbon Street, built for Fernet Branca to own Halloween.\n\nA multi-room, sensory experience combining cutting-edge technology, Hollywood-style decor, and a self-guided scavenger hunt for those daring enough to explore its halls. Around it: a run of online video spots and a Halloween-themed merchandise line."
+      },
+      { "type": "stats", "title": "AT A GLANCE", "items": [
+        { "k": "Location", "v": "New Orleans" },
+        { "k": "Season", "v": "Halloween 2024" },
+        { "k": "Format", "v": "Multi-room manor" },
+        { "k": "Path", "v": "Self-guided hunt" }
+      ] }
+    ],
+    "collaborators": [
+      { "name": "Kyle Calian", "role": "Senior Producer", "url": "https://www.kyleacalian.com/home/fernet-halloween-2024" },
+      { "name": "Millwright", "role": "Fabrication", "url": "https://www.millwrightprojects.com/" },
+      { "name": "Madwell", "role": "Code & Development", "url": "https://madwell.com" },
+      { "name": "Diego Patiño", "role": "Tarot illustration", "url": "https://diegopatino.com/" },
+      { "name": "Wlabs", "role": "Vintage TV array" },
+      { "name": "Event Marketer", "role": "Press", "url": "https://www.eventmarketer.com/article/halloween-2024-experiential/" }
     ]
   },
   "nodes": [
-    { "id": "eyk-exp", "label": "Experiential Design", "blurb": "The whole apparatus — the Manor as a single immersive instrument.", "geom": { "x": 0.168, "y": 0.426, "r": 0.4, "i": 0.88, "f": 2.25, "core": true }, "content": { "hidden": false, "order": 1, "blocks": [] } },
-    { "id": "eyk-face", "label": "Integrated Facial Recognition AI system", "blurb": "The Manor watches back — recognition wired into the experience.", "geom": { "x": -0.475, "y": 0.015, "r": 0.203, "i": 0.3, "f": 2.9, "core": false }, "content": { "hidden": false, "order": 2, "blocks": [] } },
-    { "id": "eyk-install", "label": "Installation design", "blurb": "The physical build of the rooms and their effects.", "geom": { "x": 0.372, "y": -0.302, "r": 0.22, "i": 0.88, "f": 2, "core": false, "la": -1.032 }, "content": { "hidden": false, "order": 3, "blocks": [] } },
-    { "id": "eyk-f1", "label": "", "geom": { "x": 0.192, "y": -0.52, "r": 0.12, "i": 0.31, "f": 2.5, "core": false }, "content": null },
-    { "id": "eyk-portraits", "label": "Living portraits", "blurb": "Portraits that turn, blink, and follow.", "geom": { "x": -0.287, "y": -0.396, "r": 0.123, "i": 0.37, "f": 4, "core": false }, "content": { "hidden": false, "order": 5, "blocks": [] } },
-    { "id": "eyk-peppers", "label": "Pepper's Ghost Fortune Teller", "blurb": "A 19th-century illusion driving a fortune-telling automaton.", "geom": { "x": -0.022, "y": -0.876, "r": 0.15, "i": 0.32, "f": 3.25, "core": false }, "content": { "hidden": false, "order": 6, "blocks": [] } },
-    { "id": "eyk-f2", "label": "", "geom": { "x": -0.074, "y": -0.134, "r": 0.205, "i": 0.5, "f": 2.5, "core": false }, "content": null },
-    { "id": "eyk-interior", "label": "Interior Design", "blurb": "The Manor's rooms, dressing, and atmosphere.", "geom": { "x": 0.553, "y": 0.525, "r": 0.225, "i": 0.8, "f": 2, "core": false }, "content": { "hidden": false, "order": 8, "blocks": [] } },
-    { "id": "eyk-event", "label": "Event visual system", "blurb": "The live visual language across the event.", "geom": { "x": -0.346, "y": 0.66, "r": 0.205, "i": 0.38, "f": 3.25, "core": false }, "content": { "hidden": false, "order": 9, "blocks": [] } },
-    { "id": "eyk-sound", "label": "Sound Design", "blurb": "The Manor's score and spatial audio.", "geom": { "x": -0.111, "y": 0.852, "r": 0.12, "i": 0.31, "f": 2, "core": false }, "content": { "hidden": false, "order": 10, "blocks": [] } },
-    { "id": "eyk-signage", "label": "Environmental Signage", "blurb": "Wayfinding inside the fiction.", "geom": { "x": 0.633, "y": -0.04, "r": 0.144, "i": 0.33, "f": 3.65, "core": false }, "content": { "hidden": false, "order": 11, "blocks": [] } },
     {
-      "id": "eyk-tarot",
-      "label": "Custom Tarot Card Deck",
-      "blurb": "A full custom-illustrated major arcana for the Manor's fortune-telling.",
-      "geom": { "x": 0.799, "y": -0.45, "r": 0.12, "i": 0.8, "f": 2, "core": false },
-      "content": {
-        "hidden": false,
-        "order": 12,
-        "blocks": [
-          { "type": "text", "title": "THE DECK", "body": "A custom-illustrated major arcana — twenty-two cards plus a back design — drawn for the Manor's fortune-telling." },
-          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000113093-WYS1G38GDXOLZXSOYMYD/000-The-Fool.jpg", "alt": "Tarot — The Fool" },
-          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000119505-BSH38GDJHLO14SG1XBBB/013-Death.jpg", "alt": "Tarot — Death" },
-          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000122733-TM032CSOG5TTVSJP40IO/019-The-Sun.jpg", "alt": "Tarot — The Sun" },
-          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000123747-OOLCWK3LQBSOT4HV66LB/021-The-World.jpg", "alt": "Tarot — The World" }
-        ]
-      }
+      "id": "eyk-exp", "label": "Experiential Design", "blurb": "The Manor as one immersive instrument — many rooms, one scavenger hunt.",
+      "geom": { "x": 0.168, "y": 0.426, "r": 0.4, "i": 0.88, "f": 2.25, "core": true },
+      "content": { "hidden": false, "order": 1, "blocks": [
+        { "type": "text", "title": "THE MANOR", "layout": "two", "body": "Guests moved through the mansion at their own pace, solving a self-guided scavenger hunt that threaded the rooms together — bar, portrait halls, fortune teller, the vintage-TV array, the courtyard, each a station in the hunt.\n\nCutting-edge technology met Hollywood-style decor a block from Bourbon Street in New Orleans, built for Fernet Branca to own the season." },
+        { "type": "image", "title": null, "wide": true, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/dc93984c-a74b-4810-a8f1-ae8594faf7d3/241030_Fernet-Branca_Halloween_0611.jpg", "alt": "The Manor from the street", "caption": "The Manor from the street — a block from Bourbon Street." },
+        { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/680ff7bc-615d-47f8-bb62-38e805346413/IMG_3385.JPEG", "alt": "Courtyard", "caption": "Courtyard — speakeasy bar, mapped TVs, projector, DJ booth." }
+      ] }
     },
-    { "id": "eyk-social", "label": "Social & Digital Extensions", "blurb": "How the Manor lived online.", "geom": { "x": -0.579, "y": 0.847, "r": 0.12, "i": 0.11, "f": 3.6, "core": false }, "content": { "hidden": false, "order": 13, "blocks": [] } },
+    {
+      "id": "eyk-face", "label": "Integrated Facial Recognition AI system", "blurb": "AI that reads the room and drives the portraits and prizes.",
+      "geom": { "x": -0.475, "y": 0.015, "r": 0.203, "i": 0.3, "f": 2.9, "core": false },
+      "content": { "hidden": false, "order": 2, "blocks": [
+        { "type": "text", "title": "AI SYSTEM", "body": "An AI layer wired into the experience — generating portraits and driving the Manor's reactive set-pieces. Coded by Madwell." }
+      ] }
+    },
+    {
+      "id": "eyk-install", "label": "Installation design", "blurb": "The physical build — the mansion, courtyard, sign, and the self-moving Ouija board.",
+      "geom": { "x": 0.372, "y": -0.302, "r": 0.22, "i": 0.88, "f": 2, "core": false, "la": -1.032 },
+      "content": { "hidden": false, "order": 3, "blocks": [
+        { "type": "image", "title": "THE OUIJA BOARD", "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/7f3eaa79-3f55-47ad-9887-5301f6937ddf/IMG_3426.JPEG", "alt": "Ouija board, custom-coded to move on its own and give scavenger-hunt clues" },
+        { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/fa0088a2-289f-44b8-acb7-d42c65a648b8/241030_Fernet-Branca_Halloween_0187.jpg", "alt": "Interior set-dressing" }
+      ] }
+    },
+    { "id": "eyk-f1", "label": "", "geom": { "x": 0.192, "y": -0.52, "r": 0.12, "i": 0.31, "f": 2.5, "core": false }, "content": null },
+    {
+      "id": "eyk-portraits", "label": "Living portraits", "blurb": "Two AI-generated portrait walls — and a roulette of prizes.",
+      "geom": { "x": -0.287, "y": -0.396, "r": 0.123, "i": 0.37, "f": 4, "core": false },
+      "content": { "hidden": false, "order": 5, "blocks": [
+        { "type": "image", "title": "AI PORTRAIT WALLS", "wide": true, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/fb84597e-17be-44a6-a85b-31475506d357/91E2E55F-139C-47D1-9007-47671DFC3DD6.JPEG", "alt": "AI-generated portrait wall", "caption": "One of two AI-generated portrait walls + the prize roulette. Fabricated by Millwright, coded by Madwell." },
+        { "type": "text", "title": null, "body": "One of two AI-generated portrait walls, paired with our take on roulette and its unique prizes. Fabricated by Millwright, coded by Madwell." }
+      ] }
+    },
+    {
+      "id": "eyk-peppers", "label": "Pepper's Ghost Fortune Teller", "blurb": "A 19th-century illusion driving an AI tarot reader.",
+      "geom": { "x": -0.022, "y": -0.876, "r": 0.15, "i": 0.32, "f": 3.25, "core": false },
+      "content": { "hidden": false, "order": 6, "blocks": [
+        { "type": "text", "title": "FORTUNE TELLER", "body": "A Pepper's Ghost AI tarot reader — the classic floating-spectre illusion driving a generative reading, dealt from a deck illustrated by Diego Patiño." }
+      ] }
+    },
+    { "id": "eyk-f2", "label": "", "geom": { "x": -0.074, "y": -0.134, "r": 0.205, "i": 0.5, "f": 2.5, "core": false }, "content": null },
+    {
+      "id": "eyk-interior", "label": "Interior Design", "blurb": "Speakeasy bar, merch room, and the rooms in between.",
+      "geom": { "x": 0.553, "y": 0.525, "r": 0.225, "i": 0.8, "f": 2, "core": false },
+      "content": { "hidden": false, "order": 8, "blocks": [
+        { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/4628ea10-1534-4421-b5b1-07d60ecf7383/241030_Fernet-Branca_Halloween_0113.jpg", "alt": "Interior of the Manor" },
+        { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/07865cda-fff2-4bf2-88b2-82771411f98c/fernet_day_one282.JPEG", "alt": "Edoardo Branca pouring shots at the Manor bar" }
+      ] }
+    },
+    {
+      "id": "eyk-event", "label": "Event visual system", "blurb": "The live visual language across the Manor and courtyard.",
+      "geom": { "x": -0.346, "y": 0.66, "r": 0.205, "i": 0.38, "f": 3.25, "core": false },
+      "content": { "hidden": false, "order": 9, "blocks": [] }
+    },
+    {
+      "id": "eyk-sound", "label": "Sound Design", "blurb": "Score, spatial audio, and the courtyard DJ.",
+      "geom": { "x": -0.111, "y": 0.852, "r": 0.12, "i": 0.31, "f": 2, "core": false },
+      "content": { "hidden": false, "order": 10, "blocks": [] }
+    },
+    {
+      "id": "eyk-signage", "label": "Environmental Signage", "blurb": "Custom woodcut signage for the Manor.",
+      "geom": { "x": 0.633, "y": -0.04, "r": 0.144, "i": 0.33, "f": 3.65, "core": false },
+      "content": { "hidden": false, "order": 11, "blocks": [
+        { "type": "image", "title": "WOODCUT SIGN", "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/e3fe8643-f590-4a5f-a415-56fa265c1d3c/fernet_day_one31.jpg", "alt": "Custom woodcut sign", "caption": "Custom woodcut sign for the Manor." }
+      ] }
+    },
+    {
+      "id": "eyk-tarot", "label": "Custom Tarot Card Deck", "blurb": "A full custom major arcana — illustrated by Diego Patiño.",
+      "geom": { "x": 0.799, "y": -0.45, "r": 0.12, "i": 0.8, "f": 2, "core": false },
+      "content": { "hidden": false, "order": 12, "blocks": [
+        { "type": "text", "title": "THE DECK", "body": "A custom-illustrated major arcana — twenty-two cards plus a back design — dealt by the fortune teller. Illustrated by Diego Patiño." },
+        { "type": "carousel", "title": "MAJOR ARCANA", "images": [
+          { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000113093-WYS1G38GDXOLZXSOYMYD/000-The-Fool.jpg", "caption": "0 · The Fool" },
+          { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000113075-ZELLT07ED1RM6UV4H6MC/001-The-Magician.jpg", "caption": "I · The Magician" },
+          { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000119505-BSH38GDJHLO14SG1XBBB/013-Death.jpg", "caption": "XIII · Death" },
+          { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000120861-13BT4W629M5LSFWIKAAK/016-The-Tower.jpg", "caption": "XVI · The Tower" },
+          { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000122733-TM032CSOG5TTVSJP40IO/019-The-Sun.jpg", "caption": "XIX · The Sun" },
+          { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000123747-OOLCWK3LQBSOT4HV66LB/021-The-World.jpg", "caption": "XXI · The World" }
+        ] }
+      ] }
+    },
+    {
+      "id": "eyk-social", "label": "Social & Digital Extensions", "blurb": "OLVs and a Halloween merch line around the Manor.",
+      "geom": { "x": -0.579, "y": 0.847, "r": 0.12, "i": 0.11, "f": 3.6, "core": false },
+      "content": { "hidden": false, "order": 13, "blocks": [
+        { "type": "text", "title": "CAMPAIGN", "body": "Several online video spots and a Halloween-themed merchandise line extended the Manor beyond New Orleans, owning the season for the brand." }
+      ] }
+    },
     { "id": "eyk-f3", "label": "", "geom": { "x": 0.657, "y": 0.964, "r": 0.12, "i": 0.16, "f": 3.65, "core": false }, "content": null },
     {
-      "id": "eyk-crt",
-      "label": "CRT Array Streaming Display",
-      "blurb": "A wall of CRTs switching between dispersed content and a phone-streamed live cam.",
+      "id": "eyk-crt", "label": "CRT Array Streaming Display", "blurb": "A wall of vintage TVs, mapped and switchable, live-streamed from a phone.",
       "geom": { "x": 0.042, "y": -0.52, "r": 0.12, "i": 0.5, "f": 2.35, "core": false },
-      "content": {
-        "hidden": false,
-        "order": 15,
-        "blocks": [
-          { "type": "text", "title": "CRT ARRAY", "body": "An array of CRTs, with a system for switching between dispersed content and a mapped live cam via phone stream." }
-        ]
-      }
+      "content": { "hidden": false, "order": 15, "blocks": [
+        { "type": "image", "title": "VINTAGE TV ARRAY", "wide": true, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/0d36243f-2c1f-4ae4-956d-91abaa7b1a6a/fernet_day_one1.jpg", "alt": "Vintage TV array", "caption": "Mapped to several programs — isolated and connected — switching to a phone-streamed live cam. With Millwright + Wlabs." },
+        { "type": "text", "title": null, "body": "A unique vintage-TV array mapped to several programs, both isolated and connected — switching between dispersed content and a phone-streamed live cam. Developed with Millwright and Wlabs." }
+      ] }
     }
   ]
 }
