@@ -17,6 +17,7 @@ How the build runs across focused Cowork instances: who owns what, how work stay
 
 ## Workstreams (roadmap)
 - [x] **W1 — Project page template** — `handoff_project-page-template.md`. `project.html` = masonry **card-grid** (structure per Julia's Lovable reference; BB Strata type, white). Labeled cards + `IMG-NN` slots (designed shot-described placeholders, not filler); constellation index w/ scroll-synced nav; richer content in JSON. Only `marquee.jpg` is a real photo. Passes port invariants; `index.html` untouched.
+- [~] **W-LP — Project-page LEFT PANEL + minimap** — `handoff_left-panel.md`. Dedicated worker: ensure every project has a page (build P-02 MASSIVE + P-06 SELECTED ARCADE from sources), then perfect the rail + minimap (faithful homepage translation, hover states, scalability, visuals) across all pages. **Does NOT touch existing-page content.** Spun off 2026-06-27.
 - [ ] **W2 — Content editor (CMS layer)** — per-node block editor in the studio; export full content JSON; the "only-if-content" rule; reorder + hide/show.
 - [ ] **W3 — Homepage ↔ project wiring** — click/lock a project → its page; node hover swaps focal image; minimap reuse.
 - [ ] **W4 — Media + deploy** — image sizing, Vimeo embeds, optional prerender for SEO, domain (TBD).
