@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 300" width="560" height="300" role="img" aria-label="Top-down plan of the Nightmare Kart two-player control deck">
+  <style>
+    .ln{fill:none;stroke:#15140F;stroke-width:1.4;}
+    .thin{fill:none;stroke:#15140F;stroke-width:0.9;}
+    .dim{fill:none;stroke:#15140F;stroke-width:0.8;opacity:.55;}
+    .acc{fill:none;stroke:#C40021;stroke-width:1.6;}
+    .t{font-family:ui-monospace,'SFMono-Regular',Menlo,monospace;fill:#86857D;}
+    .tk{font-family:ui-monospace,'SFMono-Regular',Menlo,monospace;fill:#15140F;}
+  </style>
+
+  <!-- deck plate -->
+  <rect class="ln" x="60" y="70" width="440" height="150" rx="6" fill="#ffffff"/>
+  <line class="thin" x1="280" y1="74" x2="280" y2="216" opacity=".35" stroke-dasharray="3 4"/>
+
+  <!-- player 1 -->
+  <circle class="acc" cx="135" cy="150" r="17"/><circle cx="135" cy="150" r="4" fill="#C40021"/>
+  <g class="thin">
+    <circle cx="188" cy="132" r="9"/><circle cx="214" cy="129" r="9"/><circle cx="240" cy="132" r="9"/>
+    <circle cx="188" cy="158" r="9"/><circle cx="214" cy="155" r="9"/><circle cx="240" cy="158" r="9"/>
+  </g>
+  <text class="t" x="135" y="196" text-anchor="middle" font-size="8" letter-spacing="2">P1</text>
+
+  <!-- player 2 -->
+  <circle class="acc" cx="425" cy="150" r="17"/><circle cx="425" cy="150" r="4" fill="#C40021"/>
+  <g class="thin">
+    <circle cx="320" cy="132" r="9"/><circle cx="346" cy="129" r="9"/><circle cx="372" cy="132" r="9"/>
+    <circle cx="320" cy="158" r="9"/><circle cx="346" cy="155" r="9"/><circle cx="372" cy="158" r="9"/>
+  </g>
+  <text class="t" x="425" y="196" text-anchor="middle" font-size="8" letter-spacing="2">P2</text>
+
+  <!-- admin buttons -->
+  <g class="thin"><circle cx="266" cy="92" r="4"/><circle cx="294" cy="92" r="4"/></g>
+
+  <!-- width dim -->
+  <line class="dim" x1="60" y1="48" x2="500" y2="48"/>
+  <line class="dim" x1="60" y1="42" x2="60" y2="54"/><line class="dim" x1="500" y1="42" x2="500" y2="54"/>
+  <rect x="262" y="40" width="36" height="16" fill="#fff"/><text class="tk" x="280" y="52" text-anchor="middle" font-size="10">28″</text>
+
+  <!-- depth dim -->
+  <line class="dim" x1="528" y1="70" x2="528" y2="220"/>
+  <line class="dim" x1="522" y1="70" x2="534" y2="70"/><line class="dim" x1="522" y1="220" x2="534" y2="220"/>
+  <rect x="518" y="137" width="20" height="16" fill="#fff"/><text class="tk" x="528" y="149" text-anchor="middle" font-size="10" transform="rotate(90 528 145)">14″</text>
+
+  <text class="t" x="60" y="250" font-size="8" letter-spacing="2">CUSTOM RESIN-CAST BUTTONS · EMBEDDED LEDS · ACTUATOR-ROD RETURN</text>
+  <text class="t" x="60" y="268" font-size="7.5" letter-spacing="3">P-04 · CONTROL DECK — PLAN · STAND-IN DRAWING</text>
+</svg>
