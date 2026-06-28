@@ -27,8 +27,8 @@ Extend the studio into the authoring tool: per-node block editor (text/column/im
 ## Phase 5 — Media pipeline (W4)
 Image sizing/optimization + responsive `srcset`, the in-house stand-in system, Vimeo embeds, lazy loading, an asset/shot manifest per project so swapping real media is drop-in.
 
-## Phase 6 — Multi-project rollout
-Build the remaining roster pages from data once the template is locked (EYEKNOW MANOR, MASSIVE, GIF, 65 PORTER, SELECTED ARCADE). Each is one JSON doc; the renderer is already generic. Wire each into the homepage `PAGES` map.
+## Phase 6 — Multi-project rollout · 🟡 started
+Build the remaining roster pages from data. **Done (rough):** GIF (P-03), EYEKNOW MANOR (P-01), 65 PORTER (P-05) — real copy/credits/images pulled from mattfryed.com, real node geometry from the roster, palette per project; all wired into the homepage `PAGES` map and rendering with zero JS errors. **Remaining:** MASSIVE (P-02), SELECTED ARCADE (P-06); fill the muted disciplines with content; **migrate hotlinked Squarespace images to own-host/repo** (Phase 5 — current images depend on Matt's live site).
 
 ## Phase 7 — Polish + ship
 Transitions/fades, accessibility pass, SEO/OG meta, optional prerender to static `/<slug>/index.html` for crawlers, custom domain (TBD), perf budget.

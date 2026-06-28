@@ -1,0 +1,54 @@
+{
+  "_note": "Rough buildout from mattfryed.com/gyroscopic-illuminated-figure. Copy + credits are Matt's own; images are referenced by URL from his Squarespace CDN (swap to repo/own-host later). Node geometry + colours match the live homepage roster (P-03). Sample-grade structure pending Matt's review.",
+  "id": "gif",
+  "code": "P-03",
+  "name": "GIF",
+  "slug": "gif",
+  "colors": { "edge": [212, 255, 192], "core": [0, 167, 255] },
+  "prev": "nightmare-kart",
+  "next": "eyeknow-manor",
+  "classification": {
+    "hero": { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588815859685-U3I5M1YA2P3REM1W4NOS/gif-angle.jpg", "alt": "Gyroscopic Illuminated Figure — neon loading symbol at an angle" },
+    "intro": [
+      {
+        "type": "text",
+        "title": "CLASSIFICATION",
+        "body": "Gyroscopic Illuminated Figure (GIF) — an analog spin on the familiar digital loading sequence. It takes a symbol of anticipation, frustration, and promise and extends it indefinitely.\n\nThe piece can be set from an excruciatingly slow load, to normal loading-symbol speed, to frenetically fast."
+      }
+    ],
+    "collaborators": [
+      { "name": "Kenny Greenberg", "role": "Neon bending", "url": "https://www.youtube.com/watch?v=19q3WIUQhrs" }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "gif-neon",
+      "label": "Neon Lightpiece Design",
+      "blurb": "Hand-bent neon on a gyroscopic armature — the loading symbol, made physical.",
+      "geom": { "x": 1, "y": -0.541, "r": 0.1, "i": 0.88, "f": 4, "core": true },
+      "content": {
+        "hidden": false,
+        "order": 1,
+        "blocks": [
+          {
+            "type": "column",
+            "title": "PROPERTIES",
+            "columns": [
+              { "spec": "FORMAT", "value": "3′ diameter", "valueNote": "controllable light fixture", "name": "Year", "body": "2015 · Design & Production." },
+              { "spec": "MOTION", "value": "Variable", "valueNote": "slow → fast", "name": "Mechanism", "body": "Gyroscopic armature; rotation speed set on a controller, from a near-stalled crawl to a frantic blur." }
+            ]
+          },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588815678616-U4EGUD6FAWWHUB89QREA/02.gif", "alt": "The figure in motion (animated)" },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588815834483-KO2CBXVVALOTROT94SFH/GIF-detail2.jpg", "alt": "Neon tube detail" },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1588815883393-GMP1QO6FFN4DGTGMVYKX/gif3.jpg", "alt": "GIF installed, illuminated" }
+        ]
+      }
+    },
+    {
+      "id": "gif-fill",
+      "label": "",
+      "geom": { "x": 0.871, "y": -0.585, "r": 0.055, "i": 0.16, "f": 4, "core": false },
+      "content": null
+    }
+  ]
+}

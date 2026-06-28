@@ -1,0 +1,82 @@
+{
+  "_note": "Rough buildout from mattfryed.com/65porter. Copy, credits, and recognition links are Matt's own; images referenced by URL from his Squarespace CDN (swap later). Node geometry + colours match the live homepage roster (P-05). Sample-grade pending Matt's review.",
+  "id": "65porter",
+  "code": "P-05",
+  "name": "65 PORTER",
+  "slug": "65porter",
+  "colors": { "edge": [127, 255, 235], "core": [136, 212, 32] },
+  "prev": "eyeknow-manor",
+  "next": "nightmare-kart",
+  "classification": {
+    "hero": { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1732580661448-EC64TJEZAADXSZJQGWST/_8504017.jpg", "alt": "65 Porter — exterior of the converted warehouse offices" },
+    "intro": [
+      {
+        "type": "text",
+        "title": "CLASSIFICATION",
+        "body": "Relocating to expand the agency's capacity — only a few blocks away, still in Bushwick — I oversaw the next phase of the office design in a 21,000 sq ft raw warehouse space.\n\nOffice space design, 2019–2021. Conceptual, interior, architectural design, fabrication management, and art."
+      },
+      {
+        "type": "text",
+        "title": "RECOGNITION",
+        "body": "Featured in Workdesign Magazine. ID Magazine Best of Year 2023 — Small Creative Office honoree. A walkable 3D Matterport tour of the space is available."
+      }
+    ],
+    "collaborators": [
+      { "name": "PSF Projects Architecture DPC", "role": "Architects", "url": "https://www.psfprojects.com/workplace/madwell-creative-agency" },
+      { "name": "PBS Solutions", "role": "General Contractor", "url": "https://www.pbsny.com/madwell" },
+      { "name": "Millwright", "role": "Fabrication", "url": "https://www.millwrightprojects.com/" }
+    ]
+  },
+  "nodes": [
+    {
+      "id": "65p-arch",
+      "label": "Architectural Design",
+      "blurb": "Converting 21,000 sq ft of raw warehouse into a working creative agency.",
+      "geom": { "x": 0.946, "y": 0.829, "r": 0.22, "i": 0.35, "f": 3, "core": true },
+      "content": {
+        "hidden": false,
+        "order": 1,
+        "blocks": [
+          { "type": "text", "title": "PRIOR TO PRINCIPAL CONSTRUCTION", "body": "The starting condition — a raw Bushwick warehouse shell, before principal construction." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1739919407571-CP2LIWAU1KRZTWE2NEKK/pre-construction1.jpg", "alt": "Raw warehouse interior, pre-construction" },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1732580662574-EJW9V77KHTRYH43C4X0B/1_8504217.jpg", "alt": "Finished exterior" }
+        ]
+      }
+    },
+    {
+      "id": "65p-interior",
+      "label": "Interior Design",
+      "blurb": "Conference rooms, front desk, and the day-to-day spaces of the agency.",
+      "geom": { "x": 1, "y": 0.424, "r": 0.29, "i": 0.8, "f": 2, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 2,
+        "blocks": [
+          { "type": "image", "title": "CONFERENCE ROOMS", "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1739922654749-E7NPLPBXIG60KNZ942DL/IMG_1726.jpg", "alt": "Conference room" },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1739922652001-7CCYC6RGQPVIQH4I7KMN/IMG_1723.jpg", "alt": "Conference room, alternate view" },
+          { "type": "image", "title": "FRONT DESK", "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1739922190336-D4FOVJCCWIJ0RVVJNI8D/IMG_0744.jpg", "alt": "Reception / front desk" }
+        ]
+      }
+    },
+    {
+      "id": "65p-signage",
+      "label": "Environmental Signage",
+      "blurb": "Wayfinding and identity built into the space.",
+      "geom": { "x": 0.744, "y": 0.494, "r": 0.12, "i": 0.8, "f": 2, "core": false },
+      "content": { "hidden": false, "order": 3, "blocks": [] }
+    },
+    {
+      "id": "65p-furniture",
+      "label": "Furniture Design & Fabrication",
+      "blurb": "Bespoke pieces fabricated for the offices.",
+      "geom": { "x": 0.833, "y": -0.056, "r": 0.12, "i": 0.57, "f": 3.45, "core": false },
+      "content": { "hidden": false, "order": 4, "blocks": [] }
+    },
+    {
+      "id": "65p-fill",
+      "label": "",
+      "geom": { "x": 0.948, "y": -0.247, "r": 0.075, "i": 0.13, "f": 3.7, "core": false },
+      "content": null
+    }
+  ]
+}

@@ -25,6 +25,12 @@ Provenance is labeled. **Verified** = I read it from the live file/git or tested
 - **Hover-to-expand "portraits"** (from the original notes): hovering a node — in the constellation or the nav — highlights it and reveals a portrait panel below the field (label + one-line `blurb` + status: live → "Case study — open ▸", muted → "Discipline · no case study yet"). Resting state follows the scrolled-into section. Per-node `blurb` descriptors added to `content/nightmare-kart.json`. Verified headless (3 states, zero console errors).
 - **Rhythm pass:** CLASSIFICATION now renders as a **full-width lead card** (`column-span:all`) with a larger opening statement, so the masonry has a strong top beat instead of a uniform field (verified: lead card 960px vs 469px cards).
 
+## Other project pages (Phase 6 — rough buildout, 2026-06-27)
+- **3 more pages built from data + mattfryed.com:** `gif.json` (P-03), `eyeknow-manor.json` (P-01), `65porter.json` (P-05). Real copy/credits, real node geometry from the roster, per-project palette; content sits on the nodes that have real material, the rest show muted in nav. All render with **zero JS errors** and the real photos load.
+- **Renderer generalized:** unlabeled "shape-only" roster nodes now contribute to the metaball but are hidden from nav + draw no dot (matches the homepage rule).
+- **Wired:** `index.html` `PAGES` map now has P-04/P-03/P-01/P-05; the prev/next chain loops nightmare-kart → gif → eyeknow-manor → 65porter → nightmare-kart.
+- **Caveats:** (1) images are **hotlinked from Matt's Squarespace CDN** — fine now, but migrate to own-host/repo (Phase 5) so they don't depend on his live site. (2) Eyeknow's CLASSIFICATION is a **draft synthesis** — the source page's intro paragraph is mis-pasted copy about a different project (NYBG Wild Medicine), so it was not used. (3) Copy/specs across all three are sample-grade pending Matt.
+
 ## Homepage ↔ project wiring (Phase 3 — round-trip live)
 - **Done:** the project page back-link → `index.html?focus=<code>`; the homepage reads `?focus`, switches to **present mode** and **locks** that project (showing its readout + CASE STUDY link). Full loop verified headless: homepage present → lock NK → CASE STUDY → project page → Back → homepage present + NK locked. `index.html` change is a single isolated handler at the end of init; the rest untouched.
 - **Next in Phase 3:** node-hover cross-preview and making the CASE STUDY affordance discoverable beyond the locked readout.

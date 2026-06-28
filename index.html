@@ -292,7 +292,7 @@ function seed(){return [
 ];}
 let projects=seed(), selProj=projects[0].id, selNode=null, mode='edit', activeSwatch='core', wheelHSV=[0,1,1], blendMode='color-burn';
 /* projects with a built case-study page (project.html?p=slug), keyed by code. Extend as pages ship. */
-const PAGES={'P-04':'nightmare-kart'};
+const PAGES={'P-04':'nightmare-kart','P-03':'gif','P-01':'eyeknow-manor','P-05':'65porter'};
 
 /* storage */
 const store={async save(){const s=JSON.stringify({v:2,projects,fx,blend:blendMode});

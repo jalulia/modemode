@@ -1,0 +1,65 @@
+{
+  "_note": "Rough buildout from mattfryed.com/eyeknow-manor. NOTE: the source page's intro paragraph actually describes a different project (NYBG 'Wild Medicine' AR app) — looks like mis-pasted copy — so it was NOT used; the CLASSIFICATION here is a draft synthesis of the project's own disciplines, pending Matt's real copy. Tarot images are Matt's own, referenced by URL from his Squarespace CDN. Node geometry + colours match the live roster (P-01).",
+  "id": "eyeknow-manor",
+  "code": "P-01",
+  "name": "EYEKNOW MANOR",
+  "slug": "eyeknow-manor",
+  "colors": { "edge": [221, 218, 252], "core": [215, 3, 89] },
+  "prev": "gif",
+  "next": "65porter",
+  "classification": {
+    "hero": { "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000123813-UP0C2R5JALMFFJFUT0YB/022-back-design.jpg", "alt": "Custom tarot deck — back design" },
+    "intro": [
+      {
+        "type": "text",
+        "title": "CLASSIFICATION",
+        "body": "The Eyeknow Manor of Spirits & Astonishments — an immersive experiential build that runs a haunted-house logic across real technology. Integrated facial-recognition watches the room; living portraits, a Pepper's Ghost fortune teller, a custom-illustrated tarot deck, and a live CRT array turn an interior into an apparatus for being seen.\n\n[Draft overview — to be replaced with Matt's final copy.]"
+      }
+    ]
+  },
+  "nodes": [
+    { "id": "eyk-exp", "label": "Experiential Design", "blurb": "The whole apparatus — the Manor as a single immersive instrument.", "geom": { "x": 0.168, "y": 0.426, "r": 0.4, "i": 0.88, "f": 2.25, "core": true }, "content": { "hidden": false, "order": 1, "blocks": [] } },
+    { "id": "eyk-face", "label": "Integrated Facial Recognition AI system", "blurb": "The Manor watches back — recognition wired into the experience.", "geom": { "x": -0.475, "y": 0.015, "r": 0.203, "i": 0.3, "f": 2.9, "core": false }, "content": { "hidden": false, "order": 2, "blocks": [] } },
+    { "id": "eyk-install", "label": "Installation design", "blurb": "The physical build of the rooms and their effects.", "geom": { "x": 0.372, "y": -0.302, "r": 0.22, "i": 0.88, "f": 2, "core": false, "la": -1.032 }, "content": { "hidden": false, "order": 3, "blocks": [] } },
+    { "id": "eyk-f1", "label": "", "geom": { "x": 0.192, "y": -0.52, "r": 0.12, "i": 0.31, "f": 2.5, "core": false }, "content": null },
+    { "id": "eyk-portraits", "label": "Living portraits", "blurb": "Portraits that turn, blink, and follow.", "geom": { "x": -0.287, "y": -0.396, "r": 0.123, "i": 0.37, "f": 4, "core": false }, "content": { "hidden": false, "order": 5, "blocks": [] } },
+    { "id": "eyk-peppers", "label": "Pepper's Ghost Fortune Teller", "blurb": "A 19th-century illusion driving a fortune-telling automaton.", "geom": { "x": -0.022, "y": -0.876, "r": 0.15, "i": 0.32, "f": 3.25, "core": false }, "content": { "hidden": false, "order": 6, "blocks": [] } },
+    { "id": "eyk-f2", "label": "", "geom": { "x": -0.074, "y": -0.134, "r": 0.205, "i": 0.5, "f": 2.5, "core": false }, "content": null },
+    { "id": "eyk-interior", "label": "Interior Design", "blurb": "The Manor's rooms, dressing, and atmosphere.", "geom": { "x": 0.553, "y": 0.525, "r": 0.225, "i": 0.8, "f": 2, "core": false }, "content": { "hidden": false, "order": 8, "blocks": [] } },
+    { "id": "eyk-event", "label": "Event visual system", "blurb": "The live visual language across the event.", "geom": { "x": -0.346, "y": 0.66, "r": 0.205, "i": 0.38, "f": 3.25, "core": false }, "content": { "hidden": false, "order": 9, "blocks": [] } },
+    { "id": "eyk-sound", "label": "Sound Design", "blurb": "The Manor's score and spatial audio.", "geom": { "x": -0.111, "y": 0.852, "r": 0.12, "i": 0.31, "f": 2, "core": false }, "content": { "hidden": false, "order": 10, "blocks": [] } },
+    { "id": "eyk-signage", "label": "Environmental Signage", "blurb": "Wayfinding inside the fiction.", "geom": { "x": 0.633, "y": -0.04, "r": 0.144, "i": 0.33, "f": 3.65, "core": false }, "content": { "hidden": false, "order": 11, "blocks": [] } },
+    {
+      "id": "eyk-tarot",
+      "label": "Custom Tarot Card Deck",
+      "blurb": "A full custom-illustrated major arcana for the Manor's fortune-telling.",
+      "geom": { "x": 0.799, "y": -0.45, "r": 0.12, "i": 0.8, "f": 2, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 12,
+        "blocks": [
+          { "type": "text", "title": "THE DECK", "body": "A custom-illustrated major arcana — twenty-two cards plus a back design — drawn for the Manor's fortune-telling." },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000113093-WYS1G38GDXOLZXSOYMYD/000-The-Fool.jpg", "alt": "Tarot — The Fool" },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000119505-BSH38GDJHLO14SG1XBBB/013-Death.jpg", "alt": "Tarot — Death" },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000122733-TM032CSOG5TTVSJP40IO/019-The-Sun.jpg", "alt": "Tarot — The Sun" },
+          { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/1740000123747-OOLCWK3LQBSOT4HV66LB/021-The-World.jpg", "alt": "Tarot — The World" }
+        ]
+      }
+    },
+    { "id": "eyk-social", "label": "Social & Digital Extensions", "blurb": "How the Manor lived online.", "geom": { "x": -0.579, "y": 0.847, "r": 0.12, "i": 0.11, "f": 3.6, "core": false }, "content": { "hidden": false, "order": 13, "blocks": [] } },
+    { "id": "eyk-f3", "label": "", "geom": { "x": 0.657, "y": 0.964, "r": 0.12, "i": 0.16, "f": 3.65, "core": false }, "content": null },
+    {
+      "id": "eyk-crt",
+      "label": "CRT Array Streaming Display",
+      "blurb": "A wall of CRTs switching between dispersed content and a phone-streamed live cam.",
+      "geom": { "x": 0.042, "y": -0.52, "r": 0.12, "i": 0.5, "f": 2.35, "core": false },
+      "content": {
+        "hidden": false,
+        "order": 15,
+        "blocks": [
+          { "type": "text", "title": "CRT ARRAY", "body": "An array of CRTs, with a system for switching between dispersed content and a mapped live cam via phone stream." }
+        ]
+      }
+    }
+  ]
+}

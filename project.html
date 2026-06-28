@@ -297,7 +297,7 @@ function drawMinimap(){
   const sx=bbox.minx-pad, sy=bbox.miny-pad;
   ctx.drawImage(mm.buf, sx,sy,vbw,vbh, 0,0,cssW,cssH);
   mm.markers=[];
-  state.nodes.forEach((n,j)=>{ const vp=mm.pts[j]; const x=(vp[0]-sx)*scale, y=(vp[1]-sy)*scale;
+  state.nodes.forEach((n,j)=>{ if(!n.label||!n.label.trim())return; const vp=mm.pts[j]; const x=(vp[0]-sx)*scale, y=(vp[1]-sy)*scale;
     const live=hasContent(n);
     const isActive=live&&state.activeKey===n.id, isHover=state.hoverNodeId===n.id, accent=rgbStr(state.accent);
     ctx.beginPath(); ctx.arc(x,y,isActive?5.2:3.7,0,6.283);
@@ -374,7 +374,7 @@ function render(p){
       it.addEventListener('pointerleave',()=>{state.hoverNodeId=null;drawMinimap();updatePortrait();}); }
     nav.appendChild(it); };
   navRow('classification','CLASSIFICATION',true,true);
-  state.nodes.forEach(n=>navRow(n.id, n.label||'UNTITLED', hasContent(n), false));
+  state.nodes.forEach(n=>{ if(n.label&&n.label.trim()) navRow(n.id, n.label, hasContent(n), false); });
   rail.appendChild(nav);
   const pg=el('div','pager');
   pg.innerHTML=`${p.prev?`<a href="project.html?p=${esc(p.prev)}">‹ ${esc(slugName(p.prev))}</a>`:'<span></span>'}`+
