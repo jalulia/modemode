@@ -8,7 +8,7 @@
   "prev": "massive",
   "next": "gif",
   "classification": {
-    "hero": { "src": "assets/nightmare-kart/cabinet-elevation.svg", "alt": "Front-elevation drawing of the Nightmare Kart cabinet — in-house stand-in until photography" },
+    "hero": { "src": "assets/nightmare-kart/marquee.jpg", "alt": "NIGHTMARE KART — faux stained-glass marquee" },
     "intro": [
       {
         "type": "text",
@@ -40,6 +40,7 @@
               { "spec": "W × L × H", "value": "28″ × 14″ × 4″", "valueNote": "control deck", "name": "Control deck", "body": "Two-player layout, Sanwa joysticks, custom resin-cast buttons with embedded LEDs. Float-mounted with actuator rods and return springs for tactile response." }
             ]
           },
+          { "type": "image", "title": null, "src": "assets/nightmare-kart/cabinet-elevation.svg", "alt": "Front-elevation drawing of the Nightmare Kart cabinet — in-house stand-in until photography" },
           { "type": "image", "title": null, "src": "assets/nightmare-kart/controldeck-detail.svg", "alt": "Control-deck plan — two-player Sanwa layout — in-house stand-in until photography" },
           {
             "type": "imagePara",

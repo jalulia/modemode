@@ -379,7 +379,7 @@ function drawMinimap(){
   const dw=bw*sc, dh=bh*sc; const ox=(cssW-dw)/2, oy=(cssH-dh)/2;
   ctx.drawImage(mm.buf, bbox.minx,bbox.miny,bw,bh, ox,oy,dw,dh);
   mm.markers=[];
-  state.nodes.forEach((n,j)=>{ if(!n.label||!n.label.trim())return; const vp=mm.pts[j];
+  state.nodes.forEach((n,j)=>{ if(!n.label||!n.label.trim()||state.hoverNodeId!==n.id)return; const vp=mm.pts[j];
     const x=ox+(vp[0]-bbox.minx)*sc, y=oy+(vp[1]-bbox.miny)*sc;
     const live=hasContent(n);
     const isActive=live&&state.activeKey===n.id, isHover=state.hoverNodeId===n.id, accent=rgbStr(state.ink);
@@ -443,7 +443,7 @@ function render(p){
   ident.querySelector('.code-row').appendChild(back);
   rail.appendChild(ident);
   const blob=el('figure','blob','<canvas id="minimap"></canvas><figcaption class="blob-cap">OBJECT FIELD</figcaption>');
-  const portrait=el('div','portrait'); portrait.id='portrait'; blob.appendChild(portrait);
+  /* minimal: no portrait overlay on the field — node reveal is driven by hovering the table of contents */
   rail.appendChild(blob);
   const nav=el('nav','nav');
   const navRow=(key,label,live,kicker)=>{ const it=el('div','nav-item'+(live?' live':' muted')+(kicker?' kicker':'')); it.dataset.key=key;
@@ -479,7 +479,7 @@ function render(p){
 
   const edge=(p.colors&&p.colors.edge)||[255,210,51];
   state.mm=computeMetaball(state.nodes,640,360,edge,state.accent);
-  requestAnimationFrame(()=>{ drawMinimap(); bindMinimap();
+  requestAnimationFrame(()=>{ drawMinimap();
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(state.mm)drawMinimap(); }); });
 
   const seen=new Map();
