@@ -38,7 +38,8 @@
   .rail{position:sticky;top:0;height:100vh;height:100dvh;overflow:visible;
     display:flex;flex-direction:column;padding:96px 14px 22px 0;}
   /* one fixed logo lockup — identical viewport position on every page, never jumps */
-  .wordmark{position:fixed;top:30px;left:36px;width:94px;z-index:60;color:var(--ink);}
+  .wordmark{position:fixed;top:30px;left:36px;width:94px;z-index:60;color:var(--ink);transition:opacity .15s;}
+  .wordmark:hover{opacity:.7;}
   .mm-logo{display:block;width:94px;height:auto;}
   .back{position:absolute;left:-38px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;color:var(--grey-2);opacity:.7;transition:color .15s,opacity .15s;}
   .back svg{display:block;}
@@ -436,7 +437,7 @@ function render(p){
 
   /* LEFT RAIL */
   const rail=el('aside','rail');
-  rail.appendChild(el('div','wordmark',LOGO));
+  const wm=el('a','wordmark',LOGO); wm.href='index.html'; wm.setAttribute('aria-label','MODE MODE — home'); rail.appendChild(wm);
   const ident=el('div','ident',`<div class="code-row"><span class="code">${esc(p.code||'')}</span></div><h1 class="name">${esc(p.name||'')}</h1>`);
   const back=el('a','back','<svg viewBox="0 0 20 12" width="20" height="12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square" role="img" aria-label="Back to MODE MODE"><path d="M20 6 H0 M5.5 0.5 L0 6 L5.5 11.5"/></svg>');
   back.href = p.code ? `index.html?focus=${encodeURIComponent(p.code)}` : 'index.html';

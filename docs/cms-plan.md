@@ -18,6 +18,7 @@ Each project = one JSON doc. CLASSIFICATION + each content-bearing node → sect
 | `media` | `{kind:"video"\|"image", embed\|src, caption, wide?}` | Vimeo embed or image. |
 | `cardgrid` | `{title, aspect, images:[{src,caption,alt}]}` | Spread of cards at true aspect, no crop (e.g. the tarot deck). |
 | `collaborators` | `[{name, role, url}]` | Classification-level credits list. |
+| `embed` *(future)* | `{source, url}` | **From the memo** — pull in a social/external post (text or image) as a block; reuse the existing content orientation so it lands titled and in order. Not built. |
 
 Empty/missing media → designed placeholder slot (shot description + "pending"), never filler.
 
