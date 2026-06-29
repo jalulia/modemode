@@ -2,6 +2,11 @@
 
 Provenance is labeled. **Verified** = I read it from the live file/git or tested it. **Known** = from your own files/mockup. **Decided** = your explicit choice. **Placeholder** = I generated it; not ground truth. **Unconfirmed** = needs you.
 
+## Polish (2026-06-28 late)
+- **Homepage studio chrome gated (fail #1):** the EDIT/PRESENT + light-dark controls are now **hidden from the public** (`body:not(.studio) .topctrls{display:none}`); reveal the field-studio controls with `?studio` (e.g. `…/modemode/?studio`). Visitors only see the field map. Verified: public = hidden, `?studio` = shown, 0 errors.
+- **Editor block labels:** every block header now shows its description + a thumbnail (e.g. "image · Courtyard"), so the editor maps 1:1 to the slots on the page — fixes the "no correlated field" friction. Verified headless (`editor/index.html`).
+- **Auth:** both editor passwords reset to a clean temp (`modemode2026`) after a paste-mismatch on the hyphenated one; both logins verified. `editor/` is the canonical path; `admin.html` redirects there.
+
 ## CMS editor — LIVE (admin.html, 2026-06-28)
 A self-contained authoring tool, `admin.html` (supabase-js). **Verified headless.**
 - **Auth:** email/password (Supabase Auth). Julia's account provisioned + confirmed (`comptonjulia@gmail.com`). **Writes locked to her email** via RLS (`projects editor write` + `media editor write`) — clears the always-true-policy advisor. Add Matt by appending his email to those two policies.
