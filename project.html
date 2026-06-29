@@ -44,31 +44,28 @@
   .back{position:absolute;left:-38px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;color:var(--grey-2);opacity:.7;transition:color .15s,opacity .15s;}
   .back svg{display:block;}
   .back:hover{color:var(--ink);opacity:1;}
-  .ident{flex:0 0 auto;} .code-row{position:relative;display:inline-block;margin-bottom:14px;}
+  .ident{flex:0 0 auto;position:relative;z-index:2;} .code-row{position:relative;display:inline-block;margin-bottom:14px;}
   .ident .code{font-size:11.5px;letter-spacing:.28em;color:var(--accent);}
   .ident .name{font-family:var(--disp);font-size:clamp(40px,4vw,58px);line-height:.86;letter-spacing:.004em;
     color:var(--accent);margin:0 0 18px;text-transform:uppercase;hyphens:none;}
 
-  /* constellation — consistent fixed box on every page (contain-fit inside) */
-  .blob{position:relative;width:100%;aspect-ratio:5/3.3;flex:0 0 auto;margin-bottom:4px;}
+  /* ambient project field — the homepage blob: large, borderless, animated + textured, bleeding behind the title (mock #2) */
+  .rail-top{position:relative;flex:3 1 auto;min-height:172px;display:flex;flex-direction:column;}
+  .field{position:absolute;top:-86px;left:-30px;right:-26px;bottom:-4px;z-index:0;overflow:hidden;}
   #minimap{display:block;width:100%;height:100%;cursor:default;}
-  .portrait{position:absolute;left:0;right:0;bottom:0;padding:30px 8px 8px;pointer-events:none;opacity:0;transform:translateY(6px);
-    transition:opacity .18s,transform .18s;background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.94) 42%);}
-  .portrait.on{opacity:1;transform:none;pointer-events:auto;}
-  .portrait .p-lab{font-family:var(--disp);font-size:15px;color:var(--ink);line-height:1.05;margin-bottom:5px;}
-  .portrait .p-blurb{font-size:11px;line-height:1.45;color:var(--grey);margin-bottom:6px;}
-  .portrait .p-status{font-size:9px;letter-spacing:.14em;text-transform:uppercase;}
-  .portrait .p-status.live{color:var(--accent);cursor:pointer;} .portrait .p-status.idle{color:var(--grey-2);}
-  .blob-cap{position:absolute;top:2px;left:1px;font-size:8px;letter-spacing:.24em;color:var(--grey-2);}
+  .field-scrim{position:absolute;top:-86px;left:-30px;right:-26px;height:190px;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.74),rgba(255,255,255,.18) 64%,rgba(255,255,255,0));}
+  .field-fade{position:absolute;left:-30px;right:-26px;bottom:-4px;height:42%;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(255,255,255,0),#fff 90%);}
 
   /* section nav — flex-distributed so any count fits without scroll; whole row hoverable */
-  .nav{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;}
+  .nav{flex:2 1 auto;min-height:0;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;background:var(--paper);}
   .nav-item{flex:1 1 0;min-height:0;max-height:50px;display:flex;align-items:center;gap:12px;padding:0 2px;
     border-bottom:1px solid var(--hair-2);font-size:13px;letter-spacing:.02em;transition:padding-left .16s ease,color .16s;}
   .nav-item .mk{width:8px;height:8px;border-radius:50%;border:1.4px solid var(--accent);flex:none;transition:background .16s;}
   .nav-item .lab{color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .nav-item.kicker .lab{letter-spacing:.16em;font-size:11.5px;}
-  .nav-item.live{cursor:pointer;} .nav-item.live:hover{padding-left:7px;}
+  .nav-item.live{cursor:pointer;} .nav-item.live:hover,.nav-item.hover{padding-left:7px;} .nav-item.hover .lab{color:var(--ink);}
   .nav-item.muted .mk{border-color:var(--grey-2);} .nav-item.muted .lab{color:var(--grey-2);}
   .nav-item.active .mk{background:var(--accent);} .nav-item.active .lab{font-family:var(--disp);}
 
@@ -204,7 +201,7 @@
     .rail{position:static;height:auto;overflow:visible;padding:84px 0 8px;}
     .back{position:static;transform:none;margin:0 0 12px;} .code-row{display:block;}
     .nav-item{max-height:none;padding:14px 2px;}
-    .blob{max-width:380px;}
+    .rail-top{flex:0 0 auto;min-height:230px;} .field{top:-30px;left:-16px;right:-16px;}
     .main{padding:26px 0 48px;}
   }
 </style>
@@ -244,42 +241,90 @@ async function loadProject(slug){
   return await res.json();
 }
 
-/* ===================== constellation (read-only port of index.html metaball) ===================== */
-const MM={ A_MAX:0.86, S_LO:0.16, S_HI:0.42, H_REF:1.0, T_EXP:0.8, SE:1.6 };
+/* ===================== ambient project field — animated + textured mirror of index.html's metaball =====================
+   Mirrors the homepage renderer READ-ONLY: same two-field metaball + organic node animation (undulation / asymmetric
+   breathing) + a perlin cloud texture. The blob breathes over a screen-space texture, exactly like the homepage. */
+const MM={ A_MAX:0.86, S_LO:0.16, S_HI:0.42, H_REF:1.0, T_EXP:0.8, SE:1.25 };
+const MMA={ on:true, amount:0.74, walk:0.045, breathe:0.15, intens:0.2, fall:0.15, speed:0.6, variance:0.92 }; // = homepage fx.anim
+const MM_FPS=28, DOWN=2.3;
 function smoothstep(a,b,x){const t=clamp((x-a)/(b-a),0,1);return t*t*(3-2*t);}
-function computeMetaball(nodes, VW, VH, edge, core){
-  // Map the normalized field with the SAME 16:9 position stretch + short-side radius as the homepage,
-  // then size the buffer to the blob's full CONTENT box (node disks) so edge nodes at x/y=±1 never clip
-  // at a fixed boundary (the homepage avoids this by rendering into a larger canvas with margins).
-  const mfd=Math.min(VW,VH);
-  const raw=nodes.map(n=>{ const g=n.geom; return { px:(g.x+1)/2*VW, py:VH-(g.y+1)/2*VH, R:g.r*mfd, i:g.i, f:g.f }; });
+function hsh1(x,y){let n=(x*374761393+y*668265263)|0;n=(n^(n>>13))*1274126177|0;return ((n^(n>>16))>>>0)/4294967295;}
+function tnoise(seed,x){const xi=Math.floor(x),xf=x-xi,u=xf*xf*(3-2*xf);return hsh1(seed,xi)*(1-u)+hsh1(seed,xi+1)*u;}
+const _seedCache={};
+function nodeSeeds(id){ let s=_seedCache[id]; if(s)return s;
+  let h=2166136261>>>0; for(let i=0;i<id.length;i++){ h=Math.imul(h^id.charCodeAt(i),16777619); }
+  const r=k=>{ let x=Math.imul((h^Math.imul(k,2654435761))>>>0,2246822519); x^=x>>>13; x=Math.imul(x,3266489917); x^=x>>>16; return (x>>>0)/4294967295; };
+  s={ wx:(r(1)*4096)|0, wy:(r(2)*4096)|0, phw:r(3)*6.2832, phh:r(4)*6.2832, phi:r(5)*6.2832, phf:r(6)*6.2832,
+      fw:0.65+r(7)*0.9, fh:0.65+r(8)*0.9, fi:0.65+r(9)*0.9, ff:0.65+r(10)*0.9, av:r(11) };
+  _seedCache[id]=s; return s; }
+function nodePert(n,t,mfd){ const A=MMA, s=nodeSeeds(n.id), m=A.amount, va=lerp(1,s.av,A.variance), T=t*0.001*A.speed;
+  const wx=(tnoise(s.wx,T*0.6*s.fw)-0.5)*2, wy=(tnoise(s.wy,T*0.6*s.fh)-0.5)*2, wamp=A.walk*m*va*mfd;
+  const bw=Math.sin(T*1.6*s.fw+s.phw), bh=Math.sin(T*1.35*s.fh+s.phh), bamp=A.breathe*m*va;
+  const di=1+A.intens*m*va*Math.sin(T*1.1*s.fi+s.phi), df=1+A.fall*m*va*Math.sin(T*0.85*s.ff+s.phf);
+  return { ox:wx*wamp, oy:wy*wamp, sx:1+bamp*bw, sy:1+bamp*bh, di, df }; }
+function vnoise2(x,y){const xi=Math.floor(x),yi=Math.floor(y),xf=x-xi,yf=y-yi,u=xf*xf*(3-2*xf),v=yf*yf*(3-2*yf);
+  const a=hsh1(xi,yi),b=hsh1(xi+1,yi),c=hsh1(xi,yi+1),d=hsh1(xi+1,yi+1);return a*(1-u)*(1-v)+b*u*(1-v)+c*(1-u)*v+d*u*v;}
+const F={ cv:null,ctx:null,lo:null,lox:null,lowW:0,lowH:0,cssW:0,cssH:0,DPR:1,
+  nodes:[],edge:[255,210,51],core:[196,0,33],ink:[0,0,0],fit:null,mfd:1,noise:null,nodeLow:{},raf:0,last:0 };
+function buildNoise(W,H){ const n=new Float32Array(W*H), step=0.05;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){ let s=0,amp=0.5,f=1; for(let o=0;o<4;o++){s+=amp*vnoise2(x*step*f,y*step*f);f*=2;amp*=0.5;} n[y*W+x]=clamp(s,0,1); }
+  return n; }
+function setupField(cv,nodes,edge,core,ink){
+  F.cv=cv; F.ctx=cv.getContext('2d'); F.nodes=nodes; F.edge=edge; F.core=core; F.ink=ink||core;
+  F.DPR=Math.min(window.devicePixelRatio||1,2);
+  F.cssW=Math.max(2,cv.clientWidth||320); F.cssH=Math.max(2,cv.clientHeight||360);
+  cv.width=Math.round(F.cssW*F.DPR); cv.height=Math.round(F.cssH*F.DPR);
+  F.lowW=Math.max(8,Math.round(F.cssW/DOWN)); F.lowH=Math.max(8,Math.round(F.cssH/DOWN));
+  if(!F.lo){ F.lo=document.createElement('canvas'); F.lox=F.lo.getContext('2d',{willReadFrequently:true}); }
+  F.lo.width=F.lowW; F.lo.height=F.lowH; F.noise=buildNoise(F.lowW,F.lowH);
+  const W=F.lowW,H=F.lowH, provMin=Math.min(W,H);
+  const raw=nodes.map(n=>{const g=n.geom;return {px:(g.x+1)/2*W, py:H-(g.y+1)/2*H, R:g.r*provMin};});
   let mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
-  raw.forEach(o=>{ if(o.R<=0)return; if(o.px-o.R<mnx)mnx=o.px-o.R; if(o.px+o.R>mxx)mxx=o.px+o.R; if(o.py-o.R<mny)mny=o.py-o.R; if(o.py+o.R>mxy)mxy=o.py+o.R; });
-  if(!isFinite(mnx)){ mnx=0;mny=0;mxx=VW;mxy=VH; }
-  const pad=2;
-  const BW=Math.max(2,Math.min(1600,Math.ceil(mxx-mnx)+pad*2)), BH=Math.max(2,Math.min(1600,Math.ceil(mxy-mny)+pad*2));
-  const offx=pad-mnx, offy=pad-mny;
-  const S=new Float32Array(BW*BH), H=new Float32Array(BW*BH);
-  const pts=raw.map(o=>[ o.px+offx, o.py+offy ]);
-  raw.forEach((o,j)=>{ const px=pts[j][0],py=pts[j][1],R=o.R; if(R<=0)return; const ir2=1/(R*R);
-    const x0=Math.max(0,Math.floor(px-R)),x1=Math.min(BW,Math.ceil(px+R));
-    const y0=Math.max(0,Math.floor(py-R)),y1=Math.min(BH,Math.ceil(py+R));
-    for(let y=y0;y<y1;y++){ const dy=y-py,dy2=dy*dy*ir2,row=y*BW;
-      for(let x=x0;x<x1;x++){ const dx=x-px,nd=dx*dx*ir2+dy2; if(nd>=1)continue; const u=1-nd;
-        S[row+x]+=Math.pow(u,MM.SE); H[row+x]+=o.i*Math.pow(u,o.f);
-      }}});
-  const buf=document.createElement('canvas'); buf.width=BW; buf.height=BH;
-  const bx=buf.getContext('2d'); const img=bx.createImageData(BW,BH), d=img.data;
-  let minx=BW,miny=BH,maxx=0,maxy=0,any=false;
-  for(let k=0,q=0;k<S.length;k++,q+=4){ const s=S[k];
-    const a=smoothstep(MM.S_LO,MM.S_HI,s)*MM.A_MAX; if(a<=0.003){d[q+3]=0;continue;}
-    const t=Math.pow(clamp(H[k]/MM.H_REF,0,1),MM.T_EXP);
-    d[q]=lerp(edge[0],core[0],t); d[q+1]=lerp(edge[1],core[1],t); d[q+2]=lerp(edge[2],core[2],t); d[q+3]=a*255;
-    const x=k%BW, y=(k/BW)|0; if(x<minx)minx=x; if(x>maxx)maxx=x; if(y<miny)miny=y; if(y>maxy)maxy=y; any=true;
-  }
-  bx.putImageData(img,0,0);
-  if(!any){minx=0;miny=0;maxx=BW;maxy=BH;}
-  return { buf, pts, bbox:{minx,miny,maxx,maxy} };
+  raw.forEach(o=>{ if(o.R<=0)return; mnx=Math.min(mnx,o.px-o.R);mxx=Math.max(mxx,o.px+o.R);mny=Math.min(mny,o.py-o.R);mxy=Math.max(mxy,o.py+o.R); });
+  if(!isFinite(mnx)){mnx=0;mny=0;mxx=W;mxy=H;}
+  const bw=Math.max(1,mxx-mnx), bh=Math.max(1,mxy-mny), cover=Math.max(W/bw,H/bh)*1.04;
+  F.fit={ cover, cx:(mnx+mxx)/2, cy:(mny+mxy)/2, provMin }; F.mfd=provMin*cover;
+}
+function drawField(t){
+  if(!F.ctx)return; const W=F.lowW,H=F.lowH,fit=F.fit; const Sa=new Float32Array(W*H), Ha=new Float32Array(W*H); F.nodeLow={};
+  F.nodes.forEach(n=>{ const g=n.geom; if(g.r<=0)return; const pt=MMA.on?nodePert(n,t,F.mfd*0.55):null;
+    const bpx=(g.x+1)/2*W, bpy=H-(g.y+1)/2*H;
+    const px=fit.cover*(bpx-fit.cx)+W/2+(pt?pt.ox:0), py=fit.cover*(bpy-fit.cy)+H/2+(pt?pt.oy:0);
+    const Rx=g.r*fit.provMin*fit.cover*(pt?pt.sx:1), Ry=g.r*fit.provMin*fit.cover*(pt?pt.sy:1);
+    if(n.label&&n.label.trim()) F.nodeLow[n.id]=[px/W*F.cssW, py/H*F.cssH];
+    if(Rx<=0||Ry<=0)return; const ni=g.i*(pt?pt.di:1), nf=g.f*(pt?pt.df:1), irx2=1/(Rx*Rx), iry2=1/(Ry*Ry);
+    const x0=Math.max(0,Math.floor(px-Rx)),x1=Math.min(W,Math.ceil(px+Rx)),y0=Math.max(0,Math.floor(py-Ry)),y1=Math.min(H,Math.ceil(py+Ry));
+    for(let y=y0;y<y1;y++){const dy=y-py,dy2=dy*dy*iry2,row=y*W;
+      for(let x=x0;x<x1;x++){const dx=x-px,nd=dx*dx*irx2+dy2; if(nd>=1)continue; const u=1-nd;
+        Sa[row+x]+=Math.pow(u,MM.SE); Ha[row+x]+=ni*Math.pow(u,nf);}}});
+  const img=F.lox.createImageData(W,H), d=img.data, edge=F.edge, core=F.core, noise=F.noise;
+  for(let k=0,q=0;k<Sa.length;k++,q+=4){ const s=Sa[k];
+    const a=smoothstep(MM.S_LO,MM.S_HI,s)*MM.A_MAX; if(a<=0.004){d[q+3]=0;continue;}
+    const tt=Math.pow(clamp(Ha[k]/MM.H_REF,0,1),MM.T_EXP), tex=1+(noise[k]-0.5)*0.22;
+    d[q]=clamp(lerp(edge[0],core[0],tt)*tex,0,255); d[q+1]=clamp(lerp(edge[1],core[1],tt)*tex,0,255);
+    d[q+2]=clamp(lerp(edge[2],core[2],tt)*tex,0,255); d[q+3]=a*255; }
+  F.lox.putImageData(img,0,0);
+  const cx=F.ctx; cx.setTransform(1,0,0,1,0,0); cx.clearRect(0,0,F.cv.width,F.cv.height);
+  cx.imageSmoothingEnabled=true; cx.imageSmoothingQuality='high'; cx.drawImage(F.lo,0,0,W,H,0,0,F.cv.width,F.cv.height);
+  cx.setTransform(F.DPR,0,0,F.DPR,0,0);
+  const hid=state.hoverNodeId, p=hid&&F.nodeLow[hid];
+  if(p){ const n=state.nodes.find(x=>x.id===hid), accent=rgbStr(F.ink);
+    cx.beginPath(); cx.arc(p[0],p[1],4.5,0,6.283); cx.fillStyle=accent; cx.fill(); cx.lineWidth=1.4; cx.strokeStyle=accent; cx.stroke();
+    if(n&&n.label){ cx.font='600 11px "BB Strata ML",ui-monospace,monospace'; cx.textBaseline='middle';
+      const tw=cx.measureText(n.label).width, gap=10; let tx=p[0]+gap, al='left';
+      if(tx+tw+6>F.cssW){ al='right'; tx=p[0]-gap; } cx.textAlign=al; const bx=al==='left'?tx-4:tx-tw-4;
+      cx.fillStyle='rgba(255,255,255,.9)'; cx.fillRect(bx,p[1]-8,tw+8,16); cx.fillStyle=accent; cx.fillText(n.label,tx,p[1]); } }
+}
+function fieldLoop(t){ if(!F.last||t-F.last>=1000/MM_FPS){ F.last=t; try{drawField(t);}catch(e){console.error(e);} } F.raf=requestAnimationFrame(fieldLoop); }
+function startField(){ cancelAnimationFrame(F.raf); F.last=0; F.raf=requestAnimationFrame(fieldLoop); }
+function syncNavHover(){ document.querySelectorAll('.nav-item').forEach(it=>it.classList.toggle('hover', it.dataset.key===state.hoverNodeId)); }
+function bindField(cv){
+  const pick=e=>{ const r=cv.getBoundingClientRect(); const mx=e.clientX-r.left,my=e.clientY-r.top; let best=null,bd=26;
+    for(const id in F.nodeLow){ const p=F.nodeLow[id], dd=Math.hypot(mx-p[0],my-p[1]); if(dd<bd){bd=dd;best=id;} } return best; };
+  cv.addEventListener('pointermove',e=>{ const id=pick(e); if(id!==state.hoverNodeId){ state.hoverNodeId=id; syncNavHover();
+    const n=id&&state.nodes.find(x=>x.id===id); cv.style.cursor=(n&&hasContent(n))?'pointer':'default'; } });
+  cv.addEventListener('pointerleave',()=>{ if(state.hoverNodeId){ state.hoverNodeId=null; syncNavHover(); } });
+  cv.addEventListener('click',()=>{ const id=state.hoverNodeId, n=id&&state.nodes.find(x=>x.id===id); if(n&&hasContent(n)) scrollToSection(id); });
 }
 
 const state={ project:null, nodes:[], contentNodes:[], accent:[196,0,33], ink:[196,0,33], mm:null, hoverNodeId:null, activeKey:'classification', imgN:0 };
@@ -418,7 +463,7 @@ function bindMinimap(){ const cv=document.getElementById('minimap');
 function scrollToSection(key){ const t=document.querySelector(`.card[data-section="${key}"]`);
   if(t) t.scrollIntoView({behavior:'smooth',block:'start'}); }
 function setActiveKey(key){ if(state.activeKey===key)return; state.activeKey=key;
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.key===key)); drawMinimap(); }
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.key===key)); }
 function updatePortrait(){
   const elp=document.getElementById('portrait'); if(!elp)return;
   const id = (state.hoverNodeId && state.nodes.find(n=>n.id===state.hoverNodeId)) ? state.hoverNodeId : null;
@@ -449,16 +494,18 @@ function render(p){
   const back=el('a','back','<svg viewBox="0 0 20 12" width="20" height="12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square" role="img" aria-label="Back to MODE MODE"><path d="M20 6 H0 M5.5 0.5 L0 6 L5.5 11.5"/></svg>');
   back.href = p.code ? `index.html?focus=${encodeURIComponent(p.code)}` : 'index.html';
   ident.querySelector('.code-row').appendChild(back);
-  rail.appendChild(ident);
-  const blob=el('figure','blob','<canvas id="minimap"></canvas><figcaption class="blob-cap">OBJECT FIELD</figcaption>');
-  /* minimal: no portrait overlay on the field — node reveal is driven by hovering the table of contents */
-  rail.appendChild(blob);
+  const railTop=el('div','rail-top');
+  railTop.appendChild(el('div','field','<canvas id="minimap"></canvas>'));
+  railTop.appendChild(el('div','field-scrim'));
+  railTop.appendChild(ident);            // title sits over the ambient field (z above)
+  railTop.appendChild(el('div','field-fade'));
+  rail.appendChild(railTop);
   const nav=el('nav','nav');
   const navRow=(key,label,live,kicker)=>{ const it=el('div','nav-item'+(live?' live':' muted')+(kicker?' kicker':'')); it.dataset.key=key;
     it.innerHTML=`<span class="mk"></span><span class="lab">${esc(label)}</span>`;
     if(live) it.addEventListener('click',()=>scrollToSection(key));
-    if(key!=='classification'){ it.addEventListener('pointerenter',()=>{state.hoverNodeId=key;drawMinimap();updatePortrait();});
-      it.addEventListener('pointerleave',()=>{state.hoverNodeId=null;drawMinimap();updatePortrait();}); }
+    if(key!=='classification'){ it.addEventListener('pointerenter',()=>{state.hoverNodeId=key;syncNavHover();});
+      it.addEventListener('pointerleave',()=>{state.hoverNodeId=null;syncNavHover();}); }
     nav.appendChild(it); };
   navRow('classification','CLASSIFICATION',true,true);
   state.nodes.forEach(n=>{ if(n.label&&n.label.trim()) navRow(n.id, n.label, hasContent(n), false); });
@@ -486,9 +533,9 @@ function render(p){
   root.appendChild(page);
 
   const edge=(p.colors&&p.colors.edge)||[255,210,51];
-  state.mm=computeMetaball(state.nodes,640,360,edge,state.accent);
-  requestAnimationFrame(()=>{ drawMinimap();
-    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(state.mm)drawMinimap(); }); });
+  const fcv=document.getElementById('minimap');
+  requestAnimationFrame(()=>{ if(fcv){ setupField(fcv,state.nodes,edge,state.accent,state.ink); bindField(fcv); startField();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(F.ctx) setupField(fcv,state.nodes,edge,state.accent,state.ink); }); } });
 
   const seen=new Map();
   const io=new IntersectionObserver(ents=>{ ents.forEach(e=>seen.set(e.target,e.intersectionRatio));
@@ -504,7 +551,7 @@ function fail(msg){ document.getElementById('root').innerHTML=
 
 function getSlug(){ const q=new URLSearchParams(location.search).get('p'); const h=location.hash?location.hash.replace(/^#/,''):'';
   return (q||h||'nightmare-kart').trim(); }
-let _rz=null; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setTimeout(()=>{ if(state.mm)drawMinimap(); },120); });
+let _rz=null; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setTimeout(()=>{ const cv=document.getElementById('minimap'); if(cv&&F.ctx){ const e=(state.project&&state.project.colors&&state.project.colors.edge)||[255,210,51]; setupField(cv,state.nodes,e,state.accent,state.ink); } },140); });
 /* full-screen image lightbox — every content image is clickable */
 (function(){ const lb=el('div',null,'<img alt=""><button class="lb-close" aria-label="Close">Close ✕</button>'); lb.id='lightbox'; document.body.appendChild(lb);
   const close=()=>lb.classList.remove('on');
