@@ -287,7 +287,7 @@ function setupField(cv,nodes,edge,core,ink){
   let mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
   raw.forEach(o=>{ if(o.R<=0)return; mnx=Math.min(mnx,o.px-o.R);mxx=Math.max(mxx,o.px+o.R);mny=Math.min(mny,o.py-o.R);mxy=Math.max(mxy,o.py+o.R); });
   if(!isFinite(mnx)){mnx=0;mny=0;mxx=W;mxy=H;}
-  const bw=Math.max(1,mxx-mnx), bh=Math.max(1,mxy-mny), cover=Math.max(W/bw,H/bh)*1.04;
+  const bw=Math.max(1,mxx-mnx), bh=Math.max(1,mxy-mny), cover=Math.min(W/bw,H/bh)*0.66;
   F.fit={ cover, cx:(mnx+mxx)/2, cy:(mny+mxy)/2, provMin }; F.mfd=provMin*cover;
 }
 function drawField(t){
