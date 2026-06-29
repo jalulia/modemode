@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:,">
+<title>MODE MODE — Studio (CMS)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{ color-scheme:light;
+    --ground:#F3F3F0; --paper:#FFFFFF; --panel:#FBFBF9; --ink:#16160F; --grey:#8C8C86; --grey-2:#B4B4AE;
+    --hair:rgba(22,22,15,.16); --hair-2:rgba(22,22,15,.07); --accent:#C40021; --ok:#1B8A4B;
+    --mono:'JetBrains Mono',ui-monospace,Menlo,monospace; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;background:var(--ground);}
+  body{font-family:var(--mono);color:var(--ink);font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;}
+  a{color:var(--accent);text-decoration:none;}
+  button{font-family:var(--mono);cursor:pointer;}
+  input,textarea,select{font-family:var(--mono);font-size:12.5px;color:var(--ink);background:var(--paper);
+    border:1px solid var(--hair);border-radius:3px;padding:8px 9px;width:100%;}
+  textarea{resize:vertical;min-height:62px;line-height:1.55;}
+  input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent);}
+  label{display:block;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);margin:0 0 5px;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;} .row>*{flex:1;min-width:120px;}
+  .btn{border:1px solid var(--ink);background:var(--ink);color:var(--ground);border-radius:3px;padding:9px 16px;font-size:11px;letter-spacing:.08em;}
+  .btn.ghost{background:none;color:var(--ink);border-color:var(--hair);}
+  .btn.ghost:hover{border-color:var(--ink);}
+  .btn.tiny{padding:4px 8px;font-size:10px;}
+  .btn.red{border-color:var(--accent);color:var(--accent);background:none;}
+  .btn:disabled{opacity:.45;cursor:default;}
+
+  /* ---- top bar ---- */
+  .top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;padding:12px 22px;
+    background:var(--paper);border-bottom:1px solid var(--hair);}
+  .brand{font-weight:700;letter-spacing:.04em;font-size:14px;}
+  .brand small{color:var(--grey);font-weight:400;letter-spacing:.18em;font-size:9.5px;margin-left:8px;text-transform:uppercase;}
+  .top .sp{flex:1;}
+  .who{color:var(--grey);font-size:11px;}
+  #status{font-size:11px;color:var(--grey);min-width:90px;text-align:right;}
+  #status.ok{color:var(--ok);} #status.err{color:var(--accent);}
+
+  /* ---- login ---- */
+  #login{max-width:340px;margin:14vh auto;padding:30px;background:var(--paper);border:1px solid var(--hair);border-radius:4px;}
+  #login h1{font-size:15px;margin:0 0 4px;} #login p{color:var(--grey);font-size:11.5px;margin:0 0 20px;}
+  #login .field+.field{margin-top:12px;} #login .btn{width:100%;margin-top:16px;}
+  #login .alt{margin-top:14px;text-align:center;font-size:11px;color:var(--grey);}
+  #loginMsg{margin-top:12px;font-size:11px;color:var(--accent);min-height:14px;}
+
+  /* ---- editor shell ---- */
+  #editor{display:grid;grid-template-columns:240px minmax(0,1fr);gap:0;align-items:start;}
+  #projlist{position:sticky;top:53px;height:calc(100vh - 53px);overflow:auto;border-right:1px solid var(--hair);background:var(--panel);padding:14px 12px;}
+  #projlist .ph{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2);margin:4px 4px 10px;}
+  .pitem{display:flex;align-items:baseline;gap:8px;padding:9px 10px;border-radius:3px;cursor:pointer;border:1px solid transparent;}
+  .pitem:hover{background:var(--paper);} .pitem.on{background:var(--paper);border-color:var(--hair);}
+  .pitem .c{font-size:9.5px;color:var(--grey);} .pitem .n{font-size:12px;}
+  #main{padding:24px 30px 120px;max-width:880px;}
+  .empty{color:var(--grey);padding:60px 10px;text-align:center;}
+
+  .sec{margin:0 0 26px;border:1px solid var(--hair);border-radius:4px;background:var(--paper);overflow:hidden;}
+  .sec>h2{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin:0;
+    padding:12px 16px;border-bottom:1px solid var(--hair-2);display:flex;align-items:center;gap:10px;background:var(--panel);}
+  .sec>h2 .meta{color:var(--grey-2);letter-spacing:.1em;font-weight:400;}
+  .sec>h2 .sp{flex:1;}
+  .sec .body{padding:16px;}
+  .node.muted>h2{color:var(--grey);}
+  .fieldwrap{margin:0 0 12px;} .fieldwrap:last-child{margin-bottom:0;}
+
+  .block{border:1px solid var(--hair);border-radius:3px;margin:0 0 12px;background:var(--panel);}
+  .block>.bh{display:flex;align-items:center;gap:8px;padding:8px 11px;border-bottom:1px solid var(--hair-2);}
+  .block>.bh .t{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink);}
+  .block>.bh .sp{flex:1;}
+  .block>.bb{padding:12px;}
+  .ctrls{display:flex;gap:4px;}
+  .ctrls button{border:1px solid var(--hair);background:var(--paper);border-radius:3px;width:24px;height:24px;font-size:12px;color:var(--grey);padding:0;}
+  .ctrls button:hover{color:var(--ink);border-color:var(--grey-2);}
+  .ctrls button.x:hover{color:var(--accent);border-color:var(--accent);}
+
+  .sub{border-left:2px solid var(--hair-2);padding:0 0 0 12px;margin:10px 0;}
+  .sub .si{display:flex;gap:8px;align-items:flex-start;margin:0 0 8px;}
+  .sub .si>div{flex:1;}
+  .addrow{display:flex;gap:8px;align-items:center;margin-top:8px;}
+  .addrow select{max-width:180px;}
+
+  .img{display:flex;gap:10px;align-items:flex-start;}
+  .img .prev{width:78px;height:58px;border:1px solid var(--hair);border-radius:3px;flex:none;object-fit:cover;background:var(--ground);}
+  .img .prev.none{display:flex;align-items:center;justify-content:center;font-size:8.5px;color:var(--grey-2);text-align:center;letter-spacing:.1em;}
+  .img .ic{flex:1;}
+  .hint{font-size:10px;color:var(--grey);margin-top:4px;}
+  .chk{display:inline-flex;gap:6px;align-items:center;font-size:11px;color:var(--ink);text-transform:none;letter-spacing:0;cursor:pointer;}
+  .chk input{width:auto;}
+  .savebar{position:fixed;bottom:0;left:240px;right:0;z-index:20;display:flex;align-items:center;gap:14px;
+    padding:12px 30px;background:var(--paper);border-top:1px solid var(--hair);}
+  .savebar .sp{flex:1;}
+  .dirty{color:var(--accent);font-size:11px;}
+  #raw{width:100%;min-height:420px;font-size:11.5px;line-height:1.5;}
+  .modeswitch{display:flex;gap:6px;}
+  .modeswitch button{border:1px solid var(--hair);background:var(--paper);color:var(--grey);border-radius:3px;padding:5px 11px;font-size:10px;letter-spacing:.06em;}
+  .modeswitch button.on{background:var(--ink);color:var(--ground);border-color:var(--ink);}
+  .hidden{display:none!important;}
+</style>
+</head>
+<body>
+  <div class="top">
+    <span class="brand">MODE MODE<small>Studio · CMS</small></span>
+    <div class="sp"></div>
+    <span id="status"></span>
+    <span class="who" id="who"></span>
+    <button class="btn ghost tiny hidden" id="logout">Log out</button>
+  </div>
+
+  <div id="login">
+    <h1>Studio sign-in</h1>
+    <p>Edit MODE MODE project content. Authorized accounts only.</p>
+    <div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div>
+    <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+    <button class="btn" id="signin">Sign in</button>
+    <div class="alt">First time? <a href="#" id="signupLink">create account</a></div>
+    <div id="loginMsg"></div>
+  </div>
+
+  <div id="editor" class="hidden">
+    <aside id="projlist"><div class="ph">Projects</div><div id="plist"></div></aside>
+    <main id="main"><div class="empty">Select a project from the left to start editing.</div></main>
+  </div>
+
+  <div class="savebar hidden" id="savebar">
+    <div class="modeswitch">
+      <button id="mForm" class="on">Form</button><button id="mRaw">Raw JSON</button>
+    </div>
+    <a class="btn ghost tiny" id="previewBtn" target="_blank">Preview ↗</a>
+    <div class="sp"></div>
+    <span class="dirty hidden" id="dirtyFlag">● unsaved changes</span>
+    <button class="btn" id="save" disabled>Save</button>
+  </div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+const SB_URL='https://vjvjparfulrtsxdslrpg.supabase.co';
+const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdmpwYXJmdWxydHN4ZHNscnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODM1ODIsImV4cCI6MjA5ODI1OTU4Mn0._A1WCuNyCtnJ2Y3U4iqWjvWQe2ANTA6i-sYfuhhcFq4';
+const sb=createClient(SB_URL, SB_ANON);
+const $=id=>document.getElementById(id);
+const el=(t,c,txt)=>{const e=document.createElement(t); if(c)e.className=c; if(txt!=null)e.textContent=txt; return e;};
+const state={ slug:null, doc:null, dirty:false, mode:'form' };
+
+/* ---------- auth ---------- */
+function setStatus(msg,kind){ const s=$('status'); s.textContent=msg||''; s.className=kind||''; if(msg&&kind==='ok') setTimeout(()=>{ if(s.textContent===msg){s.textContent='';s.className='';} },2500); }
+async function refreshAuth(){
+  const { data:{ session } }=await sb.auth.getSession();
+  const inApp=!!session;
+  $('login').classList.toggle('hidden',inApp);
+  $('editor').classList.toggle('hidden',!inApp);
+  $('savebar').classList.toggle('hidden',!inApp);
+  $('logout').classList.toggle('hidden',!inApp);
+  $('who').textContent= inApp ? session.user.email : '';
+  if(inApp) loadProjects();
+}
+$('signin').onclick=async()=>{ const email=$('email').value.trim(), password=$('password').value;
+  $('loginMsg').textContent='…';
+  const { error }=await sb.auth.signInWithPassword({ email, password });
+  $('loginMsg').textContent= error ? error.message : ''; if(!error) refreshAuth(); };
+$('signupLink').onclick=async(e)=>{ e.preventDefault(); const email=$('email').value.trim(), password=$('password').value;
+  if(!email||!password){ $('loginMsg').textContent='Enter an email + password first.'; return; }
+  $('loginMsg').textContent='Creating account…';
+  const { error }=await sb.auth.signUp({ email, password });
+  $('loginMsg').textContent= error ? error.message : 'Account created. If email confirmation is on, confirm via email, then sign in.';
+  if(!error) refreshAuth(); };
+$('logout').onclick=async()=>{ await sb.auth.signOut(); state.slug=null; state.doc=null; refreshAuth(); $('main').innerHTML='<div class="empty">Select a project from the left to start editing.</div>'; };
+sb.auth.onAuthStateChange(()=>{});
+
+/* ---------- projects ---------- */
+async function loadProjects(){
+  const { data, error }=await sb.from('projects').select('slug,code,name').order('code');
+  if(error){ setStatus('load failed','err'); return; }
+  const list=$('plist'); list.innerHTML='';
+  data.forEach(p=>{ const it=el('div','pitem'+(p.slug===state.slug?' on':'')); it.dataset.slug=p.slug;
+    it.appendChild(el('span','c',p.code||'')); it.appendChild(el('span','n',p.name||p.slug));
+    it.onclick=()=>selectProject(p.slug); list.appendChild(it); });
+}
+async function selectProject(slug){
+  if(state.dirty && !confirm('Discard unsaved changes?')) return;
+  setStatus('loading…');
+  const { data, error }=await sb.from('projects').select('data').eq('slug',slug).single();
+  if(error){ setStatus('load failed','err'); return; }
+  state.slug=slug; state.doc=data.data; state.dirty=false; state.mode='form';
+  $('mForm').classList.add('on'); $('mRaw').classList.remove('on');
+  document.querySelectorAll('.pitem').forEach(n=>n.classList.toggle('on',n.dataset.slug===slug));
+  $('previewBtn').href='project.html?p='+encodeURIComponent(slug);
+  setStatus(''); markClean(); render();
+}
+function markDirty(){ state.dirty=true; $('dirtyFlag').classList.remove('hidden'); $('save').disabled=false; }
+function markClean(){ state.dirty=false; $('dirtyFlag').classList.add('hidden'); $('save').disabled=true; }
+
+/* ---------- field helpers ---------- */
+function inputField(label, obj, key, opts={}){
+  const w=el('div','fieldwrap'); if(label)w.appendChild(el('label',null,label));
+  const i=opts.area?el('textarea'):el('input'); i.value=obj[key]==null?'':obj[key];
+  if(opts.ph)i.placeholder=opts.ph; if(opts.type)i.type=opts.type;
+  i.oninput=()=>{ obj[key]=i.value; markDirty(); }; w.appendChild(i); return w;
+}
+function checkField(label, obj, key, trueVal){
+  const w=el('div','fieldwrap'); const l=el('label','chk'); const c=el('input'); c.type='checkbox';
+  c.checked = trueVal!==undefined ? obj[key]===trueVal : !!obj[key];
+  c.onchange=()=>{ obj[key]= trueVal!==undefined ? (c.checked?trueVal:undefined) : c.checked; markDirty(); };
+  l.appendChild(c); l.appendChild(document.createTextNode(' '+label)); w.appendChild(l); return w;
+}
+function imageField(label, obj, key, opts={}){
+  const w=el('div','fieldwrap'); if(label)w.appendChild(el('label',null,label));
+  const wrap=el('div','img');
+  const prev=el('img','prev'); const set=()=>{ if(obj[key]){ prev.src=obj[key]; prev.classList.remove('none'); prev.classList.remove('placeholder'); } else { prev.removeAttribute('src'); prev.classList.add('none'); prev.textContent='PHOTO\nPENDING'; } };
+  const ic=el('div','ic');
+  const url=el('input'); url.placeholder='https://… or upload →'; url.value=obj[key]||'';
+  url.oninput=()=>{ obj[key]=url.value; markDirty(); set(); };
+  const file=el('input'); file.type='file'; file.accept='image/*'; file.style.marginTop='6px';
+  file.onchange=async()=>{ const f=file.files[0]; if(!f)return; setStatus('uploading…');
+    const path=(state.slug||'misc')+'/'+Date.now()+'-'+f.name.replace(/[^\w.\-]+/g,'_');
+    const { error }=await sb.storage.from('project-media').upload(path,f,{upsert:true,cacheControl:'31536000'});
+    if(error){ setStatus('upload failed','err'); alert(error.message); return; }
+    const { data }=sb.storage.from('project-media').getPublicUrl(path);
+    obj[key]=data.publicUrl; url.value=data.publicUrl; markDirty(); set(); setStatus('uploaded','ok'); };
+  ic.appendChild(url); ic.appendChild(file);
+  if(opts.altObj) ic.appendChild(inputField('Alt', opts.altObj, 'alt'));
+  if(opts.capObj) ic.appendChild(inputField('Caption', opts.capObj, 'caption'));
+  set(); wrap.appendChild(prev); wrap.appendChild(ic); w.appendChild(wrap); return w;
+}
+function subEditor(label, arr, factory, renderItem){
+  const w=el('div','fieldwrap'); if(label)w.appendChild(el('label',null,label));
+  const box=el('div','sub');
+  const redraw=()=>{ box.innerHTML=''; arr.forEach((item,i)=>{ const row=el('div','si');
+      const body=el('div'); renderItem(body,item); row.appendChild(body);
+      const ctr=el('div','ctrls');
+      const up=el('button',null,'↑'); up.onclick=()=>{ if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(); redraw(); } };
+      const dn=el('button',null,'↓'); dn.onclick=()=>{ if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(); redraw(); } };
+      const rm=el('button','x','✕'); rm.onclick=()=>{ arr.splice(i,1); markDirty(); redraw(); };
+      ctr.appendChild(up); ctr.appendChild(dn); ctr.appendChild(rm); row.appendChild(ctr); box.appendChild(row); });
+    const add=el('button','btn ghost tiny','+ Add'); add.onclick=()=>{ arr.push(factory()); markDirty(); redraw(); };
+    const ar=el('div','addrow'); ar.appendChild(add); box.appendChild(ar); };
+  redraw(); w.appendChild(box); return w;
+}
+
+/* ---------- block editor ---------- */
+const BLOCK_TYPES=['text','image','stats','column','imagePara','carousel','cardgrid','media'];
+function blockBody(b){
+  const c=el('div','bb');
+  const add=(...nodes)=>nodes.forEach(n=>c.appendChild(n));
+  if(b.type==='text'){ add(inputField('Title (optional)',b,'title'), inputField('Body',b,'body',{area:true}));
+      const r=el('div','row'); r.appendChild(checkField('Two-column',b,'layout','two')); r.appendChild(checkField('Wide',b,'wide')); add(r); }
+  else if(b.type==='image'){ add(inputField('Title (optional)',b,'title'), imageField('Image',b,'src',{}), inputField('Alt',b,'alt'), inputField('Caption',b,'caption'), checkField('Wide',b,'wide')); }
+  else if(b.type==='media'){ const kindW=el('div','fieldwrap'); kindW.appendChild(el('label',null,'Kind'));
+      const sel=el('select'); ['image','video'].forEach(k=>{ const o=el('option',null,k); o.value=k; if((b.kind||'image')===k)o.selected=true; sel.appendChild(o); });
+      sel.onchange=()=>{ b.kind=sel.value; markDirty(); render(); }; kindW.appendChild(sel); add(inputField('Title (optional)',b,'title'), kindW);
+      if(b.kind==='video'){ add(inputField('Vimeo embed/URL or ID',b,'embed',{ph:'https://vimeo.com/… or 123456789'})); }
+      else { add(imageField('Image',b,'src',{})); }
+      add(inputField('Caption',b,'caption'), checkField('Wide',b,'wide')); }
+  else if(b.type==='stats'){ b.items=b.items||[]; add(inputField('Title',b,'title',{ph:'AT A GLANCE'}),
+      subEditor('Items', b.items, ()=>({k:'',v:''}), (host,it)=>{ const r=el('div','row'); r.appendChild(inputField('Label',it,'k')); r.appendChild(inputField('Value',it,'v')); host.appendChild(r); })); }
+  else if(b.type==='column'){ b.columns=b.columns||[]; add(inputField('Title',b,'title',{ph:'PROPERTIES'}), checkField('Wide',b,'wide'),
+      subEditor('Columns', b.columns, ()=>({spec:'',value:'',valueNote:'',name:'',body:''}), (host,col)=>{
+        const r1=el('div','row'); r1.appendChild(inputField('Spec',col,'spec')); r1.appendChild(inputField('Value',col,'value')); r1.appendChild(inputField('Value note',col,'valueNote')); host.appendChild(r1);
+        host.appendChild(inputField('Name',col,'name')); host.appendChild(inputField('Body',col,'body',{area:true})); })); }
+  else if(b.type==='imagePara'){ b.rows=b.rows||[]; add(inputField('Title',b,'title',{ph:'MATERIAL CONDITIONS'}),
+      subEditor('Rows', b.rows, ()=>({title:'',body:'',image:null}), (host,row)=>{
+        host.appendChild(inputField('Title',row,'title')); host.appendChild(inputField('Body',row,'body',{area:true})); host.appendChild(imageField('Image (optional)',row,'image',{})); })); }
+  else if(b.type==='carousel'||b.type==='cardgrid'){ b.images=b.images||[];
+      add(inputField('Title',b,'title',{ph:b.type==='cardgrid'?'GALLERY':'SELECTED'}));
+      if(b.type==='cardgrid') add(inputField('Aspect',b,'aspect',{ph:'portrait | 9:16 | 3:2'}));
+      add(subEditor('Images', b.images, ()=>({src:'',caption:'',alt:''}), (host,im)=>{
+        host.appendChild(imageField('Image',im,'src',{})); host.appendChild(inputField('Caption',im,'caption')); host.appendChild(inputField('Alt',im,'alt')); })); }
+  return c;
+}
+function blockEditor(arr,i){
+  const b=arr[i]; const wrap=el('div','block');
+  const bh=el('div','bh'); bh.appendChild(el('span','t',b.type)); bh.appendChild(el('div','sp'));
+  const ctr=el('div','ctrls');
+  const up=el('button',null,'↑'); up.onclick=()=>{ if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(); render(); } };
+  const dn=el('button',null,'↓'); dn.onclick=()=>{ if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(); render(); } };
+  const rm=el('button','x','✕'); rm.onclick=()=>{ if(confirm('Delete this '+b.type+' block?')){ arr.splice(i,1); markDirty(); render(); } };
+  ctr.appendChild(up); ctr.appendChild(dn); ctr.appendChild(rm); bh.appendChild(ctr);
+  wrap.appendChild(bh); wrap.appendChild(blockBody(b)); return wrap;
+}
+function blocksSection(host, arr){
+  arr.forEach((b,i)=>host.appendChild(blockEditor(arr,i)));
+  const ar=el('div','addrow'); const sel=el('select'); BLOCK_TYPES.forEach(t=>{ const o=el('option',null,t); o.value=t; sel.appendChild(o); });
+  const add=el('button','btn ghost tiny','+ Add block'); add.onclick=()=>{ arr.push(newBlock(sel.value)); markDirty(); render(); };
+  ar.appendChild(sel); ar.appendChild(add); host.appendChild(ar);
+}
+function newBlock(type){ const b={type}; if(['stats'].includes(type))b.items=[]; if(type==='column')b.columns=[]; if(type==='imagePara')b.rows=[]; if(type==='carousel'||type==='cardgrid')b.images=[]; if(type==='text')b.body=''; return b; }
+
+/* ---------- render ---------- */
+function section(title, meta, mutedCls){ const s=el('div','sec'+(mutedCls?' '+mutedCls:'')); const h=el('h2'); h.appendChild(el('span',null,title)); if(meta){ const m=el('span','meta',meta); h.appendChild(el('span','sp')); h.appendChild(m); } s.appendChild(h); const b=el('div','body'); s.appendChild(b); s._b=b; return s; }
+function render(){
+  const main=$('main'); main.innerHTML='';
+  if(state.mode==='raw'){ renderRaw(main); return; }
+  const d=state.doc; if(!d){ main.innerHTML='<div class="empty">Select a project.</div>'; return; }
+  // meta
+  const meta=section('Identity', d.slug);
+  const r1=el('div','row'); r1.appendChild(inputField('Code',d,'code')); r1.appendChild(inputField('Name',d,'name')); meta._b.appendChild(r1);
+  const r2=el('div','row'); r2.appendChild(inputField('Prev (slug)',d,'prev')); r2.appendChild(inputField('Next (slug)',d,'next')); meta._b.appendChild(r2);
+  d.colors=d.colors||{edge:[0,0,0],core:[0,0,0]};
+  const colW=el('div','fieldwrap'); colW.appendChild(el('label',null,'Palette  ·  edge → core (RGB, from the field map)'));
+  const cr=el('div','row');
+  ['edge','core'].forEach(k=>{ const g=el('div','row'); d.colors[k]=d.colors[k]||[0,0,0];
+    [0,1,2].forEach(j=>{ const o={}; Object.defineProperty(o,'v',{get:()=>d.colors[k][j],set:v=>{d.colors[k][j]=Number(v)||0;}});
+      const f=inputField(j===0?k.toUpperCase()+' R':(j===1?'G':'B'),o,'v',{type:'number'}); g.appendChild(f); }); cr.appendChild(g); });
+  colW.appendChild(cr); meta._b.appendChild(colW);
+  main.appendChild(meta);
+
+  // classification
+  d.classification=d.classification||{};
+  const cl=section('Classification', 'overview · always shown');
+  d.classification.hero=d.classification.hero||{src:'',alt:''};
+  cl._b.appendChild(imageField('Hero image', d.classification.hero, 'src', {}));
+  cl._b.appendChild(inputField('Hero alt', d.classification.hero, 'alt'));
+  cl._b.appendChild(el('label',null,'Intro blocks'));
+  d.classification.intro=d.classification.intro||[]; const introHost=el('div'); blocksSection(introHost, d.classification.intro); cl._b.appendChild(introHost);
+  cl._b.appendChild(el('label',null,'Collaborators'));
+  d.classification.collaborators=d.classification.collaborators||[];
+  cl._b.appendChild(subEditor(null, d.classification.collaborators, ()=>({name:'',role:'',url:''}), (host,c)=>{
+    const r=el('div','row'); r.appendChild(inputField('Name',c,'name')); r.appendChild(inputField('Role',c,'role')); host.appendChild(r); host.appendChild(inputField('URL',c,'url')); }));
+  main.appendChild(cl);
+
+  // nodes
+  (d.nodes||[]).forEach(n=>{
+    const labelled = n.label && n.label.trim();
+    const live = n.content && Array.isArray(n.content.blocks) && n.content.blocks.length>0 && !n.content.hidden;
+    const sec=section(labelled?n.label:'(unlabelled node)', n.id+'  ·  '+(live?'section':'no content'), labelled?'node':'node muted');
+    sec._b.appendChild(inputField('Label', n, 'label'));
+    sec._b.appendChild(inputField('Blurb (hover descriptor)', n, 'blurb'));
+    if(!n.content){
+      const btn=el('button','btn ghost tiny','+ Add content (make this a section)');
+      btn.onclick=()=>{ n.content={hidden:false,order:(d.nodes.indexOf(n)+1),blocks:[]}; markDirty(); render(); };
+      sec._b.appendChild(btn);
+    } else {
+      sec._b.appendChild(checkField('Hidden (keep content but hide the section)', n.content, 'hidden'));
+      const bh=el('div'); blocksSection(bh, n.content.blocks=n.content.blocks||[]); sec._b.appendChild(bh);
+    }
+    main.appendChild(sec);
+  });
+}
+function renderRaw(main){
+  const wrap=el('div','sec'); const h=el('h2'); h.appendChild(el('span',null,'Raw JSON')); h.appendChild(el('span','sp')); h.appendChild(el('span','meta','full document · power-edit')); wrap.appendChild(h);
+  const b=el('div','body'); const ta=el('textarea'); ta.id='raw'; ta.value=JSON.stringify(state.doc,null,2);
+  ta.oninput=()=>markDirty(); b.appendChild(ta);
+  const msg=el('div','hint','Edit the document directly. It is validated as JSON on save.'); b.appendChild(msg);
+  wrap.appendChild(b); main.appendChild(wrap);
+}
+$('mForm').onclick=()=>{ if(state.mode==='raw'){ const ta=$('raw'); if(ta){ try{ state.doc=JSON.parse(ta.value); }catch(e){ alert('Raw JSON is invalid — fix before switching: '+e.message); return; } } } state.mode='form'; $('mForm').classList.add('on'); $('mRaw').classList.remove('on'); render(); };
+$('mRaw').onclick=()=>{ state.mode='raw'; $('mRaw').classList.add('on'); $('mForm').classList.remove('on'); render(); };
+
+/* ---------- save ---------- */
+$('save').onclick=async()=>{
+  let doc=state.doc;
+  if(state.mode==='raw'){ const ta=$('raw'); try{ doc=JSON.parse(ta.value); state.doc=doc; }catch(e){ setStatus('invalid JSON','err'); alert('Invalid JSON: '+e.message); return; } }
+  setStatus('saving…'); $('save').disabled=true;
+  const row={ slug:state.slug, code:doc.code||null, name:doc.name||null, data:doc };
+  const { error }=await sb.from('projects').upsert(row,{onConflict:'slug'});
+  if(error){ setStatus('save failed','err'); $('save').disabled=false; alert('Save failed: '+error.message+'\n\n(If this says permission denied, your account may not be authorized to write.)'); return; }
+  markClean(); setStatus('saved ✓','ok'); loadProjects();
+};
+window.addEventListener('beforeunload',e=>{ if(state.dirty){ e.preventDefault(); e.returnValue=''; } });
+
+refreshAuth();
+</script>
+</body>
+</html>

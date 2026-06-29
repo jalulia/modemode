@@ -1,5 +1,5 @@
 {
-  "_note": "Built from mattfryed.com + kyleacalian.com/home/fernet-halloween-2024 (Kyle Calian, creative producer — permission granted). Project = Fernet Branca's 'Eyeknow Manor of Spirits & Astonishments', Halloween 2024, New Orleans. Copy/credits are from those sources; images referenced by URL from the Squarespace CDNs (tarot art on Matt's CDN, event/build photos on Kyle's). Node geometry + colours match the live roster (P-01). Tarot deck illustrated by Diego Patiño. Sample-grade pending Matt's review.",
+  "_note": "Built from mattfryed.com + kyleacalian.com/home/fernet-halloween-2024 (Kyle Calian, creative producer — permission granted). Project = Fernet Branca's 'Eyeknow Manor of Spirits & Astonishments', Halloween 2024, New Orleans. Copy/credits are from those sources; images referenced by URL from the Squarespace CDNs (tarot art on Matt's CDN, event/build photo slots are designed placeholders (Kyle links removed)). Node geometry + colours match the live roster (P-01). Tarot deck illustrated by Diego Patiño. Sample-grade pending Matt's review.",
   "id": "eyeknow-manor",
   "code": "P-01",
   "name": "EYEKNOW MANOR",
@@ -8,7 +8,7 @@
   "prev": "gif",
   "next": "65porter",
   "classification": {
-    "hero": { "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/bd7a2039-4642-4a64-bfd7-6d0a0cb50e93/fernet_day_one226.jpg", "alt": "The Eyeknow Manor of Spirits & Astonishments, lit at night" },
+    "hero": { "src": "", "alt": "The Eyeknow Manor of Spirits & Astonishments, lit at night" },
     "intro": [
       {
         "type": "text",
@@ -29,8 +29,8 @@
       "geom": { "x": 0.168, "y": 0.426, "r": 0.4, "i": 0.88, "f": 2.25, "core": true },
       "content": { "hidden": false, "order": 1, "blocks": [
         { "type": "text", "title": "THE MANOR", "layout": "two", "body": "Guests moved through the mansion at their own pace, solving a self-guided scavenger hunt that threaded the rooms together — bar, portrait halls, fortune teller, the vintage-TV array, the courtyard, each a station in the hunt.\n\nCutting-edge technology met Hollywood-style decor a block from Bourbon Street in New Orleans, built for Fernet Branca to own the season." },
-        { "type": "image", "title": null, "wide": true, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/dc93984c-a74b-4810-a8f1-ae8594faf7d3/241030_Fernet-Branca_Halloween_0611.jpg", "alt": "The Manor from the street", "caption": "The Manor from the street — a block from Bourbon Street." },
-        { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/680ff7bc-615d-47f8-bb62-38e805346413/IMG_3385.JPEG", "alt": "Courtyard", "caption": "Courtyard — speakeasy bar, mapped TVs, projector, DJ booth." }
+        { "type": "image", "title": null, "wide": true, "src": "", "alt": "The Manor from the street", "caption": "The Manor from the street — a block from Bourbon Street." },
+        { "type": "image", "title": null, "src": "", "alt": "Courtyard", "caption": "Courtyard — speakeasy bar, mapped TVs, projector, DJ booth." }
       ] }
     },
     {
@@ -44,8 +44,8 @@
       "id": "eyk-install", "label": "Installation design", "blurb": "The physical build — the mansion, courtyard, sign, and the self-moving Ouija board.",
       "geom": { "x": 0.372, "y": -0.302, "r": 0.22, "i": 0.88, "f": 2, "core": false, "la": -1.032 },
       "content": { "hidden": false, "order": 3, "blocks": [
-        { "type": "image", "title": "THE OUIJA BOARD", "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/7f3eaa79-3f55-47ad-9887-5301f6937ddf/IMG_3426.JPEG", "alt": "Ouija board, custom-coded to move on its own and give scavenger-hunt clues" },
-        { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/fa0088a2-289f-44b8-acb7-d42c65a648b8/241030_Fernet-Branca_Halloween_0187.jpg", "alt": "Interior set-dressing" }
+        { "type": "image", "title": "THE OUIJA BOARD", "src": "", "alt": "Ouija board, custom-coded to move on its own and give scavenger-hunt clues" },
+        { "type": "image", "title": null, "src": "", "alt": "Interior set-dressing" }
       ] }
     },
     { "id": "eyk-f1", "label": "", "geom": { "x": 0.192, "y": -0.52, "r": 0.12, "i": 0.31, "f": 2.5, "core": false }, "content": null },
@@ -53,7 +53,7 @@
       "id": "eyk-portraits", "label": "Living portraits", "blurb": "Two AI-generated portrait walls — and a roulette of prizes.",
       "geom": { "x": -0.287, "y": -0.396, "r": 0.123, "i": 0.37, "f": 4, "core": false },
       "content": { "hidden": false, "order": 5, "blocks": [
-        { "type": "image", "title": "AI PORTRAIT WALLS", "wide": true, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/fb84597e-17be-44a6-a85b-31475506d357/91E2E55F-139C-47D1-9007-47671DFC3DD6.JPEG", "alt": "AI-generated portrait wall", "caption": "One of two AI-generated portrait walls + the prize roulette. Fabricated by Millwright, coded by Madwell." },
+        { "type": "image", "title": "AI PORTRAIT WALLS", "wide": true, "src": "", "alt": "AI-generated portrait wall", "caption": "One of two AI-generated portrait walls + the prize roulette. Fabricated by Millwright, coded by Madwell." },
         { "type": "text", "title": null, "body": "One of two AI-generated portrait walls, paired with our take on roulette and its unique prizes. Fabricated by Millwright, coded by Madwell." }
       ] }
     },
@@ -69,8 +69,8 @@
       "id": "eyk-interior", "label": "Interior Design", "blurb": "Speakeasy bar, merch room, and the rooms in between.",
       "geom": { "x": 0.553, "y": 0.525, "r": 0.225, "i": 0.8, "f": 2, "core": false },
       "content": { "hidden": false, "order": 8, "blocks": [
-        { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/4628ea10-1534-4421-b5b1-07d60ecf7383/241030_Fernet-Branca_Halloween_0113.jpg", "alt": "Interior of the Manor" },
-        { "type": "image", "title": null, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/07865cda-fff2-4bf2-88b2-82771411f98c/fernet_day_one282.JPEG", "alt": "Edoardo Branca pouring shots at the Manor bar" }
+        { "type": "image", "title": null, "src": "", "alt": "Interior of the Manor" },
+        { "type": "image", "title": null, "src": "", "alt": "Edoardo Branca pouring shots at the Manor bar" }
       ] }
     },
     {
@@ -87,7 +87,7 @@
       "id": "eyk-signage", "label": "Environmental Signage", "blurb": "Custom woodcut signage for the Manor.",
       "geom": { "x": 0.633, "y": -0.04, "r": 0.144, "i": 0.33, "f": 3.65, "core": false },
       "content": { "hidden": false, "order": 11, "blocks": [
-        { "type": "image", "title": "WOODCUT SIGN", "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/e3fe8643-f590-4a5f-a415-56fa265c1d3c/fernet_day_one31.jpg", "alt": "Custom woodcut sign", "caption": "Custom woodcut sign for the Manor." }
+        { "type": "image", "title": "WOODCUT SIGN", "src": "", "alt": "Custom woodcut sign", "caption": "Custom woodcut sign for the Manor." }
       ] }
     },
     {
@@ -117,7 +117,7 @@
       "id": "eyk-crt", "label": "CRT Array Streaming Display", "blurb": "A wall of vintage TVs, mapped and switchable, live-streamed from a phone.",
       "geom": { "x": 0.042, "y": -0.52, "r": 0.12, "i": 0.5, "f": 2.35, "core": false },
       "content": { "hidden": false, "order": 15, "blocks": [
-        { "type": "image", "title": "VINTAGE TV ARRAY", "wide": true, "src": "https://images.squarespace-cdn.com/content/v1/668afc94b8288a7679770674/0d36243f-2c1f-4ae4-956d-91abaa7b1a6a/fernet_day_one1.jpg", "alt": "Vintage TV array", "caption": "Mapped to several programs — isolated and connected — switching to a phone-streamed live cam. With Millwright + Wlabs." },
+        { "type": "image", "title": "VINTAGE TV ARRAY", "wide": true, "src": "", "alt": "Vintage TV array", "caption": "Mapped to several programs — isolated and connected — switching to a phone-streamed live cam. With Millwright + Wlabs." },
         { "type": "text", "title": null, "body": "A unique vintage-TV array mapped to several programs, both isolated and connected — switching between dispersed content and a phone-streamed live cam. Developed with Millwright and Wlabs." }
       ] }
     }

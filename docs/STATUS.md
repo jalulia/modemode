@@ -2,6 +2,13 @@
 
 Provenance is labeled. **Verified** = I read it from the live file/git or tested it. **Known** = from your own files/mockup. **Decided** = your explicit choice. **Placeholder** = I generated it; not ground truth. **Unconfirmed** = needs you.
 
+## CMS editor — LIVE (admin.html, 2026-06-28)
+A self-contained authoring tool, `admin.html` (supabase-js). **Verified headless.**
+- **Auth:** email/password (Supabase Auth). Julia's account provisioned + confirmed (`comptonjulia@gmail.com`). **Writes locked to her email** via RLS (`projects editor write` + `media editor write`) — clears the always-true-policy advisor. Add Matt by appending his email to those two policies.
+- **Editor:** project picker; structured forms for identity (code/name/colours/prev-next), classification (hero + intro blocks + collaborators), and every node (label, blurb, hide toggle, "add content"); editors for all block types (text/image/stats/column/imagePara/carousel/cardgrid/media) with add/remove/move; **image upload** to the `project-media` bucket (returns the public URL); **raw-JSON** power-edit; live **Preview ↗**; full-document save (authenticated upsert).
+- **Verified (chromium):** login → load → form renders for 5-node + 15-node projects → all block types render → form-path edit + raw-edit both round-trip → 0 console errors. Test markers written + reverted clean.
+- **Open:** open signup still enabled (RLS blocks non-Julia writes, but accounts can be created); no change-password UI (use Supabase dashboard); image-crop + drag-reorder are v2; node geometry still edited in the field-studio (split-spine — see ROADMAP).
+
 ## CMS backend — LIVE on Supabase (2026-06-28)
 The project pages now read from a live Supabase backend — the Phase-8 port, done. **Verified headless.**
 - **Project:** org `jalulia's`, project `modemode` (ref `vjvjparfulrtsxdslrpg`, us-east-1), URL `https://vjvjparfulrtsxdslrpg.supabase.co`.
