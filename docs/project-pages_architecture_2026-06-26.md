@@ -1,5 +1,7 @@
 # MODE MODE — Project pages + CMS architecture
 
+> **Status (2026-06-28): the design below is now implemented.** The recommended stack shipped — Supabase backend (jsonb document-per-project), the `loadProject()` flip with JSON fallback, the `editor/` CMS, and the `project-media` bucket. This doc is the design record + rationale; `STATUS.md` is the current state. §7 decisions hold; the one open architectural item is the **split-spine** (single source of truth for node geometry — see `ROADMAP.md` Phase 9).
+
 _Synthesis of the project-page mockups (mode-mode.pdf, inline notes) and the Jun 26 voice memo, plus a phased plan and stack recommendation. Written to drive decisions, not to be exhaustive._
 
 ---

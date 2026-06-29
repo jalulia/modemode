@@ -1,46 +1,50 @@
 # MODE MODE — orchestration
 
-How the build runs across focused Cowork instances: who owns what, how work stays consistent and non-overlapping. **The Nexus instance maintains this file.**
+How the build runs and how any instance onboards. **The Nexus instance maintains this file.**
 
-> **Current mode (2026-06-27): consolidated.** Julia is running build + coordination in a single chat for now (the multi-instance fork felt heavier than it was worth at this stage). The roles/handoffs below stay valid and we re-fork when a workstream is big enough to be worth isolating — Julia calls it.
+> **Current mode: consolidated.** Julia runs build + coordination through a standing Nexus chat; we re-fork a focused worker instance only when a workstream is big enough to isolate (Julia calls it). The roles/handoff discipline below stays valid either way.
 
 ## Roles
-- **Nexus (orchestrator).** Standing coordinator. Owns the roadmap, `STATUS.md`, this file, the data schema, and consistency standards. Plans workstreams, writes/updates handoffs, reviews worker output against acceptance criteria, integrates, flags overlap/drift. Does **not** do heavy building. Julia's single point of contact for "where are we / what's next / is this right."
-- **Worker instances.** Focused, scoped builds — one workstream each. Read the repo + their handoff, build, test, report; hand changes to Julia to commit.
-- **Julia (human hub).** Opens instances, pushes commits, makes product/creative calls.
+- **Nexus (orchestrator + builder).** Standing partner. Owns the roadmap, `STATUS.md`, this file, the frozen schema/invariants, and consistency. Orients, builds, verifies headless, reviews, keeps the docs straight. Julia's single point of contact for "where are we / what's next / is this right." Hands Julia exact commit commands — never runs git on the mounted repo.
+- **Worker instance (optional).** A focused, scoped build from a `handoff_*.md`; reports back; Julia commits.
+- **Julia (human hub).** Makes product/creative calls, pushes commits, owns the Supabase project + accounts.
 
 ## Source of truth
-- Repo `git@github.com:jalulia/modemode.git` — live at `https://jalulia.github.io/modemode/`. Nothing is real until committed.
-- `docs/STATUS.md` — live snapshot; Nexus keeps it current.
-- `docs/project-pages_architecture_2026-06-26.md` — architecture + data model. **The schema is frozen; only the Nexus changes it, with worker input.**
-- Auto-memory bridges sessions.
+- **Repo** `git@github.com:jalulia/modemode.git` → live at `https://jalulia.github.io/modemode/`. Nothing is real until committed + pushed.
+- **`docs/STATUS.md`** — the live snapshot (read this first). `ROADMAP.md` — the arc.
+- **Supabase** (`vjvjparfulrtsxdslrpg`) — the **live project data** (the `projects` table). The repo's `content/*.json` are the seed + offline fallback; the editor writes Supabase. `docs/supabase/` documents the schema/seed.
+- **`project-pages_architecture_2026-06-26.md`** — architecture + data model (design record; §9 notes what shipped). **The schema/invariants are frozen; only the Nexus changes them, deliberately.**
+- **Auto-memory** bridges sessions (Supabase project ref, media policy, split-spine, build notes).
 
-## Workstreams (roadmap)
-- [x] **W1 — Project page template** — `handoff_project-page-template.md`. `project.html` = masonry **card-grid** (structure per Julia's Lovable reference; BB Strata type, white). Labeled cards + `IMG-NN` slots (designed shot-described placeholders, not filler); constellation index w/ scroll-synced nav; richer content in JSON. Only `marquee.jpg` is a real photo. Passes port invariants; `index.html` untouched.
-- [x] **W-LP — Project-page LEFT PANEL + minimap** — `handoff_left-panel.md`. Delivered + Nexus-reviewed (`c63985d`, 2026-06-28): all 6 pages built/wired, minimap no-clip + legible accent + edge labels, fixed logo lockup, 0 errors / 0px overflow. One open fix (NK hero-header crop) + minor follow-ups in STATUS. Also folded back Julia-directed template changes (`cardgrid`, hero-as-header, wide stats) — reconciled into architecture §8.
-- [ ] **W2 — Content editor (CMS layer)** — per-node block editor; drag-drop reorder; image crop; export JSON; only-if-content rule. **Framework + scaffolding now scoped in `docs/cms-plan.md`** (block inventory, waterfall logic, editing layer, utility/chrome rethink). Precede with the holistic CMS-flow / utility conversation (retire the homepage EDIT/PRESENT/light-dark toggle).
-- [x] **Homepage interaction pass** (Julia notes, 2026-06-28) — shipped: load "awakening" (field opacity 0→1 + curvature merged→8%, .3s ease-in-out, only on a fresh landing); axis labels anchored to all four window edges; **click a blob (or legend row) → opens its case study**; "CASE STUDY" links removed from readout + preview; hovering a blob now gives `cursor:pointer` + a "view project →" hint that follows the pointer. Verified: present default, 0 console errors. (Project-page minimal-minimap also shipped: no default nodes, hover-TOC reveals the single node, overlay removed.)
-- [ ] **W3 — Homepage ↔ project wiring** — click/lock a project → its page; node hover swaps focal image; minimap reuse.
-- [ ] **W4 — Media + deploy** — image sizing, Vimeo embeds, optional prerender for SEO, domain (TBD).
-- [ ] **W5 — (later) Supabase port** — flip data-in-repo → Supabase per the port invariants.
+## Workstreams
+**Done:** W1 project-page template · W-LP left panel/minimap · W3 homepage↔project wiring · homepage interaction + chrome-gate · **W2 CMS content editor** (`editor/`) · **Supabase backend** (table + RLS + bucket + seed + `loadProject` flip).
 
-## Coordination protocol
-1. Nexus defines a workstream's scope + acceptance + the files it may touch (disjoint where possible) in a `docs/handoff_*.md`.
-2. Julia opens a worker instance, pastes its kickoff prompt, points it at the handoff.
-3. Worker builds, tests headless (zero console errors), reports; Julia commits/pushes.
-4. Nexus reviews against acceptance + consistency + port invariants, updates `STATUS.md` + this roadmap, flags conflicts.
+**Open (Phase 9+ in `ROADMAP.md`):**
+- **W-Spine** — resolve the split-spine (single source of truth for node geometry/labels/colours across the homepage roster and the project docs). *Architecture — Nexus surfaces the decision to Julia before building.*
+- **W-Media** — own-host Matt's Squarespace images into `project-media`; repoint `src`.
+- **W-Content** — author Matt's real copy/photos in `editor/` as they arrive.
+- **W-EditorV2** — image crop · drag-drop reorder · `embed` block.
+- **W-Ship** — domain · SEO/OG · prerender · accessibility/perf · homepage cursor→view-project tab.
 
 ## Consistency standards (every instance honors)
-- Reuse the homepage type/palette/hairline system (JetBrains Mono, the greys, corner marks); don't reinvent.
-- Keep the iOS light-render workaround on all HTML output (`meta color-scheme:light` + light bg).
-- Data: one self-contained JSON per project; all reads via a single `loadProject()` boundary; media referenced by URL. (Keeps the Supabase port a one-function change.)
-- Test headless before "done"; zero console errors; measure JS self-time, not headless FPS.
-- No fabricated content — mockup-sourced or explicitly marked placeholder.
+- One self-contained JSON doc per project = one Supabase row; **all reads via the single `loadProject()` boundary** (Supabase, JSON fallback). Media by URL.
+- The homepage metaball is the source of truth for the project minimap — **mirror it READ-ONLY; never refactor `index.html`'s renderer.**
+- Reuse the brand system: BB Strata type, white bg, JetBrains-Mono hairlines/greys/corner-marks; the iOS light-render workaround (`meta color-scheme:light` + light bg) on all HTML output.
+- Public homepage shows no studio chrome — edit affordances live behind `?studio` / the `editor/` login.
+- **Verify before "done":** render headless (Playwright in the sandbox; run node with `LD_LIBRARY_PATH=$HOME/xdlibs`; the chromium dep `libXdamage` is staged there), screenshot visual changes and look at them, zero console errors, measure JS self-time not headless FPS.
+- No fabricated content — sourced or explicitly marked placeholder. Never hotlink Kyle's site (see `media-sourcing-policy`).
+- Cosmetic/interaction/polish → just do it. Architecture (data model, auth/utility flow, the split-spine) → flag + surface to Julia, don't rabbit-hole.
+
+## Coordination protocol (when forking a worker)
+1. Nexus writes the scope + acceptance + the files it may touch (disjoint where possible) in `docs/handoff_*.md`.
+2. Julia opens a worker, points it at the handoff.
+3. Worker builds, tests headless (0 console errors), reports; Julia commits/pushes.
+4. Nexus reviews against acceptance + invariants, updates `STATUS.md` + `ROADMAP.md`, flags drift.
 
 ## Kickoff prompts (reusable)
 
 ### Nexus
-> You are the MODE MODE **Nexus** — standing orchestrator/PM for the MODE MODE studio site, in the "Matt / Mode Mode" Cowork project. Read, in order: the repo at `_Mode Mode/modemode` — `docs/ORCHESTRATION.md`, `docs/STATUS.md`, `docs/project-pages_architecture_2026-06-26.md`, `docs/handoff_project-page-template.md` — and your saved memory. Your job is coordination, not heavy building: keep the roadmap and `STATUS.md` current, keep the data schema frozen and coherent, define/update worker handoffs, review each worker's output against its acceptance criteria + the consistency standards + the port invariants, flag overlap/drift, and be Julia's single point of contact for status and next steps. When work is ready, give Julia the exact commit/push commands. Start by confirming current state from the repo + `STATUS.md` and proposing the immediate next moves.
+> You are the MODE MODE **Nexus** — standing partner for the MODE MODE studio site, in the "Matt / Mode Mode" Cowork project. Orient first: read the repo at `_Mode Mode/modemode` (request the `modemode` folder if you can't read it) — `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/ORCHESTRATION.md`, `docs/project-pages_architecture_2026-06-26.md`, `docs/cms-plan.md`, `docs/supabase/README.md`, the `docs/handoff_*.md` — and your saved memory. Then `index.html` / `project.html` / `editor/index.html` as needed. Confirm current state before acting. The site is live at GitHub Pages; **project data lives in Supabase** (`vjvjparfulrtsxdslrpg`, edited via `editor/`), with `content/*.json` as fallback. Keep the docs current, keep the schema/invariants frozen, build + verify headless (0 console errors), and hand Julia exact commit/push commands (never run git on the mounted repo). Match how Julia works (terse, decisive, high-craft, verify-before-done). Start by confirming current state from `STATUS.md` and proposing the next moves.
 
 ### Worker (template)
-> You are a focused MODE MODE worker on **<workstream>**, in the "Matt / Mode Mode" Cowork project. Read first: `_Mode Mode/modemode/docs/<handoff>.md`, then the architecture doc and any data it points to. Build only that workstream, honoring the consistency standards + port invariants in `ORCHESTRATION.md`. Test headless (zero console errors). Don't touch files outside your scope. Report back with the build + test results for Julia to commit, and a one-paragraph summary for the Nexus.
+> You are a focused MODE MODE worker on **<workstream>**, in the "Matt / Mode Mode" Cowork project. Read first: `_Mode Mode/modemode/docs/<handoff>.md`, then `STATUS.md` + the architecture doc + any data it points to. Build only that workstream, honoring the consistency standards + invariants in `ORCHESTRATION.md`. Test headless (zero console errors). Don't touch files outside your scope. Report the build + test results for Julia to commit, plus a one-paragraph summary for the Nexus.

@@ -1,5 +1,7 @@
 # Handoff — W-LP · Project-page LEFT PANEL + minimap
 
+> ✅ **Delivered + reconciled** — historical record. All six pages + the minimap shipped; the rail was later rebuilt into the animated ambient field (mock #2). See `STATUS.md` / `ROADMAP.md`.
+
 For a dedicated, focused Cowork worker. You report to the **Nexus** (the standing coordinator instance); Julia commits. **Scope discipline is the whole point of this workstream** — read the boundaries carefully.
 
 ## Mission

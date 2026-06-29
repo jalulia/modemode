@@ -1,44 +1,39 @@
 # MODE MODE — holistic roadmap
 
-Where the whole site is going, phase by phase. Status as of 2026-06-27. The Nexus keeps this current; `STATUS.md` is the live snapshot, this is the arc.
+The arc, phase by phase. `STATUS.md` is the live snapshot; this is the trajectory. The Nexus keeps both current.
 
-Principle: **the homepage field map is the spine; each project page is one node-constellation, read.** Data-in-repo JSON now, engineered to port to Supabase in one move. No asset ever blocks a phase — stand-ins are produced in-house and swapped for real media when it lands.
+Principle: **the homepage field map is the spine; each project page is one node-constellation, read.** Data is a self-contained JSON document per project, now living in Supabase with a bundled-JSON fallback. No asset blocks a phase — on-brand stand-ins are produced in-house and swapped for real media when it lands.
 
 ---
 
-## Phase 0 — Architecture & schema · ✅ done
-Schema frozen, storage decided (data-in-repo → Supabase-ready), `loadProject()` boundary, media-by-URL, Vimeo for video. (`project-pages_architecture_2026-06-26.md`.)
+## Foundation — ✅ shipped
+- **Phase 0 · Architecture & schema** — frozen schema, `loadProject()` boundary, media-by-URL, Vimeo for video, the three port invariants. (`project-pages_architecture_2026-06-26.md`.)
+- **Phase 1 · Homepage field map** — two-layer topographic metaballs; node animation, cursor magnet, present-default, axis system, click-a-blob → case study. Stable.
+- **Phase 2 · Project-page template** — `project.html` masonry card-grid: locked left rail (identity + animated/textured ambient minimap per Julia's mock #2 + flex nav + pager), all block types, full-screen lightbox, prev/next.
+- **Phase 3 · Homepage ↔ project wiring** — round-trip live: homepage lock → case study → back-link reopens the homepage focused. `PAGES`/`PREVIEW` maps cover all six.
+- **Phase 6 · Multi-project rollout** — all six roster projects have pages, real geometry/palette, closed 6-loop.
+- **Phase 4 · CMS editor** — `editor/index.html`: Supabase-auth login, structured per-node block editor for every block type (add/remove/move), image upload, raw-JSON, live preview, change-password. Writes RLS-locked to editor emails. Replaced the hand-edit-JSON workflow.
+- **Phase 8 · Supabase backend** — `projects` table (jsonb doc per row), RLS, `project-media` bucket; 6 rows seeded; `loadProject()` reads Supabase with JSON fallback. The one-function port the architecture was designed for. **Done.**
+- **Chrome rethink** — studio controls (EDIT/PRESENT + light-dark) gated behind `?studio`; the public homepage is clean.
 
-## Phase 1 — Homepage field map · ✅ done
-Two-layer topographic metaballs; the Jun-26 audio notes all shipped — cursor magnet (additive attraction), unfocused-opacity full range, black labels no chip, present-mode view-only, unlabeled-node rule, node animation on by default. Stable; touched only to add content-layer hooks.
+## The frontier
 
-## Phase 2 — Project page template · 🟡 in progress (current focus)
-A single `project.html` renders a project from its JSON as a masonry **card-grid**: persistent left rail (identity + constellation index + nav + pager) and labeled content cards (CLASSIFICATION, PROPERTIES, MATERIAL CONDITIONS, COLLABORATORS, IMG-NN). BB Strata type, white, the studio's hairline system.
-- **2a. Structure** ✅ — card-grid, scroll-synced nav, constellation hover/click, staggered load.
-- **2b. Assets (in-house)** 🟡 — I produce on-brand stand-ins (technical elevations/detail drawings, material studies) so every slot is designed, not "pending"; real photos swap in by URL when available. **I never wait on Matt.**
-- **2c. Refinement** 🟡 — tighten against the original notes: hover-to-expand node info ("portraits"), focal/preview interaction carried from the homepage, type hierarchy, spacing, motion, full responsive/mobile.
+### Phase 9 — Content + the spine (current)
+The structure is done; now it gets real and coherent.
+1. **Split-spine resolution (architecture — surface to Julia first).** Node geometry/labels/colours are duplicated between the homepage roster (`seed()`/`localStorage`, flat) and each project doc's `nodes[].geom` (nested copy), joined only by `code`, with no live link. Pick one source of truth: (a) the field-studio writes geometry to Supabase and both surfaces read it, or (b) keep the homepage as geometry-master with an explicit "sync to projects" step. This is the last structural seam.
+2. **Real content from Matt** — replace sample-grade copy; fill the muted disciplines; supply the full 22-card tarot deck; decide Eyeknow's event photos (designed placeholders today, Kyle's links purged).
+3. **Media own-hosting** — migrate Matt's ~35 Squarespace hotlinks into `project-media`; repoint `src`. Sources per `media-sourcing-policy`: Matt's site / Julia's drive / Drive portfolio — never Kyle.
+4. **Editor v2** — image crop (non-destructive rect), drag-drop reorder, the `embed` block.
 
-## Phase 3 — Homepage ↔ project wiring (W3) · 🟡 started
-Make the two halves one site. **Done:** the round-trip — homepage (present) lock → CASE STUDY → project page → back-link → `index.html?focus=<code>` reopens the homepage in present mode locked on that project. **Remaining:** node-hover cross-preview, a more discoverable CASE STUDY affordance, shared constellation polish.
+### Phase 10 — Ship
+Custom domain (TBD) · SEO/OG meta · optional prerender to static `/<slug>/index.html` for crawlers · accessibility + perf pass · transitions/fades · the homepage cursor → "view project" tab.
 
-## Phase 4 — Content editor / CMS layer (W2)
-Extend the studio into the authoring tool: per-node block editor (text/column/image/image+paragraph/media), node cover, collaborators, classification overview; the only-if-content rule; drag-reorder + hide/show per page; export full content JSON. (Removes hand-editing JSON.)
-
-## Phase 5 — Media pipeline (W4)
-Image sizing/optimization + responsive `srcset`, the in-house stand-in system, Vimeo embeds, lazy loading, an asset/shot manifest per project so swapping real media is drop-in.
-
-## Phase 6 — Multi-project rollout · ✅ pages complete (W-LP, 2026-06-28)
-**All six interactive roster projects now have pages** — NIGHTMARE KART, GIF, EYEKNOW MANOR, 65 PORTER, MASSIVE, SELECTED ARCADE — built from mattfryed.com, real node geometry/palette, wired into `PAGES`/`PREVIEW`, prev/next a closed 6-loop, 0 errors / 0px rail overflow. **Remaining:** real copy from Matt (current is sample-grade); fill muted disciplines; the NK hero-header fix; **migrate hotlinked Squarespace images to own-host/repo** (Phase 5).
-
-## Phase 7 — Polish + ship
-Transitions/fades, accessibility pass, SEO/OG meta, optional prerender to static `/<slug>/index.html` for crawlers, custom domain (TBD), perf budget.
-
-## Phase 8 — Supabase port (later)
-Flip data-in-repo → Supabase: create the table, upload JSON rows + media, swap `loadProject()`. No renderer rewrite (the three port invariants hold).
+### Phase 11 — Hardening (as needed)
+Lock down open signup (restrict to editor emails) · per-editor audit if more authors join · Supabase Pro (always-on, before the free-tier idle-pause).
 
 ---
 
 ### Immediate next moves
-1. **Phase 2b/2c now:** generate the cabinet stand-in art in-house, wire it in; refine the page against the original notes (hover-expand, focal interaction, responsive).
-2. Then **Phase 3** (homepage↔page wiring) to make it one navigable site for the Matt review.
-3. Confirm Pages is serving + the live URL (open item); domain still TBD (Phase 7).
+1. **Phase 9.1** — bring the split-spine decision to Julia (it gates clean content edits), then implement the chosen source of truth.
+2. **Phase 9.2/9.3** — as Matt's real copy + photos arrive, author them in `editor/` and own-host media into the bucket.
+3. Upgrade Supabase to Pro before the free-tier idle-pause; settle the domain (Phase 10).

@@ -1,5 +1,7 @@
 # Handoff — Project page template (Phase 1)
 
+> ✅ **Delivered + superseded** — historical record of the W1 build. `project.html` is live and has evolved well past this (Supabase-backed, ambient minimap, all block types). See `STATUS.md` / `ROADMAP.md` for current state.
+
 For a fresh Cowork instance. Goal: build the case-study/project page as a static template that renders a project from its JSON, matching the mockup. Start with **NIGHTMARE KART** — `content/nightmare-kart.json` is a **scaffold/test fixture**: node geometry + colours are real (from the live roster) and the collaborators / PROPERTIES / MATERIAL-CONDITIONS labels are from the mockup, but all other copy, captions, images, and the Vimeo id are placeholders for Matt to fill. Build the renderer against the structure; don't treat the placeholder copy as final.
 
 ## Read first

@@ -1,5 +1,7 @@
 # MODE MODE — CMS plan (framework + scaffolding)
 
+> **Status: the editor SHIPPED (2026-06-28).** The block inventory in §1 is the live schema contract the editor builds against. The chrome rethink (§4) shipped — studio controls are behind `?studio`. The lightbox (§3) shipped. The "hand-editing JSON" framing below is historical: authoring is now the `editor/` CMS writing Supabase. **Remaining v2:** image crop · drag-drop reorder · the `embed` block.
+
 _Where we are: between authoring and architecting. Six project pages exist, built by hand-editing JSON. This doc inventories what the template can already render, organizes it into a "waterfall" of content patterns, and scopes the editing layer + utility rethink so W2 (the content editor) has a real spec. Nexus-owned; reconcile with `project-pages_architecture_2026-06-26.md` §8._
 
 ---

@@ -1,29 +1,20 @@
-# MODE MODE — Field map
+# MODE MODE
 
-Interactive portfolio map. Each project is plotted as a multi-node metaball field across two axes:
+Studio site for MODE MODE — a field-map homepage plus a case-study page per project, backed by a small CMS.
 
-- X — Digital ↔ Physical
-- Y — Object ↔ Spatial
-
-A project occupies a cloud of positions rather than a single point. Overlap reads as field density, not colour mixing.
-
-## Run
-
-Open `index.html` in a browser. Self-contained — no build step, no dependencies.
-
-## Modes
-
-- Edit — author projects, palettes, nodes, and global effects (left/right panel).
-- Present — portfolio view. Hover or click a project to focus it.
+## Surfaces
+- `index.html` — the homepage field map. Projects are plotted as multi-node metaball fields across two axes (X: Digital ↔ Physical, Y: Object ↔ Spatial); a project occupies a cloud of positions, not a point, and overlap reads as field density rather than colour mixing. Present mode by default; the field studio (author geometry / palettes / effects) is at `?studio`.
+- `project.html?p=<slug>` — one case-study page per project, rendered from that project's JSON document. Left rail (logo, identity, a minimap mirrored from the homepage blob, section nav, prev/next) + content cards (text, image, specs, stats, galleries, video). Full-screen image lightbox.
+- `editor/` — the CMS. Password-gated; edit any project's content and images, save to the backend, preview live. (`admin.html` redirects here.)
 
 ## Data
+One self-contained JSON document per project. Live data is in **Supabase** (`projects` table, one `jsonb` row per project); `project.html` reads it through a single `loadProject()` boundary and falls back to the bundled `content/<slug>.json` if the backend is unreachable. Media is referenced by URL; video is Vimeo. Backend setup + schema: `docs/supabase/`.
 
-Projects export and import as JSON from the Edit panel (`EXPORT DATA`). The current roster is embedded as the default. Working state persists in the browser via localStorage.
+## Run
+Serve over HTTP — GitHub Pages or a local server; the pages fetch their data, so `file://` won't work. No build step, no dependencies.
 
-## Deployment
-
-`index.html` is the repository root; GitHub Pages serves it directly.
+## Deploy
+GitHub Pages serves the repository root. Live at `https://jalulia.github.io/modemode/`.
 
 ## Docs
-
-- `docs/field-map_feedback_2026-06-26.md` — change log / open feedback.
+`docs/STATUS.md` — current state · `docs/ROADMAP.md` — the arc · `docs/ORCHESTRATION.md` — how work runs and how to onboard.
