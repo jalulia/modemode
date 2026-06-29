@@ -801,14 +801,23 @@ document.getElementById('closeModal').onclick=()=>overlay.classList.remove('show
 overlay.onclick=e=>{if(e.target===overlay)overlay.classList.remove('show');};
 document.getElementById('copyBtn').onclick=()=>{jsonArea.select();try{document.execCommand('copy');}catch(e){}navigator.clipboard&&navigator.clipboard.writeText(jsonArea.value).catch(()=>{});const b=document.getElementById('copyBtn');b.textContent='COPIED';setTimeout(()=>b.textContent='COPY',1200);};
 document.getElementById('downloadBtn').onclick=()=>{const blob=new Blob([jsonArea.value],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mode-mode_field-data.json';a.click();};
-document.getElementById('loadBtn').onclick=()=>{try{ let parsed=JSON.parse(jsonArea.value); let data=parsed, fxIn=null; if(parsed.projects){if(parsed.blend)blendMode=parsed.blend; if(parsed.fx)fxIn=parsed.fx; data=parsed.projects;}
+function loadRoster(parsed){
+  let data=parsed, fxIn=null; if(parsed.projects){if(parsed.blend)blendMode=parsed.blend; if(parsed.fx)fxIn=parsed.fx; data=parsed.projects;}
   pushUndo(); Object.keys(buf).forEach(k=>delete buf[k]);
   projects=data.map((p,i)=>({id:uid(),code:p.code||('P-'+String(i+1).padStart(2,'0')),name:p.name||'PROJECT',tier:p.tier||'medium',colors:{edge:p.colors.edge,core:p.colors.core},
-    nodes:(p.nodes||[]).map(n=>({id:uid(),x:n.x,y:n.y,r:n.radius!=null?n.radius:(n.r!=null?n.r:0.12),i:n.intensity!=null?n.intensity:(n.i!=null?n.i:0.8),f:n.falloff!=null?n.falloff:(n.f!=null?n.f:2),core:!!n.core,label:n.label||''}))}));
+    nodes:(p.nodes||[]).map(n=>({id:uid(),x:n.x,y:n.y,r:n.radius!=null?n.radius:(n.r!=null?n.r:0.12),i:n.intensity!=null?n.intensity:(n.i!=null?n.i:0.8),f:n.falloff!=null?n.falloff:(n.f!=null?n.f:2),core:!!n.core,label:n.label||'',la:n.labelAngle!=null?n.labelAngle:(n.la||0)}))}));
   selProj=projects[0].id;selNode=null;sanitizeProjects();
   if(fxIn){ applyFx(fxIn); applyBg(); renderEffects(); } syncBlend(); fxChanged=true;
-  overlay.classList.remove('show');layout();renderInspector();persist();
-  }catch(err){alert('Could not parse JSON: '+err.message);}};
+  layout();renderInspector();persist();
+}
+document.getElementById('loadBtn').onclick=()=>{try{ loadRoster(JSON.parse(jsonArea.value)); overlay.classList.remove('show'); }catch(err){alert('Could not parse JSON: '+err.message);}};
+/* ── studio bridge: the editor's Field map tab syncs the roster over postMessage (no auth/Supabase on the public homepage) ── */
+function getRoster(){ return { blend:blendMode, fx:exportFx(), projects:exportData() }; }
+window.addEventListener('message',function(ev){ var m=ev&&ev.data; if(!m||typeof m!=='object')return;
+  if(m.type==='mm-get-roster'){ try{ (ev.source||window.parent).postMessage({type:'mm-roster',data:getRoster()}, '*'); }catch(e){} }
+  else if(m.type==='mm-load-roster'&&m.data){ try{ loadRoster(m.data); }catch(e){} }
+});
+try{ if(window.parent&&window.parent!==window) window.parent.postMessage({type:'mm-studio-ready'}, '*'); }catch(e){}
 
 /* ===================== EFFECTS ENGINE ===================== */
 const fx={
@@ -1084,7 +1093,10 @@ function introAwaken(target){
     if(p<1) requestAnimationFrame(step); else { fx.curve=target; fxChanged=true; if(stage)stage.style.opacity=''; } })(performance.now());
 }
 
-(async function(){ const saved=await store.load();
+/* source of truth: read the roster from Supabase (anon, public-read), fall back to this browser's local state, then the bundled seed */
+async function loadRosterRemote(){ const U='https://vjvjparfulrtsxdslrpg.supabase.co', K='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdmpwYXJmdWxydHN4ZHNscnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODM1ODIsImV4cCI6MjA5ODI1OTU4Mn0._A1WCuNyCtnJ2Y3U4iqWjvWQe2ANTA6i-sYfuhhcFq4';
+  try{ const res=await fetch(U+'/rest/v1/roster?id=eq.main&select=data',{headers:{apikey:K,Authorization:'Bearer '+K},cache:'no-cache'}); if(res.ok){ const r=await res.json(); if(r.length&&r[0].data) return r[0].data; } }catch(e){} return null; }
+(async function(){ const saved=(await loadRosterRemote())||(await store.load());
   const sp=Array.isArray(saved)?saved:(saved&&saved.projects?saved.projects:null);   // v1 = bare projects array; v2 = {projects,fx,blend}
   if(saved&&!Array.isArray(saved)){ if(saved.blend)blendMode=saved.blend; if(saved.fx)applyFx(saved.fx); }
   if(sp&&sp.length){ try{ projects=sp.map(p=>({id:p.id||uid(),code:p.code,name:p.name,tier:p.tier||'medium',colors:p.colors,

@@ -101,6 +101,17 @@
   .modeswitch{display:flex;gap:6px;}
   .modeswitch button{border:1px solid var(--hair);background:var(--paper);color:var(--grey);border-radius:3px;padding:5px 11px;font-size:10px;letter-spacing:.06em;}
   .modeswitch button.on{background:var(--ink);color:var(--ground);border-color:var(--ink);}
+  /* ---- field map (homepage studio) tab ---- */
+  #stage{min-width:0;}
+  .navtab{margin:0 0 2px;}
+  .navtab .c{color:var(--accent);}
+  .navtab.on{background:var(--paper);border-color:var(--hair);}
+  #fieldmap{height:calc(100vh - 53px);display:flex;flex-direction:column;}
+  #fmbar{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--hair);background:var(--paper);}
+  #fmbar .fmtitle{font-size:12px;font-weight:500;}
+  #fmbar .fmsub{color:var(--grey);font-weight:400;margin-left:6px;}
+  #fmstatus{font-size:11px;color:var(--grey);min-width:60px;text-align:right;}
+  #fmframe{flex:1;width:100%;border:0;background:var(--ground);display:block;}
   .hidden{display:none!important;}
 </style>
 </head>
@@ -125,8 +136,24 @@
   </div>
 
   <div id="editor" class="hidden">
-    <aside id="projlist"><div class="ph">Projects</div><div id="plist"></div></aside>
-    <main id="main"><div class="empty">Select a project from the left to start editing.</div></main>
+    <aside id="projlist">
+      <div id="nav-fieldmap" class="pitem navtab"><span class="c">◆</span><span class="n">Field map</span></div>
+      <div class="ph" style="margin-top:16px;">Projects</div>
+      <div id="plist"></div>
+    </aside>
+    <section id="stage">
+      <main id="main"><div class="empty">Select a project from the left to start editing.</div></main>
+      <div id="fieldmap" class="hidden">
+        <div id="fmbar">
+          <span class="fmtitle">Field map<span class="fmsub">— homepage geometry &amp; palette · the source of truth</span></span>
+          <span class="sp"></span>
+          <span id="fmstatus"></span>
+          <button class="btn ghost tiny" id="fmReload">Reload</button>
+          <button class="btn" id="fmSave" disabled>Save field map</button>
+        </div>
+        <iframe id="fmframe" title="Field map studio"></iframe>
+      </div>
+    </section>
   </div>
 
   <div class="savebar hidden" id="savebar">
@@ -186,6 +213,7 @@ async function loadProjects(){
 }
 async function selectProject(slug){
   if(state.dirty && !confirm('Discard unsaved changes?')) return;
+  $('fieldmap').classList.add('hidden'); $('main').classList.remove('hidden'); $('savebar').classList.remove('hidden'); $('nav-fieldmap').classList.remove('on');
   setStatus('loading…');
   const { data, error }=await sb.from('projects').select('data').eq('slug',slug).single();
   if(error){ setStatus('load failed','err'); return; }
@@ -371,6 +399,38 @@ $('save').onclick=async()=>{
   markClean(); setStatus('saved ✓','ok'); loadProjects();
 };
 window.addEventListener('beforeunload',e=>{ if(state.dirty){ e.preventDefault(); e.returnValue=''; } });
+
+/* ---------- field map (homepage studio) tab ---------- */
+let fmLoaded=false;
+function showFieldMap(){
+  if(state.dirty && !confirm('Discard unsaved project changes?')) return;
+  document.querySelectorAll('.pitem').forEach(n=>n.classList.remove('on'));
+  $('nav-fieldmap').classList.add('on');
+  $('main').classList.add('hidden'); $('savebar').classList.add('hidden'); $('fieldmap').classList.remove('hidden');
+  if(!fmLoaded){ fmLoaded=true; $('fmstatus').textContent='loading…'; $('fmframe').src='../index.html?studio'; }
+}
+$('nav-fieldmap').onclick=showFieldMap;
+$('fmReload').onclick=()=>{ $('fmSave').disabled=true; $('fmstatus').textContent='reloading…'; $('fmframe').src='../index.html?studio&t='+Date.now(); };
+$('fmSave').onclick=()=>{ const f=$('fmframe'); if(f&&f.contentWindow){ $('fmstatus').textContent='saving…'; $('fmSave').disabled=true; f.contentWindow.postMessage({type:'mm-get-roster'},'*'); } };
+async function pushRosterToStudio(){
+  const f=$('fmframe'); if(!f||!f.contentWindow) return;
+  try{
+    const { data, error }=await sb.from('roster').select('data').eq('id','main').maybeSingle();
+    if(!error && data && data.data){ f.contentWindow.postMessage({type:'mm-load-roster',data:data.data},'*'); $('fmstatus').textContent='loaded from Supabase'; }
+    else { $('fmstatus').textContent='studio (local) — Save to publish'; }
+  }catch(e){ $('fmstatus').textContent='studio (local)'; }
+}
+async function saveRosterToSupabase(roster){
+  if(!roster){ $('fmSave').disabled=false; return; }
+  const { error }=await sb.from('roster').upsert({ id:'main', data:roster },{ onConflict:'id' });
+  $('fmSave').disabled=false;
+  if(error){ $('fmstatus').textContent='save failed'; alert('Field map save failed: '+error.message+'\n\n(If permission denied, your account may not be authorized to write.)'); return; }
+  $('fmstatus').textContent='saved ✓'; setTimeout(()=>{ if($('fmstatus').textContent==='saved ✓') $('fmstatus').textContent='loaded from Supabase'; },2500);
+}
+window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='object') return;
+  if(m.type==='mm-studio-ready'){ $('fmSave').disabled=false; pushRosterToStudio(); }
+  else if(m.type==='mm-roster'){ saveRosterToSupabase(m.data); }
+});
 
 refreshAuth();
 </script>

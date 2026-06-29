@@ -58,3 +58,33 @@ create policy "media authenticated write"
   to authenticated
   using ( bucket_id = 'project-media' )
   with check ( bucket_id = 'project-media' );
+
+-- ───────────────────────────── roster (homepage field map) ────────────────
+-- Singleton document holding the homepage field-map roster: { blend, fx, projects[] }.
+-- SOURCE OF TRUTH for node geometry + palette. The public homepage (index.html)
+-- reads it on boot (anon, public-read, with a local/seed fallback); the editor's
+-- Field map tab writes it. Project docs sync their node geometry from here.
+create table if not exists public.roster (
+  id text primary key,
+  data jsonb not null,
+  updated_at timestamptz not null default now()
+);
+alter table public.roster enable row level security;
+
+drop policy if exists "roster public read" on public.roster;
+create policy "roster public read"
+  on public.roster for select
+  using ( true );
+
+-- Writes are gated to the editor accounts (matches the live, hardened projects policy).
+drop policy if exists "roster editor write" on public.roster;
+create policy "roster editor write"
+  on public.roster for all
+  to authenticated
+  using ( auth.email() = any (array['comptonjulia@gmail.com','mattfryed@gmail.com']) )
+  with check ( auth.email() = any (array['comptonjulia@gmail.com','mattfryed@gmail.com']) );
+
+drop trigger if exists trg_roster_touch on public.roster;
+create trigger trg_roster_touch before update on public.roster
+  for each row execute function touch_updated_at();
+-- Seed row id='main' from modemode-withbgnodes.txt (the canonical roster export).
