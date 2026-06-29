@@ -37,7 +37,7 @@
   .tab{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--grey-2);background:none;border:0;padding:7px 1px 9px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
   .tab.on{color:var(--ink);border-bottom-color:var(--ink);}
   .tab:not(.on):hover{color:var(--grey);}
-  .axis{position:absolute;font-size:10.5px;letter-spacing:.18em;color:var(--grey);pointer-events:none;white-space:nowrap;z-index:4;}
+  .axis{position:absolute;font-size:10.5px;letter-spacing:.18em;color:var(--grey);pointer-events:none;white-space:nowrap;z-index:5;background:var(--ground);padding:3px 9px;}
   .axis .k{color:var(--grey-2);}
   .hint{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);font-size:10px;letter-spacing:.07em;color:var(--grey-2);z-index:6;text-align:center;}
   .hint b{color:var(--grey);font-weight:400;}
@@ -168,7 +168,7 @@
   /* dark background chrome */
   body.darkbg{background:#0A0A0C;}
   body.darkbg .wordmark{color:#F1F1EC;}
-  body.darkbg .axis{color:#9A9A93;} body.darkbg .axis .k{color:#555;}
+  body.darkbg .axis{color:#9A9A93;background:#0A0A0C;} body.darkbg .axis .k{color:#555;}
   body.darkbg .hint{color:#5A5A56;} body.darkbg .hint b{color:#9A9A93;}
   body.darkbg .corner{border-color:#333;}
   body.darkbg .lg-h{color:#5A5A56;} body.darkbg .lg-name{color:#D8D8D2;} body.darkbg .lg-code{color:#8A8A84;} body.darkbg .lg-tier{color:#555;}

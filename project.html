@@ -51,7 +51,8 @@
 
   /* ambient project field — the homepage blob: large, borderless, animated + textured, bleeding behind the title (mock #2) */
   .rail-top{position:relative;flex:3 1 auto;min-height:172px;display:flex;flex-direction:column;}
-  .field{position:absolute;top:-86px;left:-30px;right:-26px;bottom:-4px;z-index:0;overflow:hidden;}
+  .field{position:fixed;top:0;left:0;width:46vw;height:100vh;z-index:0;overflow:hidden;pointer-events:none;}
+  .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,0),#fff);}
   #minimap{display:block;width:100%;height:100%;cursor:default;}
   .field-scrim{position:absolute;top:-86px;left:-30px;right:-26px;height:190px;z-index:1;pointer-events:none;
     background:linear-gradient(180deg,rgba(255,255,255,.74),rgba(255,255,255,.18) 64%,rgba(255,255,255,0));}
@@ -269,6 +270,10 @@ const F={ cv:null,ctx:null,lo:null,lox:null,lowW:0,lowH:0,cssW:0,cssH:0,DPR:1,
 function buildNoise(W,H){ const n=new Float32Array(W*H), step=0.05;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){ let s=0,amp=0.5,f=1; for(let o=0;o<4;o++){s+=amp*vnoise2(x*step*f,y*step*f);f*=2;amp*=0.5;} n[y*W+x]=clamp(s,0,1); }
   return n; }
+function layoutField(cv){ const f=cv&&cv.parentElement; if(!f)return; const main=document.querySelector('.main');
+  if(window.innerWidth>880 && main){ const ml=main.getBoundingClientRect().left;
+    f.style.cssText='position:fixed;top:0;left:0;height:100vh;z-index:0;overflow:hidden;pointer-events:none;width:'+Math.round(ml+46)+'px'; }
+  else { f.style.cssText='position:absolute;top:-30px;left:-16px;right:-16px;bottom:-4px;z-index:0;overflow:hidden;pointer-events:none;'; } }
 function setupField(cv,nodes,edge,core,ink){
   F.cv=cv; F.ctx=cv.getContext('2d'); F.nodes=nodes; F.edge=edge; F.core=core; F.ink=ink||core;
   F.DPR=Math.min(window.devicePixelRatio||1,2);
@@ -498,7 +503,6 @@ function render(p){
   railTop.appendChild(el('div','field','<canvas id="minimap"></canvas>'));
   railTop.appendChild(el('div','field-scrim'));
   railTop.appendChild(ident);            // title sits over the ambient field (z above)
-  railTop.appendChild(el('div','field-fade'));
   rail.appendChild(railTop);
   const nav=el('nav','nav');
   const navRow=(key,label,live,kicker)=>{ const it=el('div','nav-item'+(live?' live':' muted')+(kicker?' kicker':'')); it.dataset.key=key;
@@ -534,8 +538,8 @@ function render(p){
 
   const edge=(p.colors&&p.colors.edge)||[255,210,51];
   const fcv=document.getElementById('minimap');
-  requestAnimationFrame(()=>{ if(fcv){ setupField(fcv,state.nodes,edge,state.accent,state.ink); bindField(fcv); startField();
-    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(F.ctx) setupField(fcv,state.nodes,edge,state.accent,state.ink); }); } });
+  requestAnimationFrame(()=>{ if(fcv){ layoutField(fcv); setupField(fcv,state.nodes,edge,state.accent,state.ink); bindField(fcv); startField();
+    if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ if(F.ctx){ layoutField(fcv); setupField(fcv,state.nodes,edge,state.accent,state.ink); } }); } });
 
   const seen=new Map();
   const io=new IntersectionObserver(ents=>{ ents.forEach(e=>seen.set(e.target,e.intersectionRatio));
@@ -551,7 +555,7 @@ function fail(msg){ document.getElementById('root').innerHTML=
 
 function getSlug(){ const q=new URLSearchParams(location.search).get('p'); const h=location.hash?location.hash.replace(/^#/,''):'';
   return (q||h||'nightmare-kart').trim(); }
-let _rz=null; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setTimeout(()=>{ const cv=document.getElementById('minimap'); if(cv&&F.ctx){ const e=(state.project&&state.project.colors&&state.project.colors.edge)||[255,210,51]; setupField(cv,state.nodes,e,state.accent,state.ink); } },140); });
+let _rz=null; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setTimeout(()=>{ const cv=document.getElementById('minimap'); if(cv&&F.ctx){ const e=(state.project&&state.project.colors&&state.project.colors.edge)||[255,210,51]; layoutField(cv); setupField(cv,state.nodes,e,state.accent,state.ink); } },140); });
 /* full-screen image lightbox — every content image is clickable */
 (function(){ const lb=el('div',null,'<img alt=""><button class="lb-close" aria-label="Close">Close ✕</button>'); lb.id='lightbox'; document.body.appendChild(lb);
   const close=()=>lb.classList.remove('on');
