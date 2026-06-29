@@ -123,6 +123,12 @@
   #hoverPreview .cap{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);padding:8px 11px;display:flex;justify-content:space-between;gap:8px;}
   #hoverPreview .cap .go{color:var(--accent,#C40021);}
   body.darkbg #hoverPreview{background:#131318;border-color:#2C2C32;}
+  /* hover affordance — cursor + "view project →" follows the pointer over a project blob */
+  #viewHint{position:fixed;z-index:9;pointer-events:none;font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--ink);background:var(--panel);border:1px solid var(--hair);padding:5px 9px;opacity:0;transform:translateY(3px);transition:opacity .12s,transform .12s;white-space:nowrap;}
+  #viewHint.show{opacity:1;transform:none;}
+  #viewHint span{color:var(--accent,#C40021);}
+  body.darkbg #viewHint{background:#131318;border-color:#2C2C32;color:#EDEDE8;}
   .legend{position:absolute;left:36px;bottom:34px;display:flex;flex-direction:column;gap:1px;z-index:6;}
   .legend .lg-h{font-size:9.5px;letter-spacing:.2em;color:var(--grey-2);margin-bottom:8px;}
   .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;transition:.2s;}
@@ -182,7 +188,8 @@
   <div class="axis" id="ax-object"><span class="k">MODE:</span> OBJECT</div>
   <div class="hint edit-only" id="hint"><b>Pick a project</b> at right · <b>drag</b> its blobs to move · <b>ring</b> to resize · <b>click empty</b> to add a node · <b>⌘Z</b> undo</div>
   <div class="readout present-only" id="readout"></div>
-  <div id="hoverPreview" class="present-only"><img alt=""><div class="cap"><span class="lab"></span><span class="go">CASE STUDY ↗</span></div></div>
+  <div id="hoverPreview" class="present-only"><img alt=""><div class="cap"><span class="lab"></span></div></div>
+  <div id="viewHint" class="present-only">View project <span>&rarr;</span></div>
   <div class="legend present-only" id="legend"><div class="lg-h">INDEX</div></div>
   <aside class="inspector edit-only" id="inspector">
     <div class="insp-scroll">
@@ -358,11 +365,11 @@ function layout(){
 }
 function d2p(x,y){return [fL+(x+1)/2*fW,(fT+fH)-(y+1)/2*fH];}
 function p2d(px,py){return [clamp((px-fL)/fW*2-1,-1,1),clamp(((fT+fH)-py)/fH*2-1,-1,1)];}
-function positionAxes(){const [cx,cy]=d2p(0,0);
-  let e=document.getElementById('ax-digital'); e.style.left=(fL-8)+'px'; e.style.top=cy+'px'; e.style.transform='translate(-100%,-50%)';
-  e=document.getElementById('ax-physical'); e.style.left=(fL+fW+8)+'px'; e.style.top=cy+'px'; e.style.transform='translateY(-50%)'; e.style.display=(mode==='edit')?'none':'';
-  e=document.getElementById('ax-spatial'); e.style.left=cx+'px'; e.style.top=(fT-10)+'px'; e.style.transform='translateX(-50%)';
-  e=document.getElementById('ax-object'); e.style.left=cx+'px'; e.style.top=(fT+fH+8)+'px'; e.style.transform='translateX(-50%)';
+function positionAxes(){const [cx,cy]=d2p(0,0); const AM=26;   // anchor axis labels to the browser-window edges, on the field's axis centre-lines
+  let e=document.getElementById('ax-digital'); e.style.left=AM+'px'; e.style.top=cy+'px'; e.style.transform='translateY(-50%)';
+  e=document.getElementById('ax-physical'); e.style.left=(cssW-AM)+'px'; e.style.top=cy+'px'; e.style.transform='translate(-100%,-50%)'; e.style.display=(mode==='edit')?'none':'';
+  e=document.getElementById('ax-spatial'); e.style.left=cx+'px'; e.style.top=AM+'px'; e.style.transform='translateX(-50%)';
+  e=document.getElementById('ax-object'); e.style.left=cx+'px'; e.style.top=(cssH-AM)+'px'; e.style.transform='translate(-50%,-100%)';
 }
 
 /* TWO-FIELD metaball: S(spread,radius)->silhouette ; H(height,intensity)->color depth */
@@ -560,10 +567,10 @@ function getProj(id){return projects.find(p=>p.id===id);}
 function getNode(){const p=getProj(selProj);if(!p)return null;return p.nodes.find(n=>n.id===selNode)||null;}
 
 /* canvas interaction */
-let drag=null;
+let drag=null; const vhint=document.getElementById('viewHint');
 cv.addEventListener('pointerdown',e=>{ const px=e.clientX,py=e.clientY; mouse.x=px;mouse.y=py;mouse.inside=true;
-  if(mode!=='edit'){   // present is view-only: focus lock only, no label dragging
-    const best=projectAt(px,py); lock=(best&&lock===best)?null:best; hover=best; syncLegend();updateReadout(); return; }
+  if(mode!=='edit'){   // present: click a project blob -> open its case study
+    const best=projectAt(px,py); if(best){ const bp=getProj(best); if(bp&&PAGES[bp.code]) location.href='project.html?p='+encodeURIComponent(PAGES[bp.code]); } return; }
   if(px<fL-20||px>fL+fW+20||py<fT-20||py>fT+fH+20) return;
   const sp=getProj(selProj); if(!sp) return;
   // grab the selected node's label (previewed in edit) and swing it around the node
@@ -579,13 +586,16 @@ cv.addEventListener('pointerdown',e=>{ const px=e.clientX,py=e.clientY; mouse.x=
   const nn={id:uid(),x,y,r:0.12,i:0.8,f:2.0,core:isFirst,label:''}; sp.nodes.push(nn); selNode=nn.id; drag={type:'move',node:nn};
   cv.setPointerCapture(e.pointerId); dirty=true; renderNodeInspector(); persist();
 });
-cv.addEventListener('pointermove',e=>{ mouse.x=e.clientX;mouse.y=e.clientY;mouse.inside=true; if(!drag)return;
+cv.addEventListener('pointermove',e=>{ mouse.x=e.clientX;mouse.y=e.clientY;mouse.inside=true;
+  if(mode!=='edit'){ const best=projectAt(e.clientX,e.clientY); cv.style.cursor=best?'pointer':'';
+    if(best){ vhint.style.left=(e.clientX+15)+'px'; vhint.style.top=(e.clientY+12)+'px'; vhint.classList.add('show'); } else vhint.classList.remove('show'); return; }
+  if(!drag)return;
   if(drag.type==='label'){ const c=d2p(drag.node.x,drag.node.y); drag.node.la=Math.atan2(e.clientY-c[1],e.clientX-c[0]); dirty=true; return; }
   if(drag.type==='move'){ const [x,y]=p2d(e.clientX,e.clientY); drag.node.x=x;drag.node.y=y; }
   else { const c=d2p(drag.node.x,drag.node.y); drag.node.r=clamp(Math.hypot(e.clientX-c[0],e.clientY-c[1])/mfd,0.03,0.6); }
   dirty=true; updateNodeFieldsLive(); });
 cv.addEventListener('pointerup',()=>{ if(drag){drag=null;persist();} });
-cv.addEventListener('pointerleave',()=>{ mouse.inside=false; });
+cv.addEventListener('pointerleave',()=>{ mouse.inside=false; if(vhint)vhint.classList.remove('show'); cv.style.cursor=''; });
 window.addEventListener('keydown',e=>{
   if((e.metaKey||e.ctrlKey)&&(e.key==='z'||e.key==='Z')){ e.preventDefault(); if(e.shiftKey)redo(); else undo(); return; }
   if((e.metaKey||e.ctrlKey)&&(e.key==='y'||e.key==='Y')){ e.preventDefault(); redo(); return; }
@@ -722,7 +732,7 @@ function buildLegend(){ const vis=projects.filter(p=>p.code!=='P-07'); legendEl.
     row.innerHTML=`<span class="lg-dot" style="background:${rgbStr(p.colors.core)}"></span><span class="lg-code">${p.code}</span><span class="lg-name">${p.name}</span>`;
     row.onmouseenter=()=>{if(!lock){hover=p.id;syncLegend();updateReadout();}};
     row.onmouseleave=()=>{if(!lock){hover=null;syncLegend();updateReadout();}};
-    row.onclick=()=>{lock=(lock===p.id)?null:p.id;hover=lock;syncLegend();updateReadout();};
+    row.onclick=()=>{ if(PAGES[p.code]) location.href='project.html?p='+encodeURIComponent(PAGES[p.code]); };
     legendEl.appendChild(row);}); }
 function syncLegend(){const fi=lock||hover;legendEl.querySelectorAll('.lg-row').forEach(r=>{r.classList.toggle('active',r.dataset.id===fi);r.classList.toggle('dim',fi&&r.dataset.id!==fi);});}
 function updateReadout(){const fi=lock||hover;const pv=document.getElementById('hoverPreview');
@@ -738,8 +748,7 @@ function updateReadout(){const fi=lock||hover;const pv=document.getElementById('
     `<div class="r-name"><span class="r-sw" style="background:${rgbStr(p.colors.core)}"></span>${p.name}</div>`+
     `<div class="r-row"><span>DIGITAL ⟷ PHYSICAL</span><span>${f(xmin)} … ${f(xmax)}</span></div>`+
     `<div class="r-row"><span>OBJECT ⟷ SPATIAL</span><span>${f(ymin)} … ${f(ymax)}</span></div>`+
-    `<div class="r-row"><span>NODES</span><span>${p.nodes.length}</span></div>`+
-    (PAGES[p.code] ? `<a class="r-open" href="project.html?p=${PAGES[p.code]}" style="color:${rgbStr(p.colors.core)}"><span>CASE STUDY</span><span>&rarr;</span></a>` : '');
+    `<div class="r-row"><span>NODES</span><span>${p.nodes.length}</span></div>`;
   readoutEl.classList.add('show');
   if(pv&&pv.classList.contains('show')){ const topPx=readoutEl.offsetTop+readoutEl.offsetHeight+14; pv.style.top=topPx+'px';
     // cap the preview image so the popup always clears the INDEX legend (no overlap, any project / viewport)
@@ -795,7 +804,7 @@ const fx={
   bg:'light',
   unfocus:0.3,               // unfocused opacity in present (from the tuned export's dim 0.7)
   hoverFade:0.33,
-  curve:0.16,                // global metaball curvature (low = blobs merge / round out)
+  curve:0.08,                // global metaball curvature — resting 8% (Julia); intro awakens it from merged
   oglow:{on:false,size:46,op:0.35},
   iglow:{on:false,size:8,op:0.6},
   perlin:{on:true,scale:18.5,op:0.11},
@@ -1054,6 +1063,16 @@ function sanitizeProjects(){ projects.forEach(p=>{
     n.r=clamp(num(n.r,0.18),0.03,0.6); n.i=clamp(num(n.i,0.8),0.05,1); n.f=clamp(num(n.f,2),0.5,4);
     n.core=!!n.core; if(n.label==null)n.label=''; n.la=num(n.la,0); }); }); }
 
+/* load "awakening": the field fades in (opacity) while the metaball curvature resolves from merged -> resting; ease-in-out .3s */
+function introAwaken(target){
+  const stage=document.getElementById('stage'), T0=performance.now(), DUR=300, START=0.82;
+  const ez=p=>p<0.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+  if(stage)stage.style.opacity='0';
+  (function step(now){ const p=clamp((now-T0)/DUR,0,1), e=ez(p);
+    fx.curve=lerp(START,target,e); fxChanged=true; dirty=true; if(stage)stage.style.opacity=String(e);
+    if(p<1) requestAnimationFrame(step); else { fx.curve=target; fxChanged=true; if(stage)stage.style.opacity=''; } })(performance.now());
+}
+
 (async function(){ const saved=await store.load();
   const sp=Array.isArray(saved)?saved:(saved&&saved.projects?saved.projects:null);   // v1 = bare projects array; v2 = {projects,fx,blend}
   if(saved&&!Array.isArray(saved)){ if(saved.blend)blendMode=saved.blend; if(saved.fx)applyFx(saved.fx); }
@@ -1066,8 +1085,10 @@ function sanitizeProjects(){ projects.forEach(p=>{
   requestAnimationFrame(render);
   setMode('present');   // default to PRESENT (viewer) mode; EDIT is one toggle away
   // ?focus=<code> (from a project-page back-link) → lock that project
+  let focused=false;
   try{ const fc=new URLSearchParams(location.search).get('focus');
-    if(fc){ const fp=projects.find(x=>x.code===fc); if(fp){ lock=fp.id; hover=fp.id; syncLegend(); updateReadout(); } } }catch(e){}
+    if(fc){ const fp=projects.find(x=>x.code===fc); if(fp){ lock=fp.id; hover=fp.id; syncLegend(); updateReadout(); focused=true; } } }catch(e){}
+  if(!focused) introAwaken(0.08);   // only awaken on a fresh landing, not when returning focused to a project
 })();
 })();
 </script>
