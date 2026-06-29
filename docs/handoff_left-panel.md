@@ -2,7 +2,7 @@
 
 > ✅ **Delivered + reconciled** — historical record. All six pages + the minimap shipped; the rail was later rebuilt into the animated ambient field (mock #2). See `STATUS.md` / `ROADMAP.md`.
 
-For a dedicated, focused Cowork worker. You report to the **Nexus** (the standing coordinator instance); Julia commits. **Scope discipline is the whole point of this workstream** — read the boundaries carefully.
+For a dedicated, focused chat. Report back to the standing chat; Julia commits. **Scope discipline is the whole point of this task** — read the boundaries carefully.
 
 ## Mission
 Make the project-page **left rail** — and especially its **minimap** — functioning, well-designed, and UI-perfected, **consistently across every project page**. The minimap must be a *faithful translation of the homepage field map*.
@@ -36,7 +36,7 @@ Make the project-page **left rail** — and especially its **minimap** — funct
 ## Constraints / invariants
 Keep `loadProject()` as the single data boundary; media by URL; BB Strata type; homepage metaball mirrored read-only. Test **headless** (Playwright in the sandbox; run node with `LD_LIBRARY_PATH=$HOME/xdlibs`). Zero console errors. Measure JS self-time, not headless FPS.
 
-## Loop back & review — report to the Nexus in EXACTLY this format
+## Loop back & review — report back in EXACTLY this format
 ```
 ## W-LP report — <YYYY-MM-DD>
 ### Done
@@ -51,9 +51,9 @@ Keep `loadProject()` as the single data boundary; media by URL; BB Strata type; 
 - <notes + headless screenshots captured, especially minimap-vs-homepage comparisons per project>
 ### Invariants
 - loadProject boundary intact ✓ · index.html untouched ✓ · existing-4 content unchanged ✓
-### Open questions / decisions for the Nexus
+### Open questions / decisions to surface
 - <anything needing a call — surface, don't guess>
 ### To commit (for Julia)
 - <exact git add/commit/push commands, only the files you touched>
 ```
-Build → headless-test → post that report back to the Nexus. When unsure about scope or schema, **stop and ask the Nexus** rather than guessing.
+Build → headless-test → post that report back. When unsure about scope or schema, **stop and ask** rather than guessing.

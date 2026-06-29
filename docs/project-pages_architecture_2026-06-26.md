@@ -133,12 +133,12 @@ For a solo operator, *sequential* focused instances beat many parallel ones (les
 
 ---
 
-## 8. Template additions — folded back from W-LP (Nexus-reconciled, 2026-06-28)
-The left-panel/minimap worker also made Julia-directed template changes; the renderer (`project.html`) is the source of truth, but they're recorded here so the schema stays canonical:
+## 8. Template additions — folded back from the left-panel build (reconciled 2026-06-28)
+The left-panel/minimap build also made Julia-directed template changes; the renderer (`project.html`) is the source of truth, but they're recorded here so the schema stays canonical:
 - **New block type `cardgrid`** — `{ type:"cardgrid", title, aspect:"9:16"|…, images:[{src,caption,alt}] }`. Renders a spread of cards at true aspect (no crop), framed, tactile hover. The reusable pattern for any portrait/asset set (e.g. the tarot deck). A strong candidate primitive for the W2 content editor.
-- **Hero is now a header**, not a card — full-width banner at the top of the content column (template-wide). **Caveat (Nexus QA):** great for raster/landscape heroes (Eyeknow, MASSIVE, GIF, 65 PORTER), but it **crops portrait/SVG heroes** — NIGHTMARE KART's elevation drawing reads badly as a banner. Fix pending (see STATUS): banner only real landscape photos; `contain` or fall back to a card for SVG/portrait.
+- **Hero is now a header**, not a card — full-width banner at the top of the content column (template-wide). **Caveat (QA):** great for raster/landscape heroes (Eyeknow, MASSIVE, GIF, 65 PORTER), but it **crops portrait/SVG heroes** — NIGHTMARE KART's elevation drawing reads badly as a banner. Fix pending (see STATUS): banner only real landscape photos; `contain` or fall back to a card for SVG/portrait.
 - **Stat cards (`stats`) are `wide` by default** — full-width, 4-up, collapsing to a stacked list when narrow.
-- **Legible-accent (contrast floor):** rail text + minimap markers get an ink floor so low-contrast cores (SELECTED ARCADE yellow) read on white; the **blob keeps the true edge→core palette**. Applied uniformly (Nexus decision — it's a legibility rule, not a brand-colour change).
+- **Legible-accent (contrast floor):** rail text + minimap markers get an ink floor so low-contrast cores (SELECTED ARCADE yellow) read on white; the **blob keeps the true edge→core palette**. Applied uniformly (a legibility rule, not a brand-colour change).
 - **Minimap framing** now fits the metaball's true content box (no edge-node clipping); labels are edge-aware (flip near the right edge).
 - **Homepage:** `PAGES`/`PREVIEW` extended to all 6; the hover preview is now a clickable case-study link and caps its height against the INDEX legend. `index.html` renderer otherwise untouched (its readout/legend still render P-06 raw yellow — port the contrast floor later).
 - **Eyeknow exception:** per Julia, its content JSON was edited (collaborators dropped, tarot → `cardgrid`) even though it's an "existing" page — a sanctioned, page-scoped redesign, not a rule change.

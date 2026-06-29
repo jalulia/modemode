@@ -53,8 +53,8 @@ Keep these three invariants and the migration is: create the table, upload the J
 
 ---
 
-## Revision B — visual interpretation corrections (Nexus, 2026-06-27)
-The first pass (`project.html`) is **structurally correct and passes the port invariants**, but it **misreads the mockup's visual language**. Keep the data layer / `loadProject` / routing / block model as-is; redo the layout + styling against `docs/mockups/mode-mode.pdf` (all 5 pages — page 4 is the annotation page; pages 1–3 are the real comps). Side-by-side renders are in the Nexus session. The misread is consistent: **an airy editorial layout was turned into a boxed dashboard, and the signature element was shrunk.** Fix, in priority order:
+## Revision B — visual interpretation corrections (2026-06-27)
+The first pass (`project.html`) is **structurally correct and passes the port invariants**, but it **misreads the mockup's visual language**. Keep the data layer / `loadProject` / routing / block model as-is; redo the layout + styling against `docs/mockups/mode-mode.pdf` (all 5 pages — page 4 is the annotation page; pages 1–3 are the real comps). Side-by-side renders are in the session. The misread is consistent: **an airy editorial layout was turned into a boxed dashboard, and the signature element was shrunk.** Fix, in priority order:
 
 1. **The field-map blob is the hero of the left rail, not a thumbnail.** The mockup makes the constellation LARGE, soft, and *borderless* — it fills most of the left column and the node labels sit on it. It IS the nav (annotation: "essentially a side nav, always anchored on the left"). The first pass boxed it into a small `.minimap-wrap` panel with an `ADDR · OBJECT` caption. Make it big, borderless, dominant; drop the caption chrome. Reuse the homepage metaball math (already ported).
 2. **Strip the panel/dashboard chrome — go editorial.** No bordered cards with filled accent header bars around every block. The mockup uses small **uppercase red section labels** (PROPERTIES, MATERIAL CONDITIONS, CLASSIFICATION, COLLABORATORS) over plain body text, separated by whitespace and at most hairline rules. Remove the `panel`/`panel-h`/`IMG` chrome.

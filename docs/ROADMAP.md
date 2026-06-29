@@ -1,6 +1,6 @@
 # MODE MODE — holistic roadmap
 
-The arc, phase by phase. `STATUS.md` is the live snapshot; this is the trajectory. The Nexus keeps both current.
+The arc, phase by phase. `STATUS.md` is the live snapshot; this is the trajectory. Both are kept current as work lands.
 
 Principle: **the homepage field map is the spine; each project page is one node-constellation, read.** Data is a self-contained JSON document per project, now living in Supabase with a bundled-JSON fallback. No asset blocks a phase — on-brand stand-ins are produced in-house and swapped for real media when it lands.
 
