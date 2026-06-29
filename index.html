@@ -130,6 +130,11 @@
   #viewHint.show{opacity:1;transform:none;}
   #viewHint span{color:var(--accent,#C40021);}
   body.darkbg #viewHint{background:#131318;border-color:#2C2C32;color:#EDEDE8;}
+  /* axis hatch marks — run edge-to-edge along the field's centre-lines, independent of the field */
+  #axisH,#axisV{position:fixed;z-index:4;pointer-events:none;opacity:.5;}
+  #axisH{left:0;width:100%;height:7px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,var(--grey-2) 0 1px,transparent 1px 13px);}
+  #axisV{top:0;height:100%;width:7px;transform:translateX(-50%);background:repeating-linear-gradient(0deg,var(--grey-2) 0 1px,transparent 1px 13px);}
+  body.darkbg #axisH,body.darkbg #axisV{opacity:.32;}
   .legend{position:absolute;left:36px;bottom:34px;display:flex;flex-direction:column;gap:1px;z-index:6;}
   .legend .lg-h{font-size:9.5px;letter-spacing:.2em;color:var(--grey-2);margin-bottom:8px;}
   .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;transition:.2s;}
@@ -187,6 +192,7 @@
   <div class="axis" id="ax-physical"><span class="k">MODE:</span> PHYSICAL</div>
   <div class="axis" id="ax-spatial"><span class="k">MODE:</span> SPATIAL</div>
   <div class="axis" id="ax-object"><span class="k">MODE:</span> OBJECT</div>
+  <div id="axisH" class="present-only"></div><div id="axisV" class="present-only"></div>
   <div class="hint edit-only" id="hint"><b>Pick a project</b> at right · <b>drag</b> its blobs to move · <b>ring</b> to resize · <b>click empty</b> to add a node · <b>⌘Z</b> undo</div>
   <div class="readout present-only" id="readout"></div>
   <div id="hoverPreview" class="present-only"><img alt=""><div class="cap"><span class="lab"></span></div></div>
@@ -371,6 +377,8 @@ function positionAxes(){const [cx,cy]=d2p(0,0); const AM=26;   // anchor axis la
   e=document.getElementById('ax-physical'); e.style.left=(cssW-AM)+'px'; e.style.top=cy+'px'; e.style.transform='translate(-100%,-50%)'; e.style.display=(mode==='edit')?'none':'';
   e=document.getElementById('ax-spatial'); e.style.left=cx+'px'; e.style.top=AM+'px'; e.style.transform='translateX(-50%)';
   e=document.getElementById('ax-object'); e.style.left=cx+'px'; e.style.top=(cssH-AM)+'px'; e.style.transform='translate(-50%,-100%)';
+  const ah=document.getElementById('axisH'); if(ah)ah.style.top=cy+'px';
+  const av=document.getElementById('axisV'); if(av)av.style.left=cx+'px';
 }
 
 /* TWO-FIELD metaball: S(spread,radius)->silhouette ; H(height,intensity)->color depth */

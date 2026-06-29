@@ -191,6 +191,13 @@
   .errbox{max-width:600px;margin:12vh auto 0;border-top:2px solid var(--accent);padding:28px 0 0;color:var(--grey);font-size:14px;line-height:1.7;}
   .errbox a{color:var(--accent);}
 
+  /* full-screen image lightbox — every content image is clickable */
+  .main img{cursor:zoom-in;}
+  #lightbox{position:fixed;inset:0;z-index:200;background:rgba(16,18,14,.93);display:none;align-items:center;justify-content:center;cursor:zoom-out;padding:40px;}
+  #lightbox.on{display:flex;}
+  #lightbox>img{max-width:95vw;max-height:92vh;width:auto;height:auto;display:block;background:#fff;box-shadow:0 12px 64px rgba(0,0,0,.5);}
+  #lightbox .lb-close{position:fixed;top:22px;right:26px;font-family:var(--text);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:none;border:0;cursor:pointer;opacity:.75;}
+  #lightbox .lb-close:hover{opacity:1;}
   @media (max-width:880px){
     .stage{padding:0 36px;}
     .page{grid-template-columns:1fr;gap:8px;}
@@ -498,6 +505,14 @@ function fail(msg){ document.getElementById('root').innerHTML=
 function getSlug(){ const q=new URLSearchParams(location.search).get('p'); const h=location.hash?location.hash.replace(/^#/,''):'';
   return (q||h||'nightmare-kart').trim(); }
 let _rz=null; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setTimeout(()=>{ if(state.mm)drawMinimap(); },120); });
+/* full-screen image lightbox — every content image is clickable */
+(function(){ const lb=el('div',null,'<img alt=""><button class="lb-close" aria-label="Close">Close ✕</button>'); lb.id='lightbox'; document.body.appendChild(lb);
+  const close=()=>lb.classList.remove('on');
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape')close(); });
+  document.addEventListener('click',e=>{ const img=e.target.closest('img'); if(!img||!img.closest('.main'))return; const s=img.getAttribute('src'); if(!s)return;
+    lb.querySelector('img').src=s; lb.querySelector('img').alt=img.getAttribute('alt')||''; lb.classList.add('on'); });
+})();
 (async function init(){ const slug=getSlug();
   try{ const p=await loadProject(slug); render(p); }
   catch(err){ const m=(location.protocol==='file:')
