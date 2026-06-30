@@ -112,6 +112,8 @@
   #fmbar .fmsub{color:var(--grey);font-weight:400;margin-left:6px;}
   #fmstatus{font-size:11px;color:var(--grey);min-width:60px;text-align:right;}
   #fmframe{flex:1;width:100%;border:0;background:var(--ground);display:block;}
+  #canvaswrap{height:calc(100vh - 104px);}
+  #cvframe{width:100%;height:100%;border:0;display:block;background:var(--ground);}
   .hidden{display:none!important;}
 </style>
 </head>
@@ -143,6 +145,7 @@
     </aside>
     <section id="stage">
       <main id="main"><div class="empty">Select a project from the left to start editing.</div></main>
+      <div id="canvaswrap" class="hidden"><iframe id="cvframe" title="Canvas — edit on the real page"></iframe></div>
       <div id="fieldmap" class="hidden">
         <div id="fmbar">
           <span class="fmtitle">Field map<span class="fmsub">— homepage geometry &amp; palette · the source of truth</span></span>
@@ -158,7 +161,7 @@
 
   <div class="savebar hidden" id="savebar">
     <div class="modeswitch">
-      <button id="mForm" class="on">Form</button><button id="mRaw">Raw JSON</button>
+      <button id="mCanvas" class="on">Canvas</button><button id="mForm">Form</button><button id="mRaw">Raw JSON</button>
     </div>
     <a class="btn ghost tiny" id="previewBtn" target="_blank">Preview ↗</a>
     <div class="sp"></div>
@@ -173,7 +176,7 @@ const SB_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJl
 const sb=createClient(SB_URL, SB_ANON);
 const $=id=>document.getElementById(id);
 const el=(t,c,txt)=>{const e=document.createElement(t); if(c)e.className=c; if(txt!=null)e.textContent=txt; return e;};
-const state={ slug:null, doc:null, dirty:false, mode:'form' };
+const state={ slug:null, doc:null, dirty:false, mode:'canvas' };
 
 /* ---------- auth ---------- */
 function setStatus(msg,kind){ const s=$('status'); s.textContent=msg||''; s.className=kind||''; if(msg&&kind==='ok') setTimeout(()=>{ if(s.textContent===msg){s.textContent='';s.className='';} },2500); }
@@ -217,11 +220,10 @@ async function selectProject(slug){
   setStatus('loading…');
   const { data, error }=await sb.from('projects').select('data').eq('slug',slug).single();
   if(error){ setStatus('load failed','err'); return; }
-  state.slug=slug; state.doc=data.data; state.dirty=false; state.mode='form';
-  $('mForm').classList.add('on'); $('mRaw').classList.remove('on');
+  state.slug=slug; state.doc=data.data; state.dirty=false;
   document.querySelectorAll('.pitem').forEach(n=>n.classList.toggle('on',n.dataset.slug===slug));
   $('previewBtn').href='../project.html?p='+encodeURIComponent(slug);
-  setStatus(''); markClean(); render();
+  setStatus(''); markClean(); applyMode();
 }
 function markDirty(){ state.dirty=true; $('dirtyFlag').classList.remove('hidden'); $('save').disabled=false; }
 function markClean(){ state.dirty=false; $('dirtyFlag').classList.add('hidden'); $('save').disabled=true; }
@@ -385,8 +387,19 @@ function renderRaw(main){
   const msg=el('div','hint','Edit the document directly. It is validated as JSON on save.'); b.appendChild(msg);
   wrap.appendChild(b); main.appendChild(wrap);
 }
-$('mForm').onclick=()=>{ if(state.mode==='raw'){ const ta=$('raw'); if(ta){ try{ state.doc=JSON.parse(ta.value); }catch(e){ alert('Raw JSON is invalid — fix before switching: '+e.message); return; } } } state.mode='form'; $('mForm').classList.add('on'); $('mRaw').classList.remove('on'); render(); };
-$('mRaw').onclick=()=>{ state.mode='raw'; $('mRaw').classList.add('on'); $('mForm').classList.remove('on'); render(); };
+function openCanvas(){ const f=$('cvframe'); if(!f||!state.slug) return; f.src='../project.html?p='+encodeURIComponent(state.slug)+'&edit&t='+Date.now(); }
+function applyMode(){ const m=state.mode;
+  $('mCanvas').classList.toggle('on',m==='canvas'); $('mForm').classList.toggle('on',m==='form'); $('mRaw').classList.toggle('on',m==='raw');
+  $('canvaswrap').classList.toggle('hidden',m!=='canvas'); $('main').classList.toggle('hidden',m==='canvas');
+  if(m==='canvas') openCanvas(); else render();
+}
+function switchMode(to){ if(state.mode===to)return;
+  if(state.mode==='raw'){ const ta=$('raw'); if(ta){ try{ state.doc=JSON.parse(ta.value); }catch(e){ alert('Raw JSON is invalid — fix before switching: '+e.message); return; } } }
+  state.mode=to; applyMode();
+}
+$('mCanvas').onclick=()=>switchMode('canvas');
+$('mForm').onclick=()=>switchMode('form');
+$('mRaw').onclick=()=>switchMode('raw');
 
 /* ---------- save ---------- */
 $('save').onclick=async()=>{
@@ -406,7 +419,7 @@ function showFieldMap(){
   if(state.dirty && !confirm('Discard unsaved project changes?')) return;
   document.querySelectorAll('.pitem').forEach(n=>n.classList.remove('on'));
   $('nav-fieldmap').classList.add('on');
-  $('main').classList.add('hidden'); $('savebar').classList.add('hidden'); $('fieldmap').classList.remove('hidden');
+  $('main').classList.add('hidden'); $('canvaswrap').classList.add('hidden'); $('savebar').classList.add('hidden'); $('fieldmap').classList.remove('hidden');
   if(!fmLoaded){ fmLoaded=true; $('fmstatus').textContent='loading…'; $('fmframe').src='../index.html?studio'; }
 }
 $('nav-fieldmap').onclick=showFieldMap;
@@ -430,6 +443,8 @@ async function saveRosterToSupabase(roster){
 window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='object') return;
   if(m.type==='mm-studio-ready'){ $('fmSave').disabled=false; pushRosterToStudio(); }
   else if(m.type==='mm-roster'){ saveRosterToSupabase(m.data); }
+  else if(m.type==='mm-edit-ready'){ const f=$('cvframe'); if(f&&f.contentWindow&&state.doc) f.contentWindow.postMessage({type:'mm-edit-load',doc:state.doc},'*'); }
+  else if(m.type==='mm-edit-doc'&&m.doc){ state.doc=m.doc; markDirty(); }
 });
 
 refreshAuth();

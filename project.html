@@ -222,6 +222,13 @@ const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;',
 const real=s=>typeof s==='string'&&s.trim().length>0;
 function slugName(slug){return String(slug||'').replace(/[-_]+/g,' ').toUpperCase();}
 function paras(body){ return String(body==null?'':body).split(/\n{2,}/).map(p=>'<p>'+esc(p).replace(/\n/g,'<br>')+'</p>').join(''); }
+/* ── inline edit (the editor's Canvas tab): gated behind ?edit. Everything below is additive —
+   edAttr() returns '' unless ?edit, so the live view renders byte-identically. ── */
+const EDIT = /(?:^|[?&])edit(?:=|&|$)/.test(location.search);
+const edAttr = path => (EDIT && path) ? ` data-edit="${esc(path)}"` : '';
+function setByPath(obj,path,val){ const ks=String(path).split('.'); let o=obj;
+  for(let i=0;i<ks.length-1;i++){ const k=ks[i]; if(o[k]==null) o[k]=/^\d+$/.test(ks[i+1])?[]:{}; o=o[k]; }
+  o[ks[ks.length-1]]=val; }
 function vimeoSrc(embed){ const s=String(embed||'').trim(); if(!s)return '';
   const m=s.match(/(?:vimeo\.com\/(?:video\/)?)?(\d{6,})/); return m?`https://player.vimeo.com/video/${m[1]}`:(s.startsWith('http')?s:''); }
 const isSvg=s=>/\.svg(\?|#|$)/i.test(String(s||''));
@@ -348,9 +355,9 @@ function hasContent(node){ const c=node&&node.content; return !!(c&&Array.isArra
 function nextImg(){ state.imgN+=1; return 'IMG-'+String(state.imgN).padStart(2,'0'); }
 
 /* ===================== card builders ===================== */
-function card(sectionKey, labelText, tagText){
+function card(sectionKey, labelText, tagText, titlePath){
   const c=el('div','card'); c.dataset.section=sectionKey;
-  const h=el('div','card-h'); h.appendChild(el('span','lbl',esc(labelText||'')));
+  const h=el('div','card-h'); const lbl=el('span','lbl',esc(labelText||'')); if(EDIT&&titlePath)lbl.setAttribute('data-edit',titlePath); h.appendChild(lbl);
   if(tagText) h.appendChild(el('span','tag',esc(tagText)));
   c.appendChild(h); const b=el('div','card-b'); c.appendChild(b); c._b=b; return c;
 }
@@ -358,19 +365,19 @@ function imageCard(sectionKey, src, desc, tall, opts){
   opts=opts||{}; const lab=nextImg(); const c=el('div','card'+(opts.wide?' wide':'')); c.dataset.section=sectionKey;
   const h=el('div','card-h'); h.appendChild(el('span','lbl',lab)); h.appendChild(el('span','tag',opts.tag||(tall?'COVER':'DETAIL'))); c.appendChild(h);
   if(real(src)){ const im=el('img','img-real'+(isSvg(src)?' framed':'')); im.src=src; im.alt=desc||''; im.loading='lazy'; c.appendChild(im);
-    if(real(opts.caption)) c.appendChild(el('div','cap2',esc(opts.caption))); }
+    if(real(opts.caption)){ const cap=el('div','cap2',esc(opts.caption)); if(EDIT&&opts.capPath)cap.setAttribute('data-edit',opts.capPath); c.appendChild(cap); } }
   else { const s=el('div','slot'+(tall?' tall':'')); s.appendChild(el('div','ic'));
     if(desc) s.appendChild(el('div','desc',esc(desc)));
     s.appendChild(el('div','pending','PHOTO PENDING')); c.appendChild(s); }
   return c;
 }
-function carouselCard(sectionKey, b){
+function carouselCard(sectionKey, b, path){
   const imgs=(b.images||[]).filter(im=>real(im.src)); if(!imgs.length)return null;
   const c=el('div','card'+(b.wide===false?'':' wide')); c.dataset.section=sectionKey;
-  const h=el('div','card-h'); h.appendChild(el('span','lbl',esc(b.title||'GALLERY'))); h.appendChild(el('span','tag',`01 / ${String(imgs.length).padStart(2,'0')}`)); c.appendChild(h);
+  const h=el('div','card-h'); const lbl=el('span','lbl',esc(b.title||'GALLERY')); if(EDIT&&path)lbl.setAttribute('data-edit',path+'.title'); h.appendChild(lbl); h.appendChild(el('span','tag',`01 / ${String(imgs.length).padStart(2,'0')}`)); c.appendChild(h);
   const wrap=el('div','carwrap'); const car=el('div','carousel');
   imgs.forEach(im=>{ const sl=el('div','cslide');
-    sl.innerHTML=`<img src="${esc(im.src)}" alt="${esc(im.alt||'')}" loading="lazy">`+(real(im.caption)?`<div class="cap2">${esc(im.caption)}</div>`:'');
+    sl.innerHTML=`<img src="${esc(im.src)}" alt="${esc(im.alt||'')}" loading="lazy">`+(real(im.caption)?`<div class="cap2"${edAttr(path+'.images.'+b.images.indexOf(im)+'.caption')}>${esc(im.caption)}</div>`:'');
     car.appendChild(sl); });
   wrap.appendChild(car);
   const tagEl=h.querySelector('.tag');
@@ -382,48 +389,48 @@ function carouselCard(sectionKey, b){
     wrap.appendChild(prev); wrap.appendChild(next); }
   c.appendChild(wrap); return c;
 }
-function statsCard(sectionKey,b){
-  const items=b.items||[]; const c=card(sectionKey,b.title||'AT A GLANCE'); c.classList.add('wide','statcard');
+function statsCard(sectionKey,b,path){
+  const items=b.items||[]; const c=card(sectionKey,b.title||'AT A GLANCE',null,path?path+'.title':null); c.classList.add('wide','statcard');
   const g=el('div','statgrid'); g.style.setProperty('--n', Math.max(1,items.length));
-  items.forEach(it=>{ const s=el('div','stat'); s.innerHTML=`<div class="sv">${esc(it.v)}</div><div class="sk">${esc(it.k)}</div>`; g.appendChild(s); });
+  items.forEach((it,i)=>{ const s=el('div','stat'); s.innerHTML=`<div class="sv"${edAttr(path+'.items.'+i+'.v')}>${esc(it.v)}</div><div class="sk"${edAttr(path+'.items.'+i+'.k')}>${esc(it.k)}</div>`; g.appendChild(s); });
   c._b.appendChild(g); return c;
 }
-function blockCards(sectionKey, b){
-  const out=[]; const type=b.type||'text';
-  if(type==='text'){ const c=card(sectionKey,b.title); if(b.wide||b.layout==='two')c.classList.add('wide');
-    c._b.appendChild(el('div','body'+(b.layout==='two'?' two':''),paras(b.body))); out.push(c); }
-  else if(type==='stats'){ out.push(statsCard(sectionKey,b)); }
-  else if(type==='carousel'){ const c=carouselCard(sectionKey,b); if(c)out.push(c); }
+function blockCards(sectionKey, b, path){
+  const out=[]; const type=b.type||'text'; path=path||'';
+  if(type==='text'){ const c=card(sectionKey,b.title,null,path+'.title'); if(b.wide||b.layout==='two')c.classList.add('wide');
+    const bd=el('div','body'+(b.layout==='two'?' two':''),paras(b.body)); if(EDIT)bd.setAttribute('data-edit',path+'.body'); c._b.appendChild(bd); out.push(c); }
+  else if(type==='stats'){ out.push(statsCard(sectionKey,b,path)); }
+  else if(type==='carousel'){ const c=carouselCard(sectionKey,b,path); if(c)out.push(c); }
   else if(type==='cardgrid'){ const imgs=(b.images||[]).filter(im=>real(im.src));
-    if(imgs.length){ const c=card(sectionKey, b.title||'GALLERY', String(imgs.length).padStart(2,'0')+' CARDS'); c.classList.add('wide','cardgridcard');
+    if(imgs.length){ const c=card(sectionKey, b.title||'GALLERY', String(imgs.length).padStart(2,'0')+' CARDS', path+'.title'); c.classList.add('wide','cardgridcard');
       const g=el('div','cardgrid');
       imgs.forEach(im=>{ const t=el('div','cardtile');
-        t.innerHTML=`<img class="ct-img" src="${esc(im.src)}" alt="${esc(im.alt||im.caption||'')}" loading="lazy">`+(real(im.caption)?`<div class="ct-cap">${esc(im.caption)}</div>`:'');
+        t.innerHTML=`<img class="ct-img" src="${esc(im.src)}" alt="${esc(im.alt||im.caption||'')}" loading="lazy">`+(real(im.caption)?`<div class="ct-cap"${edAttr(path+'.images.'+b.images.indexOf(im)+'.caption')}>${esc(im.caption)}</div>`:'');
         g.appendChild(t); });
       c._b.appendChild(g); out.push(c); } }
-  else if(type==='column'){ const c=card(sectionKey,b.title); if(b.wide)c.classList.add('wide'); const g=el('div','specs');
-    (b.columns||[]).forEach(col=>{ const s=el('div','spec');
-      s.innerHTML=(col.spec?`<div class="sp-k">${esc(col.spec)}</div>`:'')+
+  else if(type==='column'){ const c=card(sectionKey,b.title,null,path+'.title'); if(b.wide)c.classList.add('wide'); const g=el('div','specs');
+    (b.columns||[]).forEach((col,ci)=>{ const s=el('div','spec'); const cp=path+'.columns.'+ci;
+      s.innerHTML=(col.spec?`<div class="sp-k"${edAttr(cp+'.spec')}>${esc(col.spec)}</div>`:'')+
         (col.value?`<div class="sp-v">${esc(col.value)}${col.valueNote?` <em>${esc(col.valueNote)}</em>`:''}</div>`:'')+
-        (col.name?`<div class="sp-n">${esc(col.name)}</div>`:'')+
-        (col.body?`<div class="sp-b">${esc(col.body).replace(/\n/g,'<br>')}</div>`:'');
+        (col.name?`<div class="sp-n"${edAttr(cp+'.name')}>${esc(col.name)}</div>`:'')+
+        (col.body?`<div class="sp-b"${edAttr(cp+'.body')}>${esc(col.body).replace(/\n/g,'<br>')}</div>`:'');
       g.appendChild(s); });
     c._b.appendChild(g); out.push(c); }
-  else if(type==='imagePara'){ const c=card(sectionKey,b.title); if(b.wide)c.classList.add('wide');
-    (b.rows||[]).forEach(r=>{ const has=real(r.image); const row=el('div','mc-row'+(has?' has-img':''));
-      row.appendChild(el('div',null,`<h4>${esc(r.title)}</h4><p>${esc(r.body).replace(/\n/g,'<br>')}</p>`));
+  else if(type==='imagePara'){ const c=card(sectionKey,b.title,null,path+'.title'); if(b.wide)c.classList.add('wide');
+    (b.rows||[]).forEach((r,ri)=>{ const has=real(r.image); const row=el('div','mc-row'+(has?' has-img':'')); const rp=path+'.rows.'+ri;
+      row.appendChild(el('div',null,`<h4${edAttr(rp+'.title')}>${esc(r.title)}</h4><p${edAttr(rp+'.body')}>${esc(r.body).replace(/\n/g,'<br>')}</p>`));
       if(has){ const im=el('img','thumb'); im.src=r.image; im.alt=r.title||''; im.loading='lazy'; row.appendChild(im); }
       c._b.appendChild(row); });
     out.push(c); }
-  else if(type==='image'){ out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,tag:b.tag})); }
+  else if(type==='image'){ out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,tag:b.tag,capPath:path+'.caption'})); }
   else if(type==='media'){
     if(b.kind==='video'){ const src=vimeoSrc(b.embed); const c=el('div','card'+(b.wide?' wide':'')); c.dataset.section=sectionKey;
-      const h=el('div','card-h'); h.appendChild(el('span','lbl',esc(b.title||'VIDEO'))); h.appendChild(el('span','tag','VIMEO')); c.appendChild(h);
+      const h=el('div','card-h'); const lbl=el('span','lbl',esc(b.title||'VIDEO')); if(EDIT)lbl.setAttribute('data-edit',path+'.title'); h.appendChild(lbl); h.appendChild(el('span','tag','VIMEO')); c.appendChild(h);
       c.appendChild(el('div',null, src ? `<div class="media-embed"><iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`
         : `<div class="slot"><div class="ic"></div><div class="desc">${esc(b.alt||'Video')}</div><div class="pending">VIDEO PENDING</div></div>`));
-      if(real(b.caption))c.appendChild(el('div','cap2',esc(b.caption))); out.push(c); }
-    else out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption})); }
-  else { const c=card(sectionKey,b.title); c._b.appendChild(el('div','body',paras(b.body||''))); out.push(c); }
+      if(real(b.caption)){ const cp=el('div','cap2',esc(b.caption)); if(EDIT)cp.setAttribute('data-edit',path+'.caption'); c.appendChild(cp); } out.push(c); }
+    else out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,capPath:path+'.caption'})); }
+  else { const c=card(sectionKey,b.title,null,path+'.title'); const bd=el('div','body',paras(b.body||'')); if(EDIT)bd.setAttribute('data-edit',path+'.body'); c._b.appendChild(bd); out.push(c); }
   return out;
 }
 function collaboratorsCard(list){
@@ -536,13 +543,13 @@ function render(p){
   const main=el('div','main');
   const heroData=p.classification&&p.classification.hero;
   if(heroData&&real(heroData.src)){ const hh=el('figure','hero-head');
-    hh.innerHTML=`<img src="${esc(heroData.src)}" alt="${esc(heroData.alt||'Cover image')}" loading="eager">`+(real(heroData.caption)?`<figcaption class="cap2">${esc(heroData.caption)}</figcaption>`:'');
+    hh.innerHTML=`<img src="${esc(heroData.src)}" alt="${esc(heroData.alt||'Cover image')}" loading="eager">`+(real(heroData.caption)?`<figcaption class="cap2"${edAttr('classification.hero.caption')}>${esc(heroData.caption)}</figcaption>`:'');
     main.appendChild(hh); }
   const cards=el('div','cards'); cards.id='cards'; main.appendChild(cards);
   const all=[];
-  ((p.classification&&p.classification.intro)||[]).forEach(b=>blockCards('classification',b).forEach(c=>{ if(!c)return; if((b.type||'text')==='text'&&!b.layout) c.classList.add('lead'); all.push(c); }));
+  ((p.classification&&p.classification.intro)||[]).forEach((b,bi)=>blockCards('classification',b,'classification.intro.'+bi).forEach(c=>{ if(!c)return; if((b.type||'text')==='text'&&!b.layout) c.classList.add('lead'); all.push(c); }));
   if(p.classification&&p.classification.collaborators&&p.classification.collaborators.length) all.push(collaboratorsCard(p.classification.collaborators));
-  state.contentNodes.forEach(n=>{ (n.content.blocks||[]).forEach(b=>blockCards(n.id,b).forEach(c=>c&&all.push(c))); });
+  state.contentNodes.forEach(n=>{ (n.content.blocks||[]).forEach((b,bi)=>blockCards(n.id,b,'nodes.'+state.nodes.indexOf(n)+'.content.blocks.'+bi).forEach(c=>c&&all.push(c))); });
   all.forEach((c,i)=>{ c.style.animationDelay=Math.min(i*45,500)+'ms'; cards.appendChild(c); });
   page.appendChild(main);
   root.appendChild(page);
@@ -572,10 +579,33 @@ let _rz=null; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setT
   const close=()=>lb.classList.remove('on');
   lb.addEventListener('click',close);
   document.addEventListener('keydown',e=>{ if(e.key==='Escape')close(); });
-  document.addEventListener('click',e=>{ const img=e.target.closest('img'); if(!img||!img.closest('.main'))return; const s=img.getAttribute('src'); if(!s)return;
+  document.addEventListener('click',e=>{ if(EDIT)return; const img=e.target.closest('img'); if(!img||!img.closest('.main'))return; const s=img.getAttribute('src'); if(!s)return;
     lb.querySelector('img').src=s; lb.querySelector('img').alt=img.getAttribute('alt')||''; lb.classList.add('on'); });
 })();
+/* ── inline-edit layer — the editor's Canvas tab drives this over postMessage (gated by ?edit) ── */
+let DOC=null, _postT=null;
+function postDoc(){ clearTimeout(_postT); _postT=setTimeout(()=>{ try{ parent.postMessage({type:'mm-edit-doc',doc:DOC},'*'); }catch(e){} },200); }
+function renderDoc(doc){ DOC=doc; try{ render(doc); }catch(e){ fail(e&&e.message||String(e)); return; } if(EDIT) enableInlineEdit(); }
+function enableInlineEdit(){
+  if(!document.getElementById('mm-ed-style')){ const st=document.createElement('style'); st.id='mm-ed-style';
+    st.textContent='.mm-ed{outline:1px dashed transparent;outline-offset:3px;border-radius:2px;transition:outline-color .12s,background .12s;cursor:text;}.mm-ed:hover{outline-color:rgba(196,0,33,.4);}.mm-ed:focus{outline:1px solid var(--accent,#C40021);background:rgba(196,0,33,.05);}';
+    document.head.appendChild(st); }
+  document.querySelectorAll('[data-edit]').forEach(node=>{
+    if(node._mmEd)return; node._mmEd=true;
+    node.setAttribute('contenteditable','true'); node.classList.add('mm-ed'); node.spellcheck=false;
+    const path=node.getAttribute('data-edit');
+    const multiline = node.classList.contains('body')||node.classList.contains('sp-b')||node.tagName==='P';
+    node.addEventListener('input',()=>{ const val= multiline ? node.innerText.replace(/ /g,' ').replace(/\n{3,}/g,'\n\n').replace(/[ \t]+\n/g,'\n').trim() : node.textContent.replace(/\s+/g,' ').trim(); setByPath(DOC,path,val); postDoc(); });
+    node.addEventListener('keydown',e=>{ if(!multiline && e.key==='Enter'){ e.preventDefault(); node.blur(); } });
+    node.addEventListener('paste',e=>{ e.preventDefault(); const t=((e.clipboardData||window.clipboardData).getData('text')||''); document.execCommand('insertText',false,t); });
+  });
+}
+window.addEventListener('message',ev=>{ const m=ev&&ev.data; if(!m||typeof m!=='object')return;
+  if(m.type==='mm-edit-load'&&m.doc) renderDoc(m.doc); });
 (async function init(){ const slug=getSlug();
+  if(EDIT){ try{ parent.postMessage({type:'mm-edit-ready',slug},'*'); }catch(e){}
+    setTimeout(async()=>{ if(!DOC){ try{ renderDoc(await loadProject(slug)); }catch(err){ fail(err&&err.message||String(err)); } } },700);
+    return; }
   try{ const p=await loadProject(slug); render(p); }
   catch(err){ const m=(location.protocol==='file:')
       ? 'This page loads its content over http. Open it from a web server — GitHub Pages, or a local server — not by double-clicking the file (file:// blocks the data fetch).'
