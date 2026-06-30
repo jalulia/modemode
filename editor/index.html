@@ -74,6 +74,7 @@
   .block>.bh .bthumb{width:30px;height:22px;object-fit:cover;border:1px solid var(--hair);border-radius:2px;background:var(--ground);flex:none;}
   .block>.bh .bthumb.none{display:inline-flex;align-items:center;justify-content:center;font-size:7px;letter-spacing:.06em;color:var(--grey-2);}
   .block>.bh .sp{flex:1;}
+  .wsel{width:auto;font-size:10px;padding:3px 4px;min-width:52px;color:var(--grey);}
   .block>.bb{padding:12px;}
   .ctrls{display:flex;gap:4px;}
   .ctrls button{border:1px solid var(--hair);background:var(--paper);border-radius:3px;width:24px;height:24px;font-size:12px;color:var(--grey);padding:0;}
@@ -169,6 +170,7 @@
     <button class="btn" id="save" disabled>Save</button>
   </div>
 
+<input type="file" id="cvfile" accept="image/*" class="hidden">
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SB_URL='https://vjvjparfulrtsxdslrpg.supabase.co';
@@ -314,6 +316,8 @@ function blockEditor(arr,i){
   const _imgblk=(b.type==='image'||(b.type==='media'&&b.kind!=='video'));
   if(_imgblk&&b.src){ const th=el('img','bthumb'); th.src=b.src; th.onerror=()=>{th.classList.add('none');th.removeAttribute('src');th.textContent='?';}; bh.appendChild(th); }
   else if(_imgblk){ bh.appendChild(el('span','bthumb none','PEND')); }
+  const wsel=el('select','wsel'); [['','—'],['full','Full'],['two-thirds','⅔'],['half','½'],['third','⅓']].forEach(([v,t])=>{ const o=el('option',null,t); o.value=v; if((b.width||'')===v)o.selected=true; wsel.appendChild(o); });
+  wsel.title='Block width'; wsel.onchange=()=>{ if(wsel.value)b.width=wsel.value; else delete b.width; markDirty(); }; bh.appendChild(wsel);
   const ctr=el('div','ctrls');
   const up=el('button',null,'↑'); up.onclick=()=>{ if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(); render(); } };
   const dn=el('button',null,'↓'); dn.onclick=()=>{ if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(); render(); } };
@@ -354,6 +358,7 @@ function render(){
   d.classification.hero=d.classification.hero||{src:'',alt:''};
   cl._b.appendChild(imageField('Hero image', d.classification.hero, 'src', {}));
   cl._b.appendChild(inputField('Hero alt', d.classification.hero, 'alt'));
+  cl._b.appendChild(checkField('Vertical hero (portrait — sits beside the intro)', d.classification.hero, 'orient', 'portrait'));
   cl._b.appendChild(el('label',null,'Intro blocks'));
   d.classification.intro=d.classification.intro||[]; const introHost=el('div'); blocksSection(introHost, d.classification.intro); cl._b.appendChild(introHost);
   cl._b.appendChild(el('label',null,'Collaborators'));
@@ -445,7 +450,17 @@ window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='obje
   else if(m.type==='mm-roster'){ saveRosterToSupabase(m.data); }
   else if(m.type==='mm-edit-ready'){ const f=$('cvframe'); if(f&&f.contentWindow&&state.doc) f.contentWindow.postMessage({type:'mm-edit-load',doc:state.doc},'*'); }
   else if(m.type==='mm-edit-doc'&&m.doc){ state.doc=m.doc; markDirty(); }
+  else if(m.type==='mm-edit-pick-image'&&m.path){ cvPickImage(m.path); }
 });
+let pendingImgPath=null;
+function cvPickImage(path){ pendingImgPath=path; const fi=$('cvfile'); fi.value=''; fi.click(); }
+$('cvfile').onchange=async()=>{ const f=$('cvfile').files[0]; if(!f||!pendingImgPath)return; setStatus('uploading…');
+  const sp=(state.slug||'misc')+'/'+Date.now()+'-'+f.name.replace(/[^\w.\-]+/g,'_');
+  const { error }=await sb.storage.from('project-media').upload(sp,f,{upsert:true,cacheControl:'31536000'});
+  if(error){ setStatus('upload failed','err'); alert(error.message); pendingImgPath=null; return; }
+  const { data }=sb.storage.from('project-media').getPublicUrl(sp);
+  const fr=$('cvframe'); if(fr&&fr.contentWindow) fr.contentWindow.postMessage({type:'mm-edit-set-image',path:pendingImgPath,url:data.publicUrl},'*');
+  setStatus('uploaded','ok'); pendingImgPath=null; };
 
 refreshAuth();
 </script>
