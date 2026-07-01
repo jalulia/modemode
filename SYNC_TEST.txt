@@ -1,0 +1,3 @@
+If you can see this file in your modemode folder, the workspace is writing directly to your disk —
+which means we can stop using the install script: I'll just edit your files and you push.
+(You can delete this file.)
