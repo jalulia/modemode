@@ -15,11 +15,6 @@
         "title": "CLASSIFICATION",
         "body": "Nightmare Kart is a freestanding indie arcade cabinet built for Wonderville (Brooklyn) — a custom enclosure for an original kart racer developed with LWMedia. The form is a love letter to the uneasy basement-arcade objects of the late nineties, scaled and materialized for a contemporary venue.\n\nFabricated in-studio over twelve weeks: shou sugi ban panels around a CNC carcass, a faux stained glass marquee, a programmable interactive lighting rig, and a feedback layer that links physical controls to in-game state. The result is an object that reads as both shrine and machine."
       }
-    ],
-    "collaborators": [
-      { "name": "LWMedia", "role": "Developer", "url": "https://b0tster.carrd.co" },
-      { "name": "Arcade Commons", "role": "Indie Arcade Non-Profit", "url": "https://arcadecommons.org" },
-      { "name": "Wonderville", "role": "Indie Arcade venue", "url": "https://wonderville.nyc" }
     ]
   },
   "nodes": [

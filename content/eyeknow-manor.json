@@ -37,7 +37,7 @@
       "id": "eyk-face", "label": "Integrated Facial Recognition AI system", "blurb": "AI that reads the room and drives the portraits and prizes.",
       "geom": { "x": -0.475, "y": 0.015, "r": 0.203, "i": 0.3, "f": 2.9, "core": false },
       "content": { "hidden": false, "order": 2, "blocks": [
-        { "type": "text", "title": "AI SYSTEM", "body": "An AI layer wired into the experience — generating portraits and driving the Manor's reactive set-pieces. Coded by Madwell." }
+        { "type": "text", "title": "AI SYSTEM", "body": "An AI layer wired into the experience — generating portraits and driving the Manor's reactive set-pieces." }
       ] }
     },
     {
@@ -53,8 +53,8 @@
       "id": "eyk-portraits", "label": "Living portraits", "blurb": "Two AI-generated portrait walls — and a roulette of prizes.",
       "geom": { "x": -0.287, "y": -0.396, "r": 0.123, "i": 0.37, "f": 4, "core": false },
       "content": { "hidden": false, "order": 5, "blocks": [
-        { "type": "image", "title": "AI PORTRAIT WALLS", "wide": true, "src": "", "alt": "AI-generated portrait wall", "caption": "One of two AI-generated portrait walls + the prize roulette. Fabricated by Millwright, coded by Madwell." },
-        { "type": "text", "title": null, "body": "One of two AI-generated portrait walls, paired with our take on roulette and its unique prizes. Fabricated by Millwright, coded by Madwell." }
+        { "type": "image", "title": "AI PORTRAIT WALLS", "wide": true, "src": "", "alt": "AI-generated portrait wall", "caption": "One of two AI-generated portrait walls + the prize roulette." },
+        { "type": "text", "title": null, "body": "One of two AI-generated portrait walls, paired with our take on roulette and its unique prizes." }
       ] }
     },
     {
@@ -117,8 +117,8 @@
       "id": "eyk-crt", "label": "CRT Array Streaming Display", "blurb": "A wall of vintage TVs, mapped and switchable, live-streamed from a phone.",
       "geom": { "x": 0.042, "y": -0.52, "r": 0.12, "i": 0.5, "f": 2.35, "core": false },
       "content": { "hidden": false, "order": 15, "blocks": [
-        { "type": "image", "title": "VINTAGE TV ARRAY", "wide": true, "src": "", "alt": "Vintage TV array", "caption": "Mapped to several programs — isolated and connected — switching to a phone-streamed live cam. With Millwright + Wlabs." },
-        { "type": "text", "title": null, "body": "A unique vintage-TV array mapped to several programs, both isolated and connected — switching between dispersed content and a phone-streamed live cam. Developed with Millwright and Wlabs." }
+        { "type": "image", "title": "VINTAGE TV ARRAY", "wide": true, "src": "", "alt": "Vintage TV array", "caption": "Mapped to several programs — isolated and connected — switching to a phone-streamed live cam." },
+        { "type": "text", "title": null, "body": "A unique vintage-TV array mapped to several programs, both isolated and connected — switching between dispersed content and a phone-streamed live cam." }
       ] }
     }
   ]

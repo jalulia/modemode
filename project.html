@@ -576,7 +576,6 @@ function render(p){
   } else if(heroData&&real(heroData.src)){ const hh=el('figure','hero-head'); hh.innerHTML=heroImg(); main.appendChild(hh); }
   main.appendChild(cards);
   intro.forEach((b,bi)=>{ if(bi===leadIdx)return; blockCards('classification',b,'classification.intro.'+bi).forEach(c=>{ if(!c)return; if((b.type||'text')==='text'&&!b.layout) c.classList.add('lead'); applyWidth(c,b); if(EDIT)c.dataset.block='classification.intro.'+bi; all.push(c); }); });
-  if(p.classification&&p.classification.collaborators&&p.classification.collaborators.length) all.push(applyWidth(collaboratorsCard(p.classification.collaborators),{type:'column'}));
   state.contentNodes.forEach(n=>{ const ni=state.nodes.indexOf(n); (n.content.blocks||[]).forEach((b,bi)=>blockCards(n.id,b,'nodes.'+ni+'.content.blocks.'+bi).forEach(c=>{ if(c){ applyWidth(c,b); if(EDIT)c.dataset.block='nodes.'+ni+'.content.blocks.'+bi; all.push(c);} })); });
   all.forEach((c,i)=>{ c.style.animationDelay=Math.min(i*45,500)+'ms'; cards.appendChild(c); });
   page.appendChild(main);

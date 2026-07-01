@@ -21,12 +21,6 @@
         { "k": "Format", "v": "Arcade cabinet" },
         { "k": "Venue", "v": "Wonderville" }
       ] }
-    ],
-    "collaborators": [
-      { "name": "Nick Santaniello", "role": "Game Development", "url": "https://robysoft.net" },
-      { "name": "Devin Curry / Grand Atrium", "role": "Music", "url": "https://www.instagram.com/grandatrium/?hl=en" },
-      { "name": "Wonderville", "role": "Arcade venue", "url": "https://www.wonderville.nyc/events/massivelaunchparty" },
-      { "name": "Complex × Puma", "role": "Press", "url": "https://www.complex.com/sneakers/2020/02/puma-future-rider-sneaker" }
     ]
   },
   "nodes": [

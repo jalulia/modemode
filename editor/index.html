@@ -361,10 +361,6 @@ function render(){
   cl._b.appendChild(checkField('Vertical hero (portrait — sits beside the intro)', d.classification.hero, 'orient', 'portrait'));
   cl._b.appendChild(el('label',null,'Intro blocks'));
   d.classification.intro=d.classification.intro||[]; const introHost=el('div'); blocksSection(introHost, d.classification.intro); cl._b.appendChild(introHost);
-  cl._b.appendChild(el('label',null,'Collaborators'));
-  d.classification.collaborators=d.classification.collaborators||[];
-  cl._b.appendChild(subEditor(null, d.classification.collaborators, ()=>({name:'',role:'',url:''}), (host,c)=>{
-    const r=el('div','row'); r.appendChild(inputField('Name',c,'name')); r.appendChild(inputField('Role',c,'role')); host.appendChild(r); host.appendChild(inputField('URL',c,'url')); }));
   main.appendChild(cl);
 
   // nodes

@@ -21,14 +21,6 @@
         { "k": "Venues", "v": "Wonderville · Smithsonian · Moxy" },
         { "k": "Honor", "v": "A MAZE 2023" }
       ] }
-    ],
-    "collaborators": [
-      { "name": "Nick Santaniello", "role": "Game Dev & Concept · Hoverburger", "url": "https://robysoft.net" },
-      { "name": "Chris Hernandez", "role": "Art & Game Design · Hoverburger" },
-      { "name": "Karl Hohn", "role": "Music & Sound · Hoverburger" },
-      { "name": "Momo Pixel", "role": "Game Art & Concept · Hair Nah", "url": "https://www.momopixel.com/hair-nah-arcade" },
-      { "name": "Whalefood Games", "role": "Game Development · Kung Fu Kickball", "url": "https://whalefoodgames.com/" },
-      { "name": "Wonderville", "role": "Arcade venue", "url": "https://www.wonderville.nyc/events/hoverburger-launch-party" }
     ]
   },
   "nodes": [
