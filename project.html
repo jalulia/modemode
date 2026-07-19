@@ -689,8 +689,40 @@ function setWidth(path,w){ const b=getByPath(DOC,path); if(!b)return; b.width=w;
 function delBlock(path){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1],1); renderDoc(DOC); postDoc(); }
 function addAfter(path,type){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1]+1,0,newBlock(type)); renderDoc(DOC); postDoc(); }
 function reorder(src,dst,after){ if(!sameArray(src,dst))return; const sp=src.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); let si=+sp[sp.length-1], di=+dst.split('.').pop(); if(!Array.isArray(arr))return; const [it]=arr.splice(si,1); if(si<di)di--; arr.splice(after?di+1:di,0,it); renderDoc(DOC); postDoc(); }
-function pickImage(path){ const u=prompt('Image URL  (leave blank to upload a file from the editor):',''); if(u===null)return;
-  if(u.trim()){ setByPath(DOC,path,u.trim()); renderDoc(DOC); postDoc(); } else { try{ parent.postMessage({type:'mm-edit-pick-image',path},'*'); }catch(e){} } }
+let _mmImgPanel=null;
+function closeImgPanel(){ if(_mmImgPanel){ _mmImgPanel.remove(); _mmImgPanel=null; } }
+function imgPanelStyle(){ if(document.getElementById('mm-img-style'))return; const st=document.createElement('style'); st.id='mm-img-style';
+  st.textContent='.mm-imgov{position:fixed;inset:0;z-index:60;background:rgba(18,16,12,.5);display:flex;align-items:center;justify-content:center;}'
+   +'.mm-imgp{width:420px;max-width:92vw;background:#fff;border:1px solid var(--hair);border-radius:10px;padding:20px;box-shadow:0 18px 60px rgba(18,16,12,.4);}'
+   +'.mm-imgp h4{margin:0 0 4px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2);}'
+   +'.mm-imgp .sub{font-size:12px;color:var(--grey);margin:0 0 14px;}'
+   +'.mm-imgp input{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:9px 11px;border:1px solid var(--hair);border-radius:6px;margin-bottom:12px;background:#fff;color:var(--ink);}'
+   +'.mm-imgp .rowb{display:flex;gap:8px;align-items:center;}'
+   +'.mm-imgp button{font:inherit;font-size:12px;border-radius:6px;padding:8px 14px;cursor:pointer;border:1px solid var(--hair);background:#fff;color:var(--ink);}'
+   +'.mm-imgp .set{margin-left:auto;background:var(--ink);color:#fff;border-color:var(--ink);}'
+   +'.mm-imgp .cx{border-color:transparent;color:var(--grey);}';
+  document.head.appendChild(st); }
+function openImagePanel(path){ closeMenu(); closeCrop(); closeImgPanel(); imgPanelStyle();
+  const cur=getByPath(DOC,path); const curUrl=(typeof cur==='string')?cur:'';
+  const ov=document.createElement('div'); ov.className='mm-imgov'; ov.setAttribute('contenteditable','false');
+  const p=document.createElement('div'); p.className='mm-imgp';
+  const hd=document.createElement('h4'); hd.textContent='Replace image'; p.appendChild(hd);
+  const sub=document.createElement('div'); sub.className='sub'; sub.textContent='Paste an image URL, or upload a file from your computer.'; p.appendChild(sub);
+  const inp=document.createElement('input'); inp.type='text'; inp.placeholder='https://…  image URL'; inp.value=curUrl; p.appendChild(inp);
+  const rb=document.createElement('div'); rb.className='rowb';
+  const up=document.createElement('button'); up.className='up'; up.textContent='Upload file…';
+  const cx=document.createElement('button'); cx.className='cx'; cx.textContent='Cancel';
+  const set=document.createElement('button'); set.className='set'; set.textContent='Set image';
+  rb.appendChild(up); rb.appendChild(cx); rb.appendChild(set); p.appendChild(rb);
+  ov.appendChild(p); document.body.appendChild(ov); _mmImgPanel=ov; setTimeout(()=>{try{inp.focus();}catch(_){}} ,30);
+  const apply=()=>{ const u=inp.value.trim(); closeImgPanel(); if(u){ setByPath(DOC,path,u); renderDoc(DOC); postDoc(); } };
+  set.addEventListener('click',apply);
+  inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); apply(); } else if(e.key==='Escape'){ e.preventDefault(); closeImgPanel(); } });
+  up.addEventListener('click',()=>{ closeImgPanel(); try{ parent.postMessage({type:'mm-edit-pick-image',path},'*'); }catch(e){} });
+  cx.addEventListener('click',closeImgPanel);
+  ov.addEventListener('mousedown',e=>{ if(e.target===ov) closeImgPanel(); });
+}
+function pickImage(path){ openImagePanel(path); }
 let _mmCrop=null,_mmCropOut=null;
 function closeCrop(){ if(_mmCropOut){ document.removeEventListener('mousedown',_mmCropOut); _mmCropOut=null; } if(_mmCrop){ _mmCrop.remove(); _mmCrop=null; } }
 function cropPanelStyle(){ if(document.getElementById('mm-crop-style'))return; const st=document.createElement('style'); st.id='mm-crop-style';
