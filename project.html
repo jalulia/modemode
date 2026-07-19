@@ -167,6 +167,8 @@
   /* images + captions (caption distinct from body) */
   .img-real{display:block;width:100%;height:auto;}
   .img-real.framed{padding:18px 18px 6px;}
+  .cropfig{position:relative;display:block;width:100%;margin:0;overflow:hidden;background:var(--paper);}
+  .cropfig img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
   .cap2{font-size:11px;line-height:1.5;letter-spacing:.02em;color:var(--grey);padding:11px 18px 14px;}
   .slot{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:13px;
     min-height:300px;padding:38px 30px;border-top:1px solid var(--hair-2);}
@@ -374,6 +376,16 @@ function bindField(cv){
 const state={ project:null, nodes:[], contentNodes:[], accent:[196,0,33], ink:[196,0,33], mm:null, hoverNodeId:null, activeKey:'classification', imgN:0 };
 function hasContent(node){ const c=node&&node.content; return !!(c&&Array.isArray(c.blocks)&&c.blocks.length>0&&!c.hidden); }
 function nextImg(){ state.imgN+=1; return 'IMG-'+String(state.imgN).padStart(2,'0'); }
+function imgEl(src, alt, cls, imgPath, crop){
+  const im=el('img',cls+(isSvg(src)?' framed':'')); im.src=src; im.alt=alt||''; im.loading='lazy';
+  if(EDIT&&imgPath) im.setAttribute('data-img',imgPath);
+  if(!(crop&&crop.aspect)||isSvg(src)) return im;
+  const p=String(crop.aspect).split(':').map(Number);
+  const fx=(crop.fx!=null?crop.fx:0.5), fy=(crop.fy!=null?crop.fy:0.5), z=(crop.zoom>1?crop.zoom:1);
+  im.style.objectPosition=(fx*100).toFixed(1)+'% '+(fy*100).toFixed(1)+'%';
+  if(z>1){ im.style.transform='scale('+z+')'; im.style.transformOrigin=(fx*100).toFixed(1)+'% '+(fy*100).toFixed(1)+'%'; }
+  const fig=el('figure','cropfig'); if(p[0]&&p[1])fig.style.aspectRatio=p[0]+'/'+p[1]; fig.appendChild(im); return fig;
+}
 
 /* ===================== card builders ===================== */
 function card(sectionKey, labelText, tagText, titlePath){
@@ -385,7 +397,7 @@ function card(sectionKey, labelText, tagText, titlePath){
 function imageCard(sectionKey, src, desc, tall, opts){
   opts=opts||{}; const lab=real(opts.title)?opts.title:nextImg(); const c=el('div','card'+(opts.wide?' wide':'')); c.dataset.section=sectionKey;
   const h=el('div','card-h'); const lbl=el('span','lbl',esc(lab)); if(EDIT&&opts.titlePath)lbl.setAttribute('data-edit',opts.titlePath); h.appendChild(lbl); h.appendChild(el('span','tag',opts.tag||(tall?'COVER':'DETAIL'))); c.appendChild(h);
-  if(real(src)){ const im=el('img','img-real'+(isSvg(src)?' framed':'')); im.src=src; im.alt=desc||''; im.loading='lazy'; if(EDIT&&opts.imgPath)im.setAttribute('data-img',opts.imgPath); c.appendChild(im);
+  if(real(src)){ c.appendChild(imgEl(src, desc, 'img-real', opts.imgPath, opts.crop));
     if(real(opts.caption)){ const cap=el('div','cap2',esc(opts.caption)); if(EDIT&&opts.capPath)cap.setAttribute('data-edit',opts.capPath); c.appendChild(cap); } }
   else { const s=el('div','slot'+(tall?' tall':'')); if(EDIT&&opts.imgPath)s.setAttribute('data-img',opts.imgPath); s.appendChild(el('div','ic'));
     if(desc) s.appendChild(el('div','desc',esc(desc)));
@@ -440,10 +452,12 @@ function blockCards(sectionKey, b, path){
   else if(type==='imagePara'){ const c=card(sectionKey,b.title,null,path+'.title'); if(b.wide)c.classList.add('wide');
     (b.rows||[]).forEach((r,ri)=>{ const has=real(r.image); const row=el('div','mc-row'+(has?' has-img':'')); const rp=path+'.rows.'+ri;
       row.appendChild(el('div',null,`<h4${edAttr(rp+'.title')}>${esc(r.title)}</h4><p${edAttr(rp+'.body')}>${esc(r.body).replace(/\n/g,'<br>')}</p>`));
-      if(has){ const im=el('img','thumb'); im.src=r.image; im.alt=r.title||''; im.loading='lazy'; row.appendChild(im); }
+      if(has){ const im=el('img','thumb'); im.src=r.image; im.alt=r.title||''; im.loading='lazy';
+        if(r.crop&&r.crop.aspect&&!isSvg(r.image)){ const cp=String(r.crop.aspect).split(':').map(Number); if(cp[0]&&cp[1])im.style.aspectRatio=cp[0]+'/'+cp[1]; const fx=(r.crop.fx!=null?r.crop.fx:0.5),fy=(r.crop.fy!=null?r.crop.fy:0.5); im.style.objectPosition=(fx*100).toFixed(1)+'% '+(fy*100).toFixed(1)+'%'; if(r.crop.zoom>1){im.style.transform='scale('+r.crop.zoom+')';im.style.transformOrigin=(fx*100).toFixed(1)+'% '+(fy*100).toFixed(1)+'%';} }
+        row.appendChild(im); }
       c._b.appendChild(row); });
     out.push(c); }
-  else if(type==='image'){ out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,tag:b.tag,title:b.title,titlePath:path+'.title',capPath:path+'.caption',imgPath:path+'.src'})); }
+  else if(type==='image'){ out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,tag:b.tag,title:b.title,titlePath:path+'.title',crop:b.crop,capPath:path+'.caption',imgPath:path+'.src'})); }
   else if(type==='media'){
     if(b.kind==='video'){ const hasFile=real(b.videoSrc); const src=hasFile?'':vimeoSrc(b.embed);
       const c=el('div','card'+(b.wide?' wide':'')); c.dataset.section=sectionKey;
@@ -455,7 +469,7 @@ function blockCards(sectionKey, b, path){
       else { inner=`<div class="slot"><div class="ic"></div><div class="desc">${esc(b.alt||'Video')}</div><div class="pending">VIDEO PENDING</div></div>`; }
       c.appendChild(el('div',null,inner));
       if(real(b.caption)){ const cp=el('div','cap2',esc(b.caption)); if(EDIT)cp.setAttribute('data-edit',path+'.caption'); c.appendChild(cp); } out.push(c); }
-    else out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,title:b.title,titlePath:path+'.title',capPath:path+'.caption',imgPath:path+'.src'})); }
+    else out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,title:b.title,titlePath:path+'.title',crop:b.crop,capPath:path+'.caption',imgPath:path+'.src'})); }
   else { const c=card(sectionKey,b.title,null,path+'.title'); const bd=el('div','body',paras(b.body||'')); if(EDIT)bd.setAttribute('data-edit',path+'.body'); c._b.appendChild(bd); out.push(c); }
   return out;
 }

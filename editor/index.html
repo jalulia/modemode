@@ -276,6 +276,31 @@ function videoField(label, obj, key){
     obj[key]=data.publicUrl; url.value=data.publicUrl; markDirty(); setStatus('uploaded','ok'); };
   ic.appendChild(url); ic.appendChild(file); w.appendChild(ic); return w;
 }
+function cropField(obj, key){
+  if(!document.getElementById('cropcss')){ const st=el('style'); st.id='cropcss'; st.textContent='.cropbox{position:relative;width:100%;max-width:280px;overflow:hidden;border:1px solid #d9d9d6;border-radius:3px;background:#f2f2f0;cursor:crosshair;touch-action:none;margin-top:6px;}.cropbox img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;}.cropdot{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border:2px solid #fff;border-radius:50%;box-shadow:0 0 0 1px rgba(0,0,0,.55);pointer-events:none;}'; document.head.appendChild(st); }
+  const w=el('div','fieldwrap'); w.appendChild(el('label',null,'Crop / framing'));
+  const cr=obj.crop||{};
+  const commit=()=>{ if(cr.aspect||cr.zoom>1||cr.fx!=null||cr.fy!=null) obj.crop=cr; else delete obj.crop; markDirty(); };
+  const row=el('div','row');
+  const asel=el('select'); [['','Original'],['16:10','16:10'],['3:2','3:2'],['4:3','4:3'],['1:1','Square'],['4:5','4:5'],['9:16','Tall']].forEach(([v,t])=>{ const o=el('option',null,t); o.value=v; if((cr.aspect||'')===v)o.selected=true; asel.appendChild(o); });
+  const zin=el('input'); zin.type='range'; zin.min='1'; zin.max='3'; zin.step='0.05'; zin.value=cr.zoom||1; zin.style.flex='1';
+  const aw=el('label','chk'); aw.appendChild(document.createTextNode('Aspect ')); aw.appendChild(asel);
+  const zw=el('label','chk'); zw.appendChild(document.createTextNode('Zoom ')); zw.appendChild(zin);
+  row.appendChild(aw); row.appendChild(zw);
+  const box=el('div','cropbox'); const pimg=el('img'); const dot=el('div','cropdot'); box.appendChild(pimg); box.appendChild(dot);
+  const paint=()=>{ pimg.src=obj[key]||''; const has=!!cr.aspect;
+    let ar='16/10'; if(cr.aspect){ const p=cr.aspect.split(':').map(Number); if(p[0]&&p[1])ar=p[0]+'/'+p[1]; } box.style.aspectRatio=ar;
+    const fx=(cr.fx!=null?cr.fx:0.5), fy=(cr.fy!=null?cr.fy:0.5), z=(cr.zoom>1?cr.zoom:1);
+    pimg.style.objectPosition=(fx*100)+'% '+(fy*100)+'%'; pimg.style.transform=z>1?('scale('+z+')'):'none'; pimg.style.transformOrigin=(fx*100)+'% '+(fy*100)+'%';
+    dot.style.left=(fx*100)+'%'; dot.style.top=(fy*100)+'%'; dot.style.display=has?'block':'none'; box.style.cursor=has?'crosshair':'default'; };
+  asel.onchange=()=>{ if(asel.value)cr.aspect=asel.value; else delete cr.aspect; commit(); paint(); };
+  zin.oninput=()=>{ const z=parseFloat(zin.value); if(z>1)cr.zoom=z; else delete cr.zoom; commit(); paint(); };
+  let drag=false; const setF=(e)=>{ const r=box.getBoundingClientRect(); cr.fx=Math.min(1,Math.max(0,(e.clientX-r.left)/r.width)); cr.fy=Math.min(1,Math.max(0,(e.clientY-r.top)/r.height)); commit(); paint(); };
+  box.addEventListener('pointerdown',e=>{ if(!cr.aspect)return; drag=true; try{box.setPointerCapture(e.pointerId);}catch(_){} setF(e); });
+  box.addEventListener('pointermove',e=>{ if(drag)setF(e); });
+  box.addEventListener('pointerup',()=>{ drag=false; });
+  w.appendChild(row); w.appendChild(box); paint(); return w;
+}
 function subEditor(label, arr, factory, renderItem){
   const w=el('div','fieldwrap'); if(label)w.appendChild(el('label',null,label));
   const box=el('div','sub');
@@ -298,13 +323,13 @@ function blockBody(b){
   const add=(...nodes)=>nodes.forEach(n=>c.appendChild(n));
   if(b.type==='text'){ add(inputField('Title (optional)',b,'title'), inputField('Body',b,'body',{area:true}));
       const r=el('div','row'); r.appendChild(checkField('Two-column',b,'layout','two')); r.appendChild(checkField('Wide',b,'wide')); add(r); }
-  else if(b.type==='image'){ add(inputField('Title (optional)',b,'title'), imageField('Image',b,'src',{}), inputField('Alt',b,'alt'), inputField('Caption',b,'caption'), checkField('Wide',b,'wide')); }
+  else if(b.type==='image'){ add(inputField('Title (optional)',b,'title'), imageField('Image',b,'src',{}), cropField(b,'src'), inputField('Alt',b,'alt'), inputField('Caption',b,'caption'), checkField('Wide',b,'wide')); }
   else if(b.type==='media'){ const kindW=el('div','fieldwrap'); kindW.appendChild(el('label',null,'Kind'));
       const sel=el('select'); ['image','video'].forEach(k=>{ const o=el('option',null,k); o.value=k; if((b.kind||'image')===k)o.selected=true; sel.appendChild(o); });
       sel.onchange=()=>{ b.kind=sel.value; markDirty(); render(); }; kindW.appendChild(sel); add(inputField('Title (optional)',b,'title'), kindW);
       if(b.kind==='video'){ add(videoField('Upload MP4',b,'videoSrc'), inputField('…or Vimeo URL / ID',b,'embed',{ph:'https://vimeo.com/… or 123456789'}));
         const vr=el('div','row'); vr.appendChild(checkField('Loop',b,'loop')); vr.appendChild(checkField('Autoplay (muted)',b,'autoplay')); add(vr); }
-      else { add(imageField('Image',b,'src',{})); }
+      else { add(imageField('Image',b,'src',{}), cropField(b,'src')); }
       add(inputField('Caption',b,'caption'), checkField('Wide',b,'wide')); }
   else if(b.type==='stats'){ b.items=b.items||[]; add(inputField('Title',b,'title',{ph:'AT A GLANCE'}),
       subEditor('Items', b.items, ()=>({k:'',v:''}), (host,it)=>{ const r=el('div','row'); r.appendChild(inputField('Label',it,'k')); r.appendChild(inputField('Value',it,'v')); host.appendChild(r); })); }
@@ -314,7 +339,7 @@ function blockBody(b){
         host.appendChild(inputField('Name',col,'name')); host.appendChild(inputField('Body',col,'body',{area:true})); })); }
   else if(b.type==='imagePara'){ b.rows=b.rows||[]; add(inputField('Title',b,'title',{ph:'MATERIAL CONDITIONS'}),
       subEditor('Rows', b.rows, ()=>({title:'',body:'',image:null}), (host,row)=>{
-        host.appendChild(inputField('Title',row,'title')); host.appendChild(inputField('Body',row,'body',{area:true})); host.appendChild(imageField('Image (optional)',row,'image',{})); })); }
+        host.appendChild(inputField('Title',row,'title')); host.appendChild(inputField('Body',row,'body',{area:true})); host.appendChild(imageField('Image (optional)',row,'image',{})); host.appendChild(cropField(row,'image')); })); }
   else if(b.type==='carousel'||b.type==='cardgrid'){ b.images=b.images||[];
       add(inputField('Title',b,'title',{ph:b.type==='cardgrid'?'GALLERY':'SELECTED'}));
       if(b.type==='cardgrid') add(inputField('Aspect',b,'aspect',{ph:'portrait | 9:16 | 3:2'}));
