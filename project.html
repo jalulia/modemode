@@ -802,9 +802,34 @@ function pbStyle(){ if(document.getElementById('mm-pb-style'))return; const st=d
   document.head.appendChild(st); }
 function arrPath(p){ return p.split('.').slice(0,-1).join('.'); }
 function setWidth(path,w){ const b=getByPath(DOC,path); if(!b)return; b.width=w; renderDoc(DOC); postDoc(); }
+const WORDER=['full','two-thirds','half','third'];
+const WEQ={1:'full',2:'half',3:'third'};
+function widthOf(b){ return (b&&b.width)||(b&&b.wide?'full':null)||(b&&DEFW[b.type||'text'])||'half'; }
+function cycleWidth(path,back){ const b=getByPath(DOC,path); if(!b||typeof b!=='object')return;
+  const i=WORDER.indexOf(widthOf(b)); const n=WORDER.length;
+  b.width=WORDER[((i<0?0:i)+(back?-1:1)+n)%n]; delete b.wide; renderDoc(DOC); postDoc(); }
+function _cardFor(p){ try{ return document.querySelector('[data-block="'+String(p).replace(/"/g,'\\"')+'"]'); }catch(_){ return null; } }
+// After a drop: if the block could not land in the target's row (the row was already
+// full at 12 cols and it wrapped), equalise that row so it can sit alongside. Only
+// fires on overflow -- a block that fits in the leftover space keeps everyone's widths.
+function fitRow(movedPath,targetPath){
+  const mc=_cardFor(movedPath), tc=_cardFor(targetPath); if(!mc||!tc)return false;
+  const top=e=>Math.round(e.getBoundingClientRect().top);
+  if(Math.abs(top(mc)-top(tc))<4) return false;               // already sharing a row: it fit
+  const tTop=top(tc);
+  const members=[].slice.call(document.querySelectorAll('[data-block]'))
+    .filter(c=>Math.abs(top(c)-tTop)<4).map(c=>c.dataset.block)
+    .filter(p=>p!==movedPath);
+  const set=members.concat([movedPath]);
+  const w=WEQ[set.length]; if(!w) return false;                // >3 across needs a quarter width
+  let changed=false;
+  set.forEach(p=>{ const b=getByPath(DOC,p); if(b&&typeof b==='object'&&(b.width!==w||b.wide)){ b.width=w; delete b.wide; changed=true; } });
+  if(changed){ renderDoc(DOC); postDoc(); }
+  return changed;
+}
 function delBlock(path){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1],1); renderDoc(DOC); postDoc(); }
 function addAfter(path,type){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1]+1,0,newBlock(type)); renderDoc(DOC); postDoc(); }
-function reorder(src,dst,after){ if(!src||!dst||src===dst)return; const sp=src.split('.'), dp=dst.split('.'); const sa=arrPath(src), da=arrPath(dst); const sArr=getByPath(DOC,sa), dArr=getByPath(DOC,da); if(!Array.isArray(sArr)||!Array.isArray(dArr))return; const si=+sp[sp.length-1]; let di=+dp[dp.length-1]; if(!(si>=0&&si<sArr.length)||!(di>=0&&di<dArr.length))return; const [it]=sArr.splice(si,1); if(sa===da&&si<di)di--; dArr.splice(after?di+1:di,0,it); renderDoc(DOC); postDoc(); }
+function reorder(src,dst,after){ if(!src||!dst||src===dst)return; const sp=src.split('.'), dp=dst.split('.'); const sa=arrPath(src), da=arrPath(dst); const sArr=getByPath(DOC,sa), dArr=getByPath(DOC,da); if(!Array.isArray(sArr)||!Array.isArray(dArr))return; const si=+sp[sp.length-1]; let di=+dp[dp.length-1]; if(!(si>=0&&si<sArr.length)||!(di>=0&&di<dArr.length))return; const [it]=sArr.splice(si,1); if(sa===da&&si<di)di--; const ins=after?di+1:di; dArr.splice(ins,0,it); renderDoc(DOC); postDoc(); return da+'.'+ins; }
 let _mmImgPanel=null;
 function closeImgPanel(){ if(_mmImgPanel){ _mmImgPanel.remove(); _mmImgPanel=null; } }
 function imgPanelStyle(){ if(document.getElementById('mm-img-style'))return; const st=document.createElement('style'); st.id='mm-img-style';
@@ -986,7 +1011,7 @@ function enablePageBuilder(){ if(!EDIT)return; pbStyle();
     dh.addEventListener('mousedown',()=>card.setAttribute('draggable','true'));
     dh.addEventListener('mouseup',()=>setTimeout(()=>card.removeAttribute('draggable'),0));
     tools.appendChild(dh);
-    tools.appendChild(mk('mm-w','▭','Width',()=>openMenu(card,'width',path)));
+    tools.appendChild(mk('mm-w','▭','Width — click to cycle (⇧ back)',(e)=>cycleWidth(path,e&&e.shiftKey)));
     tools.appendChild(mk('mm-add','＋','Add block after',()=>openMenu(card,'add',path)));
     tools.appendChild(mk('mm-del','✕','Delete block',()=>{ if(confirm('Delete this block?'))delBlock(path); }));
     card.appendChild(tools);
@@ -995,7 +1020,7 @@ function enablePageBuilder(){ if(!EDIT)return; pbStyle();
     card.addEventListener('dragenter',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='move'; });
     card.addEventListener('dragover',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='move'; const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); card.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b'); card.classList.add(mn===dl?'mm-drop-l':mn===dr?'mm-drop-r':mn===dt?'mm-drop-t':'mm-drop-b'); });
     card.addEventListener('dragleave',()=>card.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b'));
-    card.addEventListener('drop',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); e.stopPropagation(); const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); const after=(mn===dl?false:mn===dr?true:mn===dt?false:true); const s=_dragSrc; _dragSrc=null; document.querySelectorAll('.mm-drop-l,.mm-drop-r,.mm-drop-t,.mm-drop-b,.mm-dragging').forEach(x=>x.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b','mm-dragging')); document.querySelectorAll('[data-block][draggable]').forEach(x=>x.removeAttribute('draggable')); reorder(s,path,after); });
+    card.addEventListener('drop',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); e.stopPropagation(); const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); const after=(mn===dl?false:mn===dr?true:mn===dt?false:true); const beside=(mn===dl||mn===dr); const s=_dragSrc; _dragSrc=null; document.querySelectorAll('.mm-drop-l,.mm-drop-r,.mm-drop-t,.mm-drop-b,.mm-dragging').forEach(x=>x.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b','mm-dragging')); document.querySelectorAll('[data-block][draggable]').forEach(x=>x.removeAttribute('draggable')); const np=reorder(s,path,after); if(np&&beside) fitRow(np,path); });
   });
   document.querySelectorAll('[data-img]').forEach(img=>{ if(img._mmImg)return; img._mmImg=true; const p=img.dataset.img;
     img.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); if(!real(getByPath(DOC,p))) openImagePanel(p); else selectImage(img, p); });
