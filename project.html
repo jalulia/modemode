@@ -288,6 +288,39 @@ function hsl2rgb(h,s,l){ if(s===0){ const v=Math.round(l*255); return [v,v,v]; }
     if(t<1/6)return p+(q-p)*6*t; if(t<1/2)return q; if(t<2/3)return p+(q-p)*(2/3-t)*6; return p; };
   const q=l<0.5?l*(1+s):l+s-l*s, p=2*l-q;
   return [Math.round(f(p,q,h+1/3)*255),Math.round(f(p,q,h)*255),Math.round(f(p,q,h-1/3)*255)]; }
+/* ===== palette derivation =====================================================
+   ONE input: the project's ground colour. Everything else is a transform of it, with the
+   constants calibrated so ground=#FFFFFF reproduces the original hand-picked palette
+   byte-for-byte (asserted in test). Greys ride the ink->ground axis per channel, which
+   preserves the warmth of the original ramp; on a coloured ground the ink takes that
+   ground's hue, so the whole page reads as one temperature. */
+const HEX=h=>{ const m=String(h||'').trim().match(/^#?([0-9a-fA-F]{6})$/); if(!m)return null;
+  const n=parseInt(m[1],16); return [(n>>16)&255,(n>>8)&255,n&255]; };
+const RGBHEX=r=>'#'+r.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('').toUpperCase();
+/* per-channel positions along ink->ground, measured off the original palette */
+const T_GREY=[0.4487,0.4468,0.4250], T_GREY2=[0.6880,0.6851,0.6583], T_HAIR=[-0.0128,-0.0170,-0.0125];
+const INK_H0=50/360, INK_S0=0.1667, INK_L0=0.0706;   /* #15140F */
+const along=(ink,ground,t)=>ink.map((v,i)=>v+(ground[i]-v)*t[i]);
+function derivePalette(ground){
+  const g=HEX(ground)||[255,255,255];
+  const [hg,sg,lg]=rgb2hsl(g[0],g[1],g[2]);
+  const ih=sg>0.02?hg:INK_H0, is=Math.min(0.45,INK_S0+sg*0.15);
+  const dk=hsl2rgb(ih,is,INK_L0), lt=hsl2rgb(ih,is,1-INK_L0);   /* take whichever pole actually wins —
+     picking by lightness alone loses on mid-tone grounds, where dark ink can beat light ink */
+  const ink=contrastOn(dk,g)>=contrastOn(lt,g)?dk:lt;
+  const panel=hsl2rgb(hg,sg,Math.min(1,lg+0.035*(1-lg)));
+  return { ground:g, panel, ink, grey:along(ink,g,T_GREY), grey2:along(ink,g,T_GREY2), hair:along(ink,g,T_HAIR) };
+}
+function applyPalette(ground){
+  const p=derivePalette(ground), st=document.documentElement.style, h=p.hair.map(Math.round);
+  st.setProperty('--ground',RGBHEX(p.ground)); st.setProperty('--panel',RGBHEX(p.panel));
+  st.setProperty('--ink',RGBHEX(p.ink));       st.setProperty('--grey',RGBHEX(p.grey));
+  st.setProperty('--grey-2',RGBHEX(p.grey2));
+  st.setProperty('--hair','rgba('+h.join(',')+',.17)');
+  st.setProperty('--hair-2','rgba('+h.join(',')+',.08)');
+  st.setProperty('--scrim',p.ground.join(','));
+  return p;
+}
 function legibleInk(rgb,ground,target){ ground=ground||groundRGB(); target=target||4.0;
   if(relLum(ground)<0.18){                       /* dark ground — lighten, don't darken */
     const c=rgb2hsl(rgb[0],rgb[1],rgb[2]); let l=c[2], out=[rgb[0],rgb[1],rgb[2]];
@@ -612,7 +645,9 @@ function updatePortrait(){
 
 /* ===================== render ===================== */
 function render(p){
-  state.project=p; state.nodes=p.nodes||[]; state.accent=(p.colors&&p.colors.core)||p.accent||[196,0,33]; state.ink=legibleInk(state.accent); state.imgN=0;
+  state.project=p; state.nodes=p.nodes||[]; state.accent=(p.colors&&p.colors.core)||p.accent||[196,0,33];
+  applyPalette((p.colors&&p.colors.ground)||'#FFFFFF');   /* must precede legibleInk — it reads --ground */
+  state.ink=legibleInk(state.accent); state.imgN=0;
   state.activeKey=''; state.hoverNodeId=null;
   state.contentNodes=state.nodes.filter(hasContent).sort((a,b)=>((a.content.order||0)-(b.content.order||0)));
   document.documentElement.style.setProperty('--accent',rgbStr(state.ink));
