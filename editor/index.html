@@ -262,6 +262,20 @@ function imageField(label, obj, key, opts={}){
   if(opts.capObj) ic.appendChild(inputField('Caption', opts.capObj, 'caption'));
   set(); wrap.appendChild(prev); wrap.appendChild(ic); w.appendChild(wrap); return w;
 }
+function videoField(label, obj, key){
+  const w=el('div','fieldwrap'); if(label)w.appendChild(el('label',null,label));
+  const ic=el('div','ic');
+  const url=el('input'); url.placeholder='https://… .mp4 or upload →'; url.value=obj[key]||'';
+  url.oninput=()=>{ obj[key]=url.value; markDirty(); };
+  const file=el('input'); file.type='file'; file.accept='video/mp4,video/*'; file.style.marginTop='6px';
+  file.onchange=async()=>{ const f=file.files[0]; if(!f)return; setStatus('uploading video…');
+    const path=(state.slug||'misc')+'/'+Date.now()+'-'+f.name.replace(/[^\w.\-]+/g,'_');
+    const { error }=await sb.storage.from('project-media').upload(path,f,{upsert:true,cacheControl:'31536000',contentType:f.type||'video/mp4'});
+    if(error){ setStatus('upload failed','err'); alert(error.message); return; }
+    const { data }=sb.storage.from('project-media').getPublicUrl(path);
+    obj[key]=data.publicUrl; url.value=data.publicUrl; markDirty(); setStatus('uploaded','ok'); };
+  ic.appendChild(url); ic.appendChild(file); w.appendChild(ic); return w;
+}
 function subEditor(label, arr, factory, renderItem){
   const w=el('div','fieldwrap'); if(label)w.appendChild(el('label',null,label));
   const box=el('div','sub');
@@ -288,7 +302,8 @@ function blockBody(b){
   else if(b.type==='media'){ const kindW=el('div','fieldwrap'); kindW.appendChild(el('label',null,'Kind'));
       const sel=el('select'); ['image','video'].forEach(k=>{ const o=el('option',null,k); o.value=k; if((b.kind||'image')===k)o.selected=true; sel.appendChild(o); });
       sel.onchange=()=>{ b.kind=sel.value; markDirty(); render(); }; kindW.appendChild(sel); add(inputField('Title (optional)',b,'title'), kindW);
-      if(b.kind==='video'){ add(inputField('Vimeo embed/URL or ID',b,'embed',{ph:'https://vimeo.com/… or 123456789'})); }
+      if(b.kind==='video'){ add(videoField('Upload MP4',b,'videoSrc'), inputField('…or Vimeo URL / ID',b,'embed',{ph:'https://vimeo.com/… or 123456789'}));
+        const vr=el('div','row'); vr.appendChild(checkField('Loop',b,'loop')); vr.appendChild(checkField('Autoplay (muted)',b,'autoplay')); add(vr); }
       else { add(imageField('Image',b,'src',{})); }
       add(inputField('Caption',b,'caption'), checkField('Wide',b,'wide')); }
   else if(b.type==='stats'){ b.items=b.items||[]; add(inputField('Title',b,'title',{ph:'AT A GLANCE'}),

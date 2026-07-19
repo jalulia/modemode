@@ -191,6 +191,7 @@
 
   .media-embed{position:relative;width:100%;aspect-ratio:16/9;background:#0a0a0c;}
   .media-embed iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .media-embed video{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover;background:#0a0a0c;display:block;}
 
   /* collaborators */
   .collab .crow{display:grid;grid-template-columns:1fr 1fr auto;align-items:baseline;gap:6px 16px;
@@ -382,8 +383,8 @@ function card(sectionKey, labelText, tagText, titlePath){
   c.appendChild(h); const b=el('div','card-b'); c.appendChild(b); c._b=b; return c;
 }
 function imageCard(sectionKey, src, desc, tall, opts){
-  opts=opts||{}; const lab=nextImg(); const c=el('div','card'+(opts.wide?' wide':'')); c.dataset.section=sectionKey;
-  const h=el('div','card-h'); h.appendChild(el('span','lbl',lab)); h.appendChild(el('span','tag',opts.tag||(tall?'COVER':'DETAIL'))); c.appendChild(h);
+  opts=opts||{}; const lab=real(opts.title)?opts.title:nextImg(); const c=el('div','card'+(opts.wide?' wide':'')); c.dataset.section=sectionKey;
+  const h=el('div','card-h'); const lbl=el('span','lbl',esc(lab)); if(EDIT&&opts.titlePath)lbl.setAttribute('data-edit',opts.titlePath); h.appendChild(lbl); h.appendChild(el('span','tag',opts.tag||(tall?'COVER':'DETAIL'))); c.appendChild(h);
   if(real(src)){ const im=el('img','img-real'+(isSvg(src)?' framed':'')); im.src=src; im.alt=desc||''; im.loading='lazy'; if(EDIT&&opts.imgPath)im.setAttribute('data-img',opts.imgPath); c.appendChild(im);
     if(real(opts.caption)){ const cap=el('div','cap2',esc(opts.caption)); if(EDIT&&opts.capPath)cap.setAttribute('data-edit',opts.capPath); c.appendChild(cap); } }
   else { const s=el('div','slot'+(tall?' tall':'')); if(EDIT&&opts.imgPath)s.setAttribute('data-img',opts.imgPath); s.appendChild(el('div','ic'));
@@ -442,14 +443,19 @@ function blockCards(sectionKey, b, path){
       if(has){ const im=el('img','thumb'); im.src=r.image; im.alt=r.title||''; im.loading='lazy'; row.appendChild(im); }
       c._b.appendChild(row); });
     out.push(c); }
-  else if(type==='image'){ out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,tag:b.tag,capPath:path+'.caption',imgPath:path+'.src'})); }
+  else if(type==='image'){ out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,tag:b.tag,title:b.title,titlePath:path+'.title',capPath:path+'.caption',imgPath:path+'.src'})); }
   else if(type==='media'){
-    if(b.kind==='video'){ const src=vimeoSrc(b.embed); const c=el('div','card'+(b.wide?' wide':'')); c.dataset.section=sectionKey;
-      const h=el('div','card-h'); const lbl=el('span','lbl',esc(b.title||'VIDEO')); if(EDIT)lbl.setAttribute('data-edit',path+'.title'); h.appendChild(lbl); h.appendChild(el('span','tag','VIMEO')); c.appendChild(h);
-      c.appendChild(el('div',null, src ? `<div class="media-embed"><iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`
-        : `<div class="slot"><div class="ic"></div><div class="desc">${esc(b.alt||'Video')}</div><div class="pending">VIDEO PENDING</div></div>`));
+    if(b.kind==='video'){ const hasFile=real(b.videoSrc); const src=hasFile?'':vimeoSrc(b.embed);
+      const c=el('div','card'+(b.wide?' wide':'')); c.dataset.section=sectionKey;
+      const h=el('div','card-h'); const lbl=el('span','lbl',esc(b.title||'VIDEO')); if(EDIT)lbl.setAttribute('data-edit',path+'.title'); h.appendChild(lbl); h.appendChild(el('span','tag',hasFile?'MP4':(src?'VIMEO':'VIDEO'))); c.appendChild(h);
+      let inner;
+      if(hasFile){ const at=[]; if(b.loop)at.push('loop'); if(b.autoplay)at.push('autoplay','muted','playsinline'); if(!b.autoplay)at.push('controls'); at.push('preload="metadata"');
+        inner=`<div class="media-embed"><video src="${esc(b.videoSrc)}" ${at.join(' ')}></video></div>`; }
+      else if(src){ inner=`<div class="media-embed"><iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`; }
+      else { inner=`<div class="slot"><div class="ic"></div><div class="desc">${esc(b.alt||'Video')}</div><div class="pending">VIDEO PENDING</div></div>`; }
+      c.appendChild(el('div',null,inner));
       if(real(b.caption)){ const cp=el('div','cap2',esc(b.caption)); if(EDIT)cp.setAttribute('data-edit',path+'.caption'); c.appendChild(cp); } out.push(c); }
-    else out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,capPath:path+'.caption',imgPath:path+'.src'})); }
+    else out.push(imageCard(sectionKey,b.src,b.alt||b.caption,false,{wide:b.wide,caption:b.caption,title:b.title,titlePath:path+'.title',capPath:path+'.caption',imgPath:path+'.src'})); }
   else { const c=card(sectionKey,b.title,null,path+'.title'); const bd=el('div','body',paras(b.body||'')); if(EDIT)bd.setAttribute('data-edit',path+'.body'); c._b.appendChild(bd); out.push(c); }
   return out;
 }
