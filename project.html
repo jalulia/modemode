@@ -822,10 +822,12 @@ function cropBoxUI(obj, key, commit){
   paint(); return root;
 }
 function openCropPanel(card, path){ closeMenu(); closeCrop();
-  const block=getByPath(DOC,path); if(!block)return; cropPanelStyle();
+  /* same src-path→block-path split as selectImage */
+  const _sp=String(path).split('.'), _key=_sp.pop(), _bpath=_sp.join('.');
+  const block=getByPath(DOC,_bpath); if(!block||typeof block!=='object')return; cropPanelStyle();
   const panel=document.createElement('div'); panel.className='mm-crop'; panel.setAttribute('contenteditable','false');
   const h=document.createElement('div'); h.className='mm-crop-h'; h.textContent='Crop / framing'; panel.appendChild(h);
-  panel.appendChild(cropBoxUI(block,'src',()=>postDoc()));
+  panel.appendChild(cropBoxUI(block,_key,()=>postDoc()));
   const done=document.createElement('button'); done.className='mm-crop-done'; done.textContent='Done';
   done.addEventListener('click',e=>{ e.stopPropagation(); e.preventDefault(); closeCrop(); renderDoc(DOC); });
   panel.appendChild(done);
@@ -847,21 +849,23 @@ function startResize(e, cardEl, cardsEl, path, handle, axes){
     if(axes.indexOf('y')>=0){ curH=Math.max(90,Math.round(sh+(ev.clientY-sy))); cardEl.style.minHeight=curH+'px'; }
   };
   const up=()=>{ document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up);
-    const b=getByPath(DOC,path); if(b){ if(curW){ b.width=curW; delete b.wide; } if(curH){ b.height=curH; } }
+    const b=getByPath(DOC,path); if(b&&typeof b==='object'){ if(curW){ b.width=curW; delete b.wide; } if(curH){ b.height=curH; } }
     if(curW||curH){ _selClear(false); postDoc(); renderDoc(DOC); } };
   document.addEventListener('pointermove',move); document.addEventListener('pointerup',up);
 }
 function selectImage(img, path){ if(_mmSel&&_mmSel.path===path)return; _selClear(false); closeMenu(); closeCrop(); closeImgPanel();
-  const block=getByPath(DOC,path); if(!block)return; cropPanelStyle();
+  /* data-img holds the SRC path (…blocks.N.src); crop/width/height live on the BLOCK, so split it. */
+  const _sp=String(path).split('.'), _key=_sp.pop(), _bpath=_sp.join('.');
+  const block=getByPath(DOC,_bpath); if(!block||typeof block!=='object')return; cropPanelStyle();
   let anchor=img.closest('figure'); if(!anchor) anchor=img.closest('.card')||img.parentElement;
   if(getComputedStyle(anchor).position==='static') anchor.style.position='relative';
   const cardEl=img.closest('.card'); const bound=cardEl||anchor; if(cardEl)cardEl.classList.add('mm-selcard');
   const ov=document.createElement('div'); ov.className='mm-inplace'; ov.setAttribute('contenteditable','false');
-  ov.appendChild(cropBoxUI(block,'src',()=>postDoc())); anchor.appendChild(ov);
+  ov.appendChild(cropBoxUI(block,_key,()=>postDoc())); anchor.appendChild(ov);
   let rhs=[];
   if(cardEl){ const cardsEl=cardEl.closest('.cards');
     [['mm-rh-e','x'],['mm-rh-s','y'],['mm-rh-se','xy']].forEach(([cls,ax])=>{ const h=document.createElement('div'); h.className='mm-rh '+cls; h.setAttribute('contenteditable','false');
-      h.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); startResize(e,cardEl,cardsEl,path,h,ax); });
+      h.addEventListener('pointerdown',e=>{ e.preventDefault(); e.stopPropagation(); startResize(e,cardEl,cardsEl,_bpath,h,ax); });
       cardEl.appendChild(h); rhs.push(h); }); }
   const outside=(ev)=>{ if(_mmSel && bound && !bound.contains(ev.target)) deselectImage(); };
   setTimeout(()=>document.addEventListener('mousedown',outside),0);
