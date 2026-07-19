@@ -79,14 +79,7 @@
 
   /* ===================== MAIN — masonry + full-width feature cards ===================== */
   .main{padding:78px 0 64px;}
-  /* Masonry: fine-grained implicit rows + dense packing. Each card is given a
-     grid-row span sized to its own content by layoutMasonry(), so a short block
-     leaves usable space beneath it and the next block can stack under it rather
-     than being pushed to a new full-width row. Widths are untouched — still the
-     same 12-col spans. align-items:start (not stretch) so a card keeps its own
-     height; stretch is what previously locked every card to the tallest in its
-     row, which also made the bottom height handle unable to shrink anything. */
-  .cards{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:22px;align-items:start;grid-auto-rows:8px;grid-auto-flow:row dense;}
+  .cards{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:22px;align-items:stretch;}
   .card{grid-column:span 6;border:1px solid var(--hair);border-radius:var(--r);background:var(--panel);
     scroll-margin-top:26px;transition:border-color .18s;overflow:hidden;
     opacity:0;transform:translateY(9px);animation:rise .55s cubic-bezier(.2,.7,.2,1) forwards;}
@@ -96,7 +89,7 @@
   /* per-block widths on the 12-col grid */
   .card.w-full{grid-column:1 / -1;} .card.w-tt{grid-column:span 8;} .card.w-half{grid-column:span 6;} .card.w-third{grid-column:span 4;}
   .card.wide{grid-column:1 / -1;}
-  @media (max-width:1180px){ .cards{grid-template-columns:1fr;grid-auto-rows:auto;grid-auto-flow:row;}
+  @media (max-width:1180px){ .cards{grid-template-columns:1fr;}
     .card,.card.w-full,.card.w-tt,.card.w-half,.card.w-third,.card.wide,.card.lead{grid-column:1 / -1;} }
 
   .card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 20px;border-bottom:1px solid var(--hair-2);}
@@ -737,11 +730,7 @@ function render(p){
   all.forEach((c,i)=>{ c.style.animationDelay=Math.min(i*45,500)+'ms'; cards.appendChild(c); });
   page.appendChild(main);
   root.appendChild(page);
-  /* Masonry spans must be sized on EVERY render path, not just the editor's
-     renderDoc() — the published page calls render() directly. Without spans each
-     card occupies a single 8px implicit row and they all overlap. */
-  watchMedia(); layoutMasonry();
-  requestAnimationFrame(layoutMasonry); setTimeout(layoutMasonry,300); setTimeout(layoutMasonry,1200);
+  clearSpans();
 
   const edge=adaptEdge((p.colors&&p.colors.edge)||[255,210,51],(p.colors&&p.colors.ground)||'#FFFFFF');
   const fcv=document.getElementById('minimap');
@@ -774,38 +763,12 @@ let _rz=null; window.addEventListener('resize',()=>{ clearTimeout(_rz); _rz=setT
 /* ── inline-edit layer — the editor's Canvas tab drives this over postMessage (gated by ?edit) ── */
 let DOC=null, _postT=null;
 function postDoc(){ clearTimeout(_postT); _postT=setTimeout(()=>{ try{ parent.postMessage({type:'mm-edit-doc',doc:DOC},'*'); }catch(e){} },200); }
-/* ---- masonry row-span sizing -------------------------------------------------
-   Each .card is placed on a 8px implicit-row grid with dense packing. We size its
-   grid-row span from its own content height so short cards stop reserving the
-   whole row, which is what lets a block sit *underneath* a third instead of being
-   bumped to a new row. Cards have overflow:hidden, so scrollHeight reports the
-   full content height even while the card is span-constrained — that is what makes
-   this converge instead of oscillating. An explicit inline height (set by the
-   bottom resize handle) wins, so a deliberately cropped card spans fewer rows. */
-let _mmLayT=null;
-function layoutMasonry(){
-  document.querySelectorAll('.cards').forEach(cards=>{
-    const cs=getComputedStyle(cards);
-    const dense=(cs.gridAutoFlow||'').indexOf('dense')>=0;
-    const unit=parseFloat(cs.gridAutoRows)||0, gap=parseFloat(cs.rowGap)||0;
-    Array.prototype.forEach.call(cards.children,c=>{
-      if(!c.classList||!c.classList.contains('card'))return;
-      if(!dense||!unit){ if(c.style.gridRowEnd) c.style.gridRowEnd=''; return; }  // 1-col fallback
-      const ex=parseFloat(c.style.height||'')||0;
-      const h=ex||c.scrollHeight; if(!h)return;
-      const span='span '+Math.max(1,Math.ceil((h+gap)/(unit+gap)));
-      if(c.style.gridRowEnd!==span) c.style.gridRowEnd=span;
-    });
-  });
-}
-function relayoutSoon(){ clearTimeout(_mmLayT); _mmLayT=setTimeout(layoutMasonry,60); }
-function watchMedia(){
-  document.querySelectorAll('.cards img,.cards video').forEach(m=>{ if(m._mmML)return; m._mmML=1;
-    m.addEventListener('load',relayoutSoon); m.addEventListener('loadedmetadata',relayoutSoon); m.addEventListener('error',relayoutSoon); });
-}
-window.addEventListener('resize',relayoutSoon);
-function renderDoc(doc){ DOC=doc; try{ render(doc); }catch(e){ fail(e&&e.message||String(e)); return; } if(EDIT){ enableInlineEdit(); enablePageBuilder(); }
-  watchMedia(); layoutMasonry(); setTimeout(layoutMasonry,300); setTimeout(layoutMasonry,1200); }
+/* Free-form masonry was tried (grid-auto-rows + dense + per-card row spans) and
+   reverted: it broke the aligned editorial grid the site's look depends on —
+   ragged columns and floating voids. Rows stay tidy. clearSpans() exists so any
+   stale inline grid-row from that build can't survive a re-render. */
+function clearSpans(){ document.querySelectorAll('.cards > .card').forEach(c=>{ if(c.style.gridRowEnd) c.style.gridRowEnd=''; }); }
+function renderDoc(doc){ DOC=doc; try{ render(doc); }catch(e){ fail(e&&e.message||String(e)); return; } if(EDIT){ enableInlineEdit(); enablePageBuilder(); } }
 function enableInlineEdit(){
   if(!document.getElementById('mm-ed-style')){ const st=document.createElement('style'); st.id='mm-ed-style';
     st.textContent='.mm-ed{outline:1px dashed transparent;outline-offset:3px;border-radius:2px;transition:outline-color .12s,background .12s;cursor:text;}.mm-ed:hover{outline-color:rgba(196,0,33,.4);}.mm-ed:focus{outline:1px solid var(--accent,#C40021);background:rgba(196,0,33,.05);}';
@@ -847,7 +810,7 @@ function pbStyle(){ if(document.getElementById('mm-pb-style'))return; const st=d
 function arrPath(p){ return p.split('.').slice(0,-1).join('.'); }
 // Bump on every project.html change that ships. Shown bottom-left in edit mode so
 // Julia and I can both tell at a glance which build the canvas is actually running.
-const MM_BUILD='r8 · masonry+height';
+const MM_BUILD='r9 · masonry reverted';
 function buildChip(){ if(!EDIT||document.getElementById('mm-build'))return;
   const b=document.createElement('div'); b.id='mm-build'; b.className='mm-build'; b.textContent=MM_BUILD;
   b.setAttribute('contenteditable','false'); document.body.appendChild(b); }
@@ -1006,7 +969,7 @@ function startResize(e, cardEl, cardsEl, path, handle, axes){
   const nearest=(px)=>{ const raw=(px+GAP)/(unit+GAP); let best=SPANW[0],bd=1e9; SPANW.forEach(s=>{ const d=Math.abs(s[0]-raw); if(d<bd){bd=d;best=s;} }); return best; };
   const move=ev=>{
     if(axes.indexOf('x')>=0&&cardsEl){ const s=nearest(sw+(ev.clientX-sx)); if(s[2]!==curW){ curW=s[2]; ['w-full','w-tt','w-half','w-third','wide'].forEach(x=>cardEl.classList.remove(x)); cardEl.classList.add(s[1]); } }
-    if(axes.indexOf('y')>=0){ curH=Math.max(90,Math.round(sh+(ev.clientY-sy))); cardEl.style.height=curH+'px'; cardEl.style.minHeight=''; layoutMasonry(); }
+    if(axes.indexOf('y')>=0){ curH=Math.max(90,Math.round(sh+(ev.clientY-sy))); cardEl.style.height=curH+'px'; cardEl.style.minHeight=''; }
   };
   const up=()=>{ document.removeEventListener('pointermove',move); document.removeEventListener('pointerup',up);
     const b=getByPath(DOC,path); if(b&&typeof b==='object'){ if(curW){ b.width=curW; delete b.wide; } if(curH){ b.height=curH; } }
