@@ -89,8 +89,22 @@
   /* per-block widths on the 12-col grid */
   .card.w-full{grid-column:1 / -1;} .card.w-tt{grid-column:span 8;} .card.w-half{grid-column:span 6;} .card.w-third{grid-column:span 4;}
   .card.wide{grid-column:1 / -1;}
+  /* A stack occupies ONE cell of the 12-col row and divides its height between
+     its children, so the row's top and bottom edges stay aligned. Children are
+     a nested 1-col grid, so their own w-* spans must be neutralised or they'd
+     create implicit columns inside the cell. */
+  .stackcell{display:grid;grid-auto-rows:1fr;gap:22px;grid-column:span 6;position:relative;}
+  /* the stack's own toolbar sits left so it can't collide with its first child's */
+  .stackcell > .mm-tools{left:6px;right:auto;}
+  .stackcell.w-full{grid-column:1 / -1;} .stackcell.w-tt{grid-column:span 8;}
+  .stackcell.w-half{grid-column:span 6;} .stackcell.w-third{grid-column:span 4;}
+  .stackcell.wide{grid-column:1 / -1;}
+  .stackcell > .card,.stackcell > .card.w-full,.stackcell > .card.w-tt,
+  .stackcell > .card.w-half,.stackcell > .card.w-third,.stackcell > .card.wide,
+  .stackcell > .card.lead{grid-column:1 / -1;}
   @media (max-width:1180px){ .cards{grid-template-columns:1fr;}
-    .card,.card.w-full,.card.w-tt,.card.w-half,.card.w-third,.card.wide,.card.lead{grid-column:1 / -1;} }
+    .card,.card.w-full,.card.w-tt,.card.w-half,.card.w-third,.card.wide,.card.lead,
+    .stackcell,.stackcell.w-full,.stackcell.w-tt,.stackcell.w-half,.stackcell.w-third,.stackcell.wide{grid-column:1 / -1;} }
 
   .card-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 20px;border-bottom:1px solid var(--hair-2);}
   .card-h .lbl{font-size:11px;letter-spacing:.22em;color:var(--label,var(--accent));text-transform:uppercase;}
@@ -257,7 +271,7 @@ function setByPath(obj,path,val){ const ks=String(path).split('.'); let o=obj;
 function getByPath(o,path){ return String(path).split('.').reduce((a,k)=>a==null?a:a[k], o); }
 /* per-block width on the 12-col grid (presets) */
 const WCLASS={full:'w-full','two-thirds':'w-tt',half:'w-half',third:'w-third'};
-const DEFW={text:'half',column:'full',stats:'full',cardgrid:'full',carousel:'full',imagePara:'half',image:'half',media:'half'};
+const DEFW={stack:'half',text:'half',column:'full',stats:'full',cardgrid:'full',carousel:'full',imagePara:'half',image:'half',media:'half'};
 function applyWidth(c,b,forceW){ if(!c)return c; c.classList.remove('wide');
   let w=forceW||(b&&b.width)||(c.classList.contains('lead')?'full':null)||(b&&b.wide?'full':null)||(b&&DEFW[b.type||'text'])||'half';
   c.classList.add(WCLASS[w]||'w-half'); return c; }
@@ -555,6 +569,15 @@ function blockCards(sectionKey, b, path){
   const out=[]; const type=b.type||'text'; path=path||'';
   if(type==='text'){ const c=card(sectionKey,b.title,null,path+'.title'); if(b.wide||b.layout==='two')c.classList.add('wide');
     const bd=el('div','body'+(b.layout==='two'?' two':''),paras(b.body)); if(EDIT)bd.setAttribute('data-edit',path+'.body'); c._b.appendChild(bd); out.push(c); }
+  else if(type==='stack'){
+    /* One row cell holding N blocks stacked vertically. Children render as normal
+       cards; the cell carries the width + data-block of the stack itself (applied
+       by the caller), so children must set their own data-block here. */
+    const cell=el('div','stackcell');
+    (b.blocks||[]).forEach((kb,ki)=>{ if(!kb)return; const kp=path+'.blocks.'+ki;
+      blockCards(sectionKey,kb,kp).forEach(kc=>{ if(!kc)return; if(EDIT)kc.dataset.block=kp; cell.appendChild(kc); }); });
+    if(cell.children.length) out.push(cell);
+  }
   else if(type==='stats'){ out.push(statsCard(sectionKey,b,path)); }
   else if(type==='carousel'){ const c=carouselCard(sectionKey,b,path); if(c)out.push(c); }
   else if(type==='cardgrid'){ const imgs=(b.images||[]).filter(im=>real(im.src));
@@ -810,7 +833,7 @@ function pbStyle(){ if(document.getElementById('mm-pb-style'))return; const st=d
 function arrPath(p){ return p.split('.').slice(0,-1).join('.'); }
 // Bump on every project.html change that ships. Shown bottom-left in edit mode so
 // Julia and I can both tell at a glance which build the canvas is actually running.
-const MM_BUILD='r9 · masonry reverted';
+const MM_BUILD='r10 · stacks';
 function buildChip(){ if(!EDIT||document.getElementById('mm-build'))return;
   const b=document.createElement('div'); b.id='mm-build'; b.className='mm-build'; b.textContent=MM_BUILD;
   b.setAttribute('contenteditable','false'); document.body.appendChild(b); }
@@ -822,6 +845,47 @@ function cycleWidth(path,back){ const b=getByPath(DOC,path); if(!b||typeof b!=='
   const i=WORDER.indexOf(widthOf(b)); const n=WORDER.length;
   b.width=WORDER[((i<0?0:i)+(back?-1:1)+n)%n]; delete b.wide; renderDoc(DOC); postDoc(); }
 function _cardFor(p){ try{ return document.querySelector('[data-block="'+String(p).replace(/"/g,'\\"')+'"]'); }catch(_){ return null; } }
+/* ---- stacks -----------------------------------------------------------------
+   A stack is one row cell holding N blocks vertically: {type:'stack',width,blocks:[]}.
+   Created by dropping on a card's BOTTOM edge. Capped at one level deep. */
+function stackOwner(p){ const parts=arrPath(p).split('.');
+  if(parts[parts.length-1]!=='blocks')return null;
+  const op=parts.slice(0,-1).join('.'); const o=getByPath(DOC,op);
+  return (o&&o.type==='stack')?{path:op,obj:o}:null; }
+/* Collapse degenerate stacks (0 or 1 child) and flatten any nested stack, so the
+   model can never drift into a shape the renderer doesn't support. */
+function normalizeStacks(doc){
+  const walk=arr=>{ if(!Array.isArray(arr))return;
+    for(let i=arr.length-1;i>=0;i--){ const b=arr[i]; if(!b||b.type!=='stack')continue;
+      let kids=(b.blocks||[]).filter(Boolean);
+      kids=kids.reduce((acc,k)=>acc.concat(k.type==='stack'?(k.blocks||[]).filter(Boolean):[k]),[]);
+      if(!kids.length){ arr.splice(i,1); }
+      else if(kids.length===1){ const k=kids[0]; if(b.width&&!k.width)k.width=b.width; arr[i]=k; }
+      else b.blocks=kids; } };
+  walk(doc&&doc.classification&&doc.classification.intro);
+  ((doc&&doc.nodes)||[]).forEach(n=>{ if(n&&n.content)walk(n.content.blocks); });
+}
+function stackDrop(src,dst){
+  if(!src||!dst||src===dst)return false;
+  const sArr=getByPath(DOC,arrPath(src)); if(!Array.isArray(sArr))return false;
+  const si=+src.split('.').pop(); if(!(si>=0&&si<sArr.length))return false;
+  const tgt=getByPath(DOC,dst); if(!tgt||typeof tgt!=='object')return false;
+  const own=stackOwner(dst);
+  if(tgt.type==='stack'){                       // dropped on the stack cell itself
+    const [it]=sArr.splice(si,1); (tgt.blocks=tgt.blocks||[]).push(it);
+  } else if(own){                               // dropped on a block already in a stack
+    const dArr=own.obj.blocks; let di=+dst.split('.').pop();
+    const [it]=sArr.splice(si,1); if(sArr===dArr&&si<di)di--;
+    dArr.splice(di+1,0,it);
+  } else {                                      // wrap the target and the dropped block
+    const dArr=getByPath(DOC,arrPath(dst)); if(!Array.isArray(dArr))return false;
+    let di=+dst.split('.').pop();
+    const [it]=sArr.splice(si,1); if(sArr===dArr&&si<di)di--;
+    const t=dArr[di]; if(!t){ dArr.splice(Math.max(0,di),0,it); }
+    else dArr[di]={type:'stack',width:widthOf(t),blocks:[t,it]};
+  }
+  normalizeStacks(DOC); renderDoc(DOC); postDoc(); return true;
+}
 // After a drop: if the block could not land in the target's row (the row was already
 // full at 12 cols and it wrapped), equalise that row so it can sit alongside. Only
 // fires on overflow -- a block that fits in the leftover space keeps everyone's widths.
@@ -840,9 +904,9 @@ function fitRow(movedPath,targetPath){
   if(changed){ renderDoc(DOC); postDoc(); }
   return changed;
 }
-function delBlock(path){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1],1); renderDoc(DOC); postDoc(); }
+function delBlock(path){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1],1); normalizeStacks(DOC); renderDoc(DOC); postDoc(); }
 function addAfter(path,type){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1]+1,0,newBlock(type)); renderDoc(DOC); postDoc(); }
-function reorder(src,dst,after){ if(!src||!dst||src===dst)return; const sp=src.split('.'), dp=dst.split('.'); const sa=arrPath(src), da=arrPath(dst); const sArr=getByPath(DOC,sa), dArr=getByPath(DOC,da); if(!Array.isArray(sArr)||!Array.isArray(dArr))return; const si=+sp[sp.length-1]; let di=+dp[dp.length-1]; if(!(si>=0&&si<sArr.length)||!(di>=0&&di<dArr.length))return; const [it]=sArr.splice(si,1); if(sa===da&&si<di)di--; const ins=after?di+1:di; dArr.splice(ins,0,it); renderDoc(DOC); postDoc(); return da+'.'+ins; }
+function reorder(src,dst,after){ if(!src||!dst||src===dst)return; const sp=src.split('.'), dp=dst.split('.'); const sa=arrPath(src), da=arrPath(dst); const sArr=getByPath(DOC,sa), dArr=getByPath(DOC,da); if(!Array.isArray(sArr)||!Array.isArray(dArr))return; const si=+sp[sp.length-1]; let di=+dp[dp.length-1]; if(!(si>=0&&si<sArr.length)||!(di>=0&&di<dArr.length))return; const [it]=sArr.splice(si,1); if(sa===da&&si<di)di--; const ins=after?di+1:di; dArr.splice(ins,0,it); normalizeStacks(DOC); renderDoc(DOC); postDoc(); return da+'.'+ins; }
 let _mmImgPanel=null;
 function closeImgPanel(){ if(_mmImgPanel){ _mmImgPanel.remove(); _mmImgPanel=null; } }
 function imgPanelStyle(){ if(document.getElementById('mm-img-style'))return; const st=document.createElement('style'); st.id='mm-img-style';
@@ -1033,7 +1097,7 @@ function enablePageBuilder(){ if(!EDIT)return; pbStyle(); buildChip();
     card.addEventListener('dragenter',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='move'; });
     card.addEventListener('dragover',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='move'; const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); card.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b'); card.classList.add(mn===dl?'mm-drop-l':mn===dr?'mm-drop-r':mn===dt?'mm-drop-t':'mm-drop-b'); });
     card.addEventListener('dragleave',()=>card.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b'));
-    card.addEventListener('drop',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); e.stopPropagation(); const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); const after=(mn===dl?false:mn===dr?true:mn===dt?false:true); const s=_dragSrc; _dragSrc=null; document.querySelectorAll('.mm-drop-l,.mm-drop-r,.mm-drop-t,.mm-drop-b,.mm-dragging').forEach(x=>x.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b','mm-dragging')); document.querySelectorAll('[data-block][draggable]').forEach(x=>x.removeAttribute('draggable')); const np=reorder(s,path,after); if(np) fitRow(np,path); });
+    card.addEventListener('drop',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); e.stopPropagation(); const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); const edge=(mn===dl?'l':mn===dr?'r':mn===dt?'t':'b'); const after=(edge==='r'||edge==='b'); const s=_dragSrc; _dragSrc=null; document.querySelectorAll('.mm-drop-l,.mm-drop-r,.mm-drop-t,.mm-drop-b,.mm-dragging').forEach(x=>x.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b','mm-dragging')); document.querySelectorAll('[data-block][draggable]').forEach(x=>x.removeAttribute('draggable')); if(edge==='b'&&widthOf(getByPath(DOC,path))!=='full'&&stackDrop(s,path))return; const np=reorder(s,path,after); if(np) fitRow(np,path); });
   });
   document.querySelectorAll('[data-img]').forEach(img=>{ if(img._mmImg)return; img._mmImg=true; const p=img.dataset.img;
     img.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); if(!real(getByPath(DOC,p))) openImagePanel(p); else selectImage(img, p); });

@@ -404,7 +404,14 @@ const BLOCK_TYPES=['text','image','stats','column','imagePara','carousel','cardg
 function blockBody(b){
   const c=el('div','bb');
   const add=(...nodes)=>nodes.forEach(n=>c.appendChild(n));
-  if(b.type==='text'){ add(inputField('Title (optional)',b,'title'), inputField('Body',b,'body',{area:true}));
+  if(b.type==='stack'){ b.blocks=b.blocks||[];
+      const note=el('div','fieldwrap'); note.appendChild(el('label',null,'Stacked cell'));
+      note.appendChild(el('div','hint', b.blocks.length+' blocks sharing one cell of the row. Drag on the Canvas to restack.'));
+      add(note);
+      b.blocks.forEach((kb,ki)=>{ const w=el('div','fieldwrap');
+        w.appendChild(el('label',null,'Block '+(ki+1)+' · '+(kb.type||'text')));
+        w.appendChild(blockBody(kb)); add(w); }); }
+  else if(b.type==='text'){ add(inputField('Title (optional)',b,'title'), inputField('Body',b,'body',{area:true}));
       const r=el('div','row'); r.appendChild(checkField('Two-column',b,'layout','two')); r.appendChild(checkField('Wide',b,'wide')); add(r); }
   else if(b.type==='image'){ add(inputField('Title (optional)',b,'title'), imageField('Image',b,'src',{}), cropField(b,'src'), inputField('Alt',b,'alt'), inputField('Caption',b,'caption'), checkField('Fit to width (show whole image)',b,'fit','width'), checkField('Wide',b,'wide')); }
   else if(b.type==='media'){ const kindW=el('div','fieldwrap'); kindW.appendChild(el('label',null,'Kind'));
