@@ -63,12 +63,12 @@
 
   /* section nav — flex-distributed so any count fits without scroll; whole row hoverable */
   .nav{flex:2 1 auto;min-height:0;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;background:var(--panel);overflow-y:auto;scrollbar-width:thin;}
-  .nav-item{flex:1 1 auto;min-height:31px;max-height:52px;display:flex;align-items:center;gap:14px;padding:4px 2px;
+  .nav-item{flex:1 1 auto;min-height:31px;max-height:52px;display:flex;align-items:center;gap:14px;padding:4px 14px;
     border-bottom:1px solid var(--hair-2);font-size:13px;letter-spacing:.02em;transition:padding-left .16s ease,color .16s;}
   .nav-item .mk{width:8px;height:8px;border-radius:50%;border:1.4px solid var(--accent);flex:none;transition:background .16s;}
   .nav-item .lab{color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .nav-item.kicker .lab{letter-spacing:.16em;font-size:11.5px;}
-  .nav-item.live{cursor:pointer;} .nav-item.live:hover,.nav-item.hover{padding-left:7px;} .nav-item.hover .lab{color:var(--ink);}
+  .nav-item.live{cursor:pointer;} .nav-item.live:hover,.nav-item.hover{padding-left:21px;} .nav-item.hover .lab{color:var(--ink);}
   .nav-item.muted .mk{border-color:var(--grey-2);} .nav-item.muted .lab{color:var(--grey-2);}
   .nav-item.active .mk{background:var(--accent);} .nav-item.active .lab{font-family:var(--disp);}
 
@@ -305,9 +305,13 @@ function derivePalette(ground){
   const g=HEX(ground)||[255,255,255];
   const [hg,sg,lg]=rgb2hsl(g[0],g[1],g[2]);
   const ih=sg>0.02?hg:INK_H0, is=Math.min(0.45,INK_S0+sg*0.15);
-  const dk=hsl2rgb(ih,is,INK_L0), lt=hsl2rgb(ih,is,1-INK_L0);   /* take whichever pole actually wins —
-     picking by lightness alone loses on mid-tone grounds, where dark ink can beat light ink */
-  const ink=contrastOn(dk,g)>=contrastOn(lt,g)?dk:lt;
+  const dk=hsl2rgb(ih,is,INK_L0), lt=hsl2rgb(ih,is,1-INK_L0);
+  /* Pick by PERCEIVED lightness, not by max contrast. Max-contrast flips at unintuitive points:
+     on a saturated mid-tone like #00AFED it scores dark ink 7.4:1 vs light 2.5:1 and you get
+     black text on brand blue. Luminance < 0.4 is the standard "this reads as a dark ground" test.
+     The cost is real — a saturated mid-tone can't give good contrast either way, and the picker's
+     readout reports whatever we actually achieve. */
+  const ink=relLum(g)<0.4?lt:dk;
   const panel=hsl2rgb(hg,sg,Math.min(1,lg+0.035*(1-lg)));
   return { ground:g, panel, ink, grey:along(ink,g,T_GREY), grey2:along(ink,g,T_GREY2), hair:along(ink,g,T_HAIR) };
 }
@@ -321,7 +325,7 @@ function applyPalette(ground){
   st.setProperty('--hair','rgba('+h.join(',')+',.17)');
   st.setProperty('--hair-2','rgba('+h.join(',')+',.08)');
   st.setProperty('--scrim',p.ground.join(','));
-  st.setProperty('--label', rgb2hsl(p.ground[0],p.ground[1],p.ground[2])[2]<0.5 ? 'var(--grey)' : 'var(--accent)');
+  st.setProperty('--label', relLum(p.ground)<0.4 ? 'var(--grey)' : 'var(--accent)');
   return p;
 }
 /* The blob's EDGE is authored to sit just under the ground's lightness so the falloff dissolves
@@ -332,7 +336,9 @@ function adaptEdge(edge,ground){ const g=HEX(ground)||[255,255,255];
   const lo=1-e[2], l=lo+(e[2]-lo)*lg;
   return hsl2rgb(e[0],e[1],Math.max(0,Math.min(1,l))); }
 function legibleInk(rgb,ground,target){ ground=ground||groundRGB(); target=target||4.0;
-  if(relLum(ground)<0.18){                       /* dark ground — lighten, don't darken */
+  if(relLum(ground)<0.4){                        /* dark ground — lighten, don't darken.
+       0.4 matches the ink pole test in derivePalette(); when these two thresholds disagreed,
+       a mid-tone ground like #00AFED got light body text and a dark navy title. */
     const c=rgb2hsl(rgb[0],rgb[1],rgb[2]); let l=c[2], out=[rgb[0],rgb[1],rgb[2]];
     while(l<0.98 && contrastOn(out,ground)<target){ l=Math.min(0.98,l+0.02); out=hsl2rgb(c[0],c[1],l); }
     return out; }
@@ -661,9 +667,11 @@ function updatePortrait(){
 function render(p){
   state.project=p; state.nodes=p.nodes||[]; state.accent=(p.colors&&p.colors.core)||p.accent||[196,0,33];
   const _pal=applyPalette((p.colors&&p.colors.ground)||'#FFFFFF');   /* must precede legibleInk — it reads --ground */
-  if(EDIT){ try{ parent.postMessage({type:'mm-palette',ground:RGBHEX(_pal.ground),ink:RGBHEX(_pal.ink.map(Math.round)),
-    contrast:+contrastOn(_pal.ink.map(Math.round),_pal.ground).toFixed(2)},'*'); }catch(_){} }
+  const _pmsg={type:'mm-palette',ground:RGBHEX(_pal.ground),ink:RGBHEX(_pal.ink.map(Math.round)),
+    contrast:+contrastOn(_pal.ink.map(Math.round),_pal.ground).toFixed(2)};
   state.ink=legibleInk(state.accent); state.imgN=0;
+  if(EDIT){ _pmsg.accent=RGBHEX(state.ink); _pmsg.accentContrast=+contrastOn(state.ink,_pal.ground).toFixed(2);
+    try{ parent.postMessage(_pmsg,'*'); }catch(_){} }
   state.activeKey=''; state.hoverNodeId=null;
   state.contentNodes=state.nodes.filter(hasContent).sort((a,b)=>((a.content.order||0)-(b.content.order||0)));
   document.documentElement.style.setProperty('--accent',rgbStr(state.ink));

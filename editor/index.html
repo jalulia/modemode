@@ -598,8 +598,10 @@ window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='obje
   else if(m.type==='mm-roster'){ saveRosterToSupabase(m.data); }
   else if(m.type==='mm-edit-ready'){ const f=$('cvframe'); if(f&&f.contentWindow&&state.doc) f.contentWindow.postMessage({type:'mm-edit-load',doc:state.doc},'*'); }
   else if(m.type==='mm-palette'){ const g=$('gmeta'); if(g){
-      g.textContent='ink '+m.ink+' · '+m.contrast+':1'+(m.contrast<4.5?'  — low contrast':'');
-      g.classList.toggle('warn',m.contrast<4.5); } }
+      const lo=Math.min(m.contrast, m.accentContrast==null?99:m.accentContrast);
+      g.textContent='text '+m.contrast+':1'+(m.accentContrast!=null?'   accent '+m.accentContrast+':1':'')
+        +(lo<4.5?'  — low contrast':'');
+      g.classList.toggle('warn',lo<4.5); } }
   else if(m.type==='mm-edit-doc'&&m.doc){ _applyingCanvasEdit=true; state.doc=m.doc; markDirty(); _applyingCanvasEdit=false; }
   else if(m.type==='mm-edit-fields'&&m.path){ openBlockDrawer(m.path); }
   else if(m.type==='mm-edit-undo'){ undo(); }
