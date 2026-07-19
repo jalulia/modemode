@@ -842,11 +842,16 @@ function selectImage(img, path){ if(_mmSel&&_mmSel.path===path)return; _selClear
 }
 function openLayoutMenu(anchor, path){ closeMenu(); const block=getByPath(DOC,path); if(!block)return;
   const m=document.createElement('div'); m.className='mm-menu'; m.setAttribute('contenteditable','false'); m.style.top='36px'; m.style.right='6px';
-  const head=document.createElement('div'); head.className='mm-mh'; head.textContent='Layout'; m.appendChild(head);
-  const opt=(t,fn)=>{ const b=document.createElement('button'); b.textContent=t; b.onclick=(e)=>{ e.stopPropagation(); closeMenu(); fn(); }; m.appendChild(b); };
-  opt('Fill height', ()=>{ delete block.fit; postDoc(); _selClear(false); renderDoc(DOC); });
-  opt('Fit to width', ()=>{ block.fit='width'; postDoc(); _selClear(false); renderDoc(DOC); });
-  opt('Replace image…', ()=>{ _selClear(false); openImagePanel(path); });
+  const head=(t)=>{ const h=document.createElement('div'); h.className='mm-mh'; h.textContent=t; m.appendChild(h); };
+  const opt=(t,active,fn)=>{ const b=document.createElement('button'); b.textContent=(active?'✓  ':'')+t; b.onclick=(e)=>{ e.stopPropagation(); closeMenu(); fn(); }; m.appendChild(b); };
+  const curW=block.width||(block.wide?'full':'half'); const curFit=block.fit==='width'?'width':'height';
+  head('Size');
+  [['full','Full width'],['two-thirds','Two-thirds'],['half','Half'],['third','Third']].forEach(([v,t])=>opt(t,curW===v,()=>{ _selClear(false); setWidth(path,v); }));
+  head('Fit');
+  opt('Fill height',curFit==='height',()=>{ delete block.fit; postDoc(); _selClear(false); renderDoc(DOC); });
+  opt('Fit to width',curFit==='width',()=>{ block.fit='width'; postDoc(); _selClear(false); renderDoc(DOC); });
+  head('');
+  opt('Replace image…',false,()=>{ _selClear(false); openImagePanel(path); });
   anchor.appendChild(m); _mmMenu=m; setTimeout(()=>document.addEventListener('mousedown',function h(ev){ if(_mmMenu&&!_mmMenu.contains(ev.target))closeMenu(); document.removeEventListener('mousedown',h); }),0);
 }
 let _mmMenu=null;
