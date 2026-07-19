@@ -533,6 +533,7 @@ window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='obje
   else if(m.type==='mm-edit-doc'&&m.doc){ state.doc=m.doc; markDirty(); }
   else if(m.type==='mm-edit-undo'){ undo(); }
   else if(m.type==='mm-edit-redo'){ redo(); }
+  else if(m.type==='mm-edit-upload'&&m.path&&m.dataUrl){ cvUploadDataUrl(m.path,m.name,m.dataUrl); }
   else if(m.type==='mm-edit-pick-image'&&m.path){ cvPickImage(m.path); }
 });
 let pendingImgPath=null;
@@ -544,6 +545,14 @@ $('cvfile').onchange=async()=>{ const f=$('cvfile').files[0]; if(!f||!pendingImg
   const { data }=sb.storage.from('project-media').getPublicUrl(sp);
   const fr=$('cvframe'); if(fr&&fr.contentWindow) fr.contentWindow.postMessage({type:'mm-edit-set-image',path:pendingImgPath,url:data.publicUrl},'*');
   setStatus('uploaded','ok'); pendingImgPath=null; };
+async function cvUploadDataUrl(path,name,dataUrl){ try{ setStatus('uploading…');
+  const blob=await (await fetch(dataUrl)).blob();
+  const sp=(state.slug||'misc')+'/'+Date.now()+'-'+((name||'image').replace(/[^\w.\-]+/g,'_'));
+  const { error }=await sb.storage.from('project-media').upload(sp,blob,{upsert:true,cacheControl:'31536000',contentType:blob.type||'image/jpeg'});
+  if(error){ setStatus('upload failed','err'); alert(error.message); return; }
+  const { data }=sb.storage.from('project-media').getPublicUrl(sp);
+  const fr=$('cvframe'); if(fr&&fr.contentWindow) fr.contentWindow.postMessage({type:'mm-edit-set-image',path,url:data.publicUrl},'*');
+  setStatus('uploaded','ok'); }catch(e){ setStatus('upload failed','err'); } }
 
 refreshAuth();
 </script>

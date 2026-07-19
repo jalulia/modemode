@@ -704,7 +704,7 @@ function pbStyle(){ if(document.getElementById('mm-pb-style'))return; const st=d
    +'.mm-menu button:hover{background:rgba(196,0,33,.08);color:var(--accent);}'
    +'.mm-menu .mm-mh{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey-2);padding:4px 9px 3px;}'
    +'.mm-pbcard.mm-drop-before{box-shadow:-3px 0 0 var(--accent);} .mm-pbcard.mm-drop-after{box-shadow:3px 0 0 var(--accent);} .mm-pbcard.mm-dragging{opacity:.4;}'
-   +'[data-img]{cursor:pointer;} [data-img]:hover{outline:2px solid var(--accent);outline-offset:-2px;}';
+   +'[data-img]{cursor:pointer;} [data-img]:hover{outline:2px solid var(--accent);outline-offset:-2px;} [data-img].mm-dragover{outline:2px dashed var(--accent);outline-offset:-2px;background:rgba(196,0,33,.07);}';
   document.head.appendChild(st); }
 function sameArray(a,b){ return a.split('.').slice(0,-1).join('.')===b.split('.').slice(0,-1).join('.'); }
 function setWidth(path,w){ const b=getByPath(DOC,path); if(!b)return; b.width=w; renderDoc(DOC); postDoc(); }
@@ -728,7 +728,7 @@ function openImagePanel(path){ closeMenu(); closeCrop(); closeImgPanel(); imgPan
   const cur=getByPath(DOC,path); const curUrl=(typeof cur==='string')?cur:'';
   const ov=document.createElement('div'); ov.className='mm-imgov'; ov.setAttribute('contenteditable','false');
   const p=document.createElement('div'); p.className='mm-imgp';
-  const hd=document.createElement('h4'); hd.textContent='Replace image'; p.appendChild(hd);
+  const hd=document.createElement('h4'); hd.textContent=curUrl?'Replace image':'Add image'; p.appendChild(hd);
   const sub=document.createElement('div'); sub.className='sub'; sub.textContent='Paste an image URL, or upload a file from your computer.'; p.appendChild(sub);
   const inp=document.createElement('input'); inp.type='text'; inp.placeholder='https://…  image URL'; inp.value=curUrl; p.appendChild(inp);
   const rb=document.createElement('div'); rb.className='rowb';
@@ -900,7 +900,12 @@ function enablePageBuilder(){ if(!EDIT)return; pbStyle();
     card.addEventListener('dragleave',()=>card.classList.remove('mm-drop-before','mm-drop-after'));
     card.addEventListener('drop',e=>{ if(!_dragSrc||_dragSrc===path||!sameArray(_dragSrc,path))return; e.preventDefault(); const r=card.getBoundingClientRect(); const after=(e.clientX-r.left)>r.width/2; const s=_dragSrc; card.classList.remove('mm-drop-before','mm-drop-after'); reorder(s,path,after); });
   });
-  document.querySelectorAll('[data-img]').forEach(img=>{ if(img._mmImg)return; img._mmImg=true; img.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); selectImage(img, img.dataset.img); }); });
+  document.querySelectorAll('[data-img]').forEach(img=>{ if(img._mmImg)return; img._mmImg=true; const p=img.dataset.img;
+    img.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); if(!real(getByPath(DOC,p))) openImagePanel(p); else selectImage(img, p); });
+    img.addEventListener('dragover',e=>{ e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='copy'; img.classList.add('mm-dragover'); });
+    img.addEventListener('dragleave',()=>img.classList.remove('mm-dragover'));
+    img.addEventListener('drop',e=>{ e.preventDefault(); e.stopPropagation(); img.classList.remove('mm-dragover'); const f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!f||!/^image\//.test(f.type))return; const rd=new FileReader(); rd.onload=()=>{ try{ parent.postMessage({type:'mm-edit-upload',path:p,name:f.name,dataUrl:rd.result},'*'); }catch(_){} }; rd.readAsDataURL(f); });
+  });
 }
 window.addEventListener('message',ev=>{ const m=ev&&ev.data; if(!m||typeof m!=='object')return;
   if(m.type==='mm-edit-load'&&m.doc) renderDoc(m.doc);
