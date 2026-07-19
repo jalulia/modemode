@@ -461,7 +461,7 @@ function blockCards(sectionKey, b, path){
   else if(type==='media'){
     if(b.kind==='video'){ const hasFile=real(b.videoSrc); const src=hasFile?'':vimeoSrc(b.embed);
       const c=el('div','card'+(b.wide?' wide':'')); c.dataset.section=sectionKey;
-      const h=el('div','card-h'); const lbl=el('span','lbl',esc(b.title||'VIDEO')); if(EDIT)lbl.setAttribute('data-edit',path+'.title'); h.appendChild(lbl); h.appendChild(el('span','tag',hasFile?'MP4':(src?'VIMEO':'VIDEO'))); c.appendChild(h);
+      const h=el('div','card-h'); const lbl=el('span','lbl',esc(b.title||'VIDEO')); if(EDIT)lbl.setAttribute('data-edit',path+'.title'); h.appendChild(lbl); c.appendChild(h);
       let inner;
       if(hasFile){ const at=[]; if(b.loop)at.push('loop'); if(b.autoplay)at.push('autoplay','muted','playsinline'); if(!b.autoplay)at.push('controls'); at.push('preload="metadata"');
         inner=`<div class="media-embed"><video src="${esc(b.videoSrc)}" ${at.join(' ')}></video></div>`; }
