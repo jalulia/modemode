@@ -30,11 +30,11 @@ The structure is done; now it gets real and coherent.
 Custom domain (TBD) · SEO/OG meta · optional prerender to static `/<slug>/index.html` for crawlers · accessibility + perf pass · transitions/fades · the homepage cursor → "view project" tab.
 
 ### Phase 11 — Hardening (as needed)
-Lock down open signup (restrict to editor emails) · per-editor audit if more authors join · Supabase Pro (always-on, before the free-tier idle-pause).
+Lock down open signup (restrict to editor emails) · per-editor audit if more authors join · ~~Supabase Pro (always-on, before the free-tier idle-pause)~~ ✅ **done — org is on Pro ($25/mo), project always-on** (verified 2026-07-19); the keep-alive Action is now vestigial and can be deleted.
 
 ---
 
 ### Immediate next moves
 1. **Phase 9.1** — bring the split-spine decision to Julia (it gates clean content edits), then implement the chosen source of truth.
 2. **Phase 9.2/9.3** — as Matt's real copy + photos arrive, author them in `editor/` and own-host media into the bucket.
-3. Upgrade Supabase to Pro before the free-tier idle-pause; settle the domain (Phase 10).
+3. Settle the domain (Phase 10). *(Supabase Pro: done — no longer a pending move.)*

@@ -1,10 +1,10 @@
 # MODE MODE — Supabase backend
 
-> **Status: LIVE (2026-06-28).** Project ref `vjvjparfulrtsxdslrpg`. Schema applied, all 6 rows seeded, and `loadProject()` in `project.html` reads Supabase with a bundled-`content/*.json` fallback. Authoring: Supabase Table editor → `projects` → `data`. Free-tier project idle-pauses after 7 days → upgrade the org to Pro for always-on. The setup steps below are kept for reference / rebuilds.
+> **Status: LIVE (2026-06-28).** Project ref `vjvjparfulrtsxdslrpg`. Schema applied, all 6 rows seeded, and `loadProject()` in `project.html` reads Supabase with a bundled-`content/*.json` fallback. Authoring: Supabase Table editor → `projects` → `data`. **The org is on Pro ($25/mo) — the project is always-on, no idle-pause** (verified 2026-07-19). The setup steps below are kept for reference / rebuilds.
 
 The CMS backend, set up the way the architecture was designed for: **one row per project, the content document stored as `jsonb`.** No relational shredding of the block schema, no renderer rewrite. Flipping data-in-repo → Supabase is a one-function change in `project.html`.
 
-Why Supabase Pro (~$25/mo): the free tier pauses a project after 7 days idle, which would take a live site down. At this volume you're paying for uptime + a hosted editor, not capacity.
+Why Supabase Pro ($25/mo) — **now active**: the free tier paused a project after 7 days idle, which would have taken a live site down. At this volume the spend buys uptime + a hosted editor, not capacity. Because the project no longer sleeps, `.github/workflows/keepalive.yml` (the ~2-day ping that defended against the pause) is **vestigial** and can be deleted.
 
 ## Setup (once)
 

@@ -1,7 +1,15 @@
 name: supabase-keepalive
-# Pings the MODE MODE Supabase project every ~2 days so its free tier never idle-pauses
-# (free projects sleep after ~7 days of inactivity). The anon key is public-safe — it is
-# already shipped in the site's client code, so no repo secret is needed.
+#
+# VESTIGIAL as of 2026-07-19 — SAFE TO DELETE.
+# This existed only because the project was on the Supabase free tier, where a project
+# sleeps after ~7 days of inactivity; the ping kept it awake. The org is now on Pro
+# ($25/mo) and the project is always-on, so there is no pause to prevent.
+# It is left in place for now because it is one cheap request every 2 days and it also
+# serves as a passive uptime check (the job fails loudly if REST stops returning 200).
+# Delete this file whenever you want that noise gone.
+#
+# The anon key below is public-safe — it is already shipped in the site's client code,
+# so no repo secret is needed.
 on:
   schedule:
     - cron: "0 9 */2 * *"   # every 2nd day at 09:00 UTC
