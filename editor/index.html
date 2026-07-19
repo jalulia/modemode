@@ -182,7 +182,7 @@
     <button class="btn" id="save" disabled>Save</button>
   </div>
 
-<input type="file" id="cvfile" accept="image/*" class="hidden">
+<input type="file" id="cvfile" accept="image/*,video/*" class="hidden">
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 const SB_URL='https://vjvjparfulrtsxdslrpg.supabase.co';
@@ -275,7 +275,7 @@ function imageField(label, obj, key, opts={}){
   const ic=el('div','ic');
   const url=el('input'); url.placeholder='https://… or upload →'; url.value=obj[key]||'';
   url.oninput=()=>{ obj[key]=url.value; markDirty(); set(); };
-  const file=el('input'); file.type='file'; file.accept='image/*'; file.style.marginTop='6px';
+  const file=el('input'); file.type='file'; file.accept='image/*,video/*'; file.style.marginTop='6px';
   file.onchange=async()=>{ const f=file.files[0]; if(!f)return; setStatus('uploading…');
     const path=(state.slug||'misc')+'/'+Date.now()+'-'+f.name.replace(/[^\w.\-]+/g,'_');
     const { error }=await sb.storage.from('project-media').upload(path,f,{upsert:true,cacheControl:'31536000'});
@@ -561,7 +561,7 @@ window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='obje
   else if(m.type==='mm-edit-fields'&&m.path){ openBlockDrawer(m.path); }
   else if(m.type==='mm-edit-undo'){ undo(); }
   else if(m.type==='mm-edit-redo'){ redo(); }
-  else if(m.type==='mm-edit-upload'&&m.path&&m.dataUrl){ cvUploadDataUrl(m.path,m.name,m.dataUrl); }
+  else if(m.type==='mm-edit-upload'&&m.path&&m.file){ cvUploadFile(m.path,m.file); }
   else if(m.type==='mm-edit-pick-image'&&m.path){ cvPickImage(m.path); }
 });
 let pendingImgPath=null;
@@ -573,10 +573,9 @@ $('cvfile').onchange=async()=>{ const f=$('cvfile').files[0]; if(!f||!pendingImg
   const { data }=sb.storage.from('project-media').getPublicUrl(sp);
   const fr=$('cvframe'); if(fr&&fr.contentWindow) fr.contentWindow.postMessage({type:'mm-edit-set-image',path:pendingImgPath,url:data.publicUrl},'*');
   setStatus('uploaded','ok'); pendingImgPath=null; };
-async function cvUploadDataUrl(path,name,dataUrl){ try{ setStatus('uploading…');
-  const blob=await (await fetch(dataUrl)).blob();
-  const sp=(state.slug||'misc')+'/'+Date.now()+'-'+((name||'image').replace(/[^\w.\-]+/g,'_'));
-  const { error }=await sb.storage.from('project-media').upload(sp,blob,{upsert:true,cacheControl:'31536000',contentType:blob.type||'image/jpeg'});
+async function cvUploadFile(path,file){ if(!file)return; try{ setStatus('uploading…');
+  const sp=(state.slug||'misc')+'/'+Date.now()+'-'+((file.name||'file').replace(/[^\w.\-]+/g,'_'));
+  const { error }=await sb.storage.from('project-media').upload(sp,file,{upsert:true,cacheControl:'31536000',contentType:file.type||undefined});
   if(error){ setStatus('upload failed','err'); alert(error.message); return; }
   const { data }=sb.storage.from('project-media').getPublicUrl(sp);
   const fr=$('cvframe'); if(fr&&fr.contentWindow) fr.contentWindow.postMessage({type:'mm-edit-set-image',path,url:data.publicUrl},'*');
