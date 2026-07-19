@@ -115,6 +115,13 @@
   #fmframe{flex:1;width:100%;border:0;background:var(--ground);display:block;}
   #canvaswrap{height:calc(100vh - 104px);}
   #cvframe{width:100%;height:100%;border:0;display:block;background:var(--ground);}
+  #drawer{position:fixed;top:53px;left:0;bottom:0;width:344px;max-width:88vw;z-index:40;background:var(--paper);border-right:1px solid var(--hair);box-shadow:6px 0 26px rgba(22,22,15,.13);overflow:auto;}
+  .dwh{position:sticky;top:0;display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1px solid var(--hair);background:var(--panel);z-index:2;}
+  .dwt{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);flex:1;}
+  #dwClose{border:1px solid var(--hair);background:var(--paper);border-radius:3px;width:26px;height:26px;color:var(--grey);flex:none;}
+  #dwClose:hover{color:var(--ink);border-color:var(--grey-2);}
+  #dwBody{padding:14px 15px 60px;}
+  #dwBody .dwtype{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey-2);margin:0 0 12px;}
   .hidden{display:none!important;}
 </style>
 </head>
@@ -159,6 +166,11 @@
       </div>
     </section>
   </div>
+
+  <aside id="drawer" class="hidden">
+    <div class="dwh"><span class="dwt">Edit block</span><button class="btn ghost tiny red" id="dwDelete">Delete</button><button id="dwClose" title="Close">✕</button></div>
+    <div id="dwBody"></div>
+  </aside>
 
   <div class="savebar hidden" id="savebar">
     <div class="modeswitch">
@@ -227,7 +239,9 @@ async function selectProject(slug){
   $('previewBtn').href='../project.html?p='+encodeURIComponent(slug);
   setStatus(''); markClean(); applyMode();
 }
-function markDirty(){ state.dirty=true; $('dirtyFlag').classList.remove('hidden'); $('save').disabled=false; histPush(); }
+let _applyingCanvasEdit=false, _syncT=null;
+function syncCanvasSoon(){ if(state.mode!=='canvas')return; clearTimeout(_syncT); _syncT=setTimeout(()=>{ const f=$('cvframe'); if(f&&f.contentWindow&&state.doc) f.contentWindow.postMessage({type:'mm-edit-load',doc:state.doc},'*'); },250); }
+function markDirty(){ state.dirty=true; $('dirtyFlag').classList.remove('hidden'); $('save').disabled=false; histPush(); if(!_applyingCanvasEdit) syncCanvasSoon(); }
 function markClean(){ state.dirty=false; $('dirtyFlag').classList.add('hidden'); $('save').disabled=true; }
 /* ---------- undo / redo history ---------- */
 let _hist=[], _hp=-1, _histT=null;
@@ -368,7 +382,7 @@ function blockBody(b){
   const add=(...nodes)=>nodes.forEach(n=>c.appendChild(n));
   if(b.type==='text'){ add(inputField('Title (optional)',b,'title'), inputField('Body',b,'body',{area:true}));
       const r=el('div','row'); r.appendChild(checkField('Two-column',b,'layout','two')); r.appendChild(checkField('Wide',b,'wide')); add(r); }
-  else if(b.type==='image'){ add(inputField('Title (optional)',b,'title'), imageField('Image',b,'src',{}), cropField(b,'src'), inputField('Alt',b,'alt'), inputField('Caption',b,'caption'), checkField('Wide',b,'wide')); }
+  else if(b.type==='image'){ add(inputField('Title (optional)',b,'title'), imageField('Image',b,'src',{}), cropField(b,'src'), inputField('Alt',b,'alt'), inputField('Caption',b,'caption'), checkField('Fit to width (show whole image)',b,'fit','width'), checkField('Wide',b,'wide')); }
   else if(b.type==='media'){ const kindW=el('div','fieldwrap'); kindW.appendChild(el('label',null,'Kind'));
       const sel=el('select'); ['image','video'].forEach(k=>{ const o=el('option',null,k); o.value=k; if((b.kind||'image')===k)o.selected=true; sel.appendChild(o); });
       sel.onchange=()=>{ b.kind=sel.value; markDirty(); render(); }; kindW.appendChild(sel); add(inputField('Title (optional)',b,'title'), kindW);
@@ -487,6 +501,19 @@ $('mCanvas').onclick=()=>switchMode('canvas');
 $('mForm').onclick=()=>switchMode('form');
 $('mRaw').onclick=()=>switchMode('raw');
 
+/* ---------- block field drawer (double-click a block in Canvas) ---------- */
+let _drawerPath=null;
+function _pathTo(path){ const sp=path.split('.'); const idx=+sp[sp.length-1]; const arr=sp.slice(0,-1).reduce((a,k)=>(a==null?a:a[k]), state.doc); return {arr, idx}; }
+function openBlockDrawer(path){ if(!state.doc)return; const {arr,idx}=_pathTo(path); if(!Array.isArray(arr)||!arr[idx])return;
+  const b=arr[idx]; _drawerPath=path; const body=$('dwBody'); body.innerHTML='';
+  $('dwDelete').onclick=()=>{ if(confirm('Delete this '+(b.type||'')+' block?')){ arr.splice(idx,1); markDirty(); closeBlockDrawer(); } };
+  body.appendChild(el('div','dwtype', (b.type||'block')+'  ·  fields'));
+  body.appendChild(blockBody(b));
+  $('drawer').classList.remove('hidden');
+}
+function closeBlockDrawer(){ $('drawer').classList.add('hidden'); _drawerPath=null; }
+$('dwClose').onclick=closeBlockDrawer;
+
 /* ---------- save ---------- */
 $('save').onclick=async()=>{
   let doc=state.doc;
@@ -530,7 +557,8 @@ window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='obje
   if(m.type==='mm-studio-ready'){ $('fmSave').disabled=false; pushRosterToStudio(); }
   else if(m.type==='mm-roster'){ saveRosterToSupabase(m.data); }
   else if(m.type==='mm-edit-ready'){ const f=$('cvframe'); if(f&&f.contentWindow&&state.doc) f.contentWindow.postMessage({type:'mm-edit-load',doc:state.doc},'*'); }
-  else if(m.type==='mm-edit-doc'&&m.doc){ state.doc=m.doc; markDirty(); }
+  else if(m.type==='mm-edit-doc'&&m.doc){ _applyingCanvasEdit=true; state.doc=m.doc; markDirty(); _applyingCanvasEdit=false; }
+  else if(m.type==='mm-edit-fields'&&m.path){ openBlockDrawer(m.path); }
   else if(m.type==='mm-edit-undo'){ undo(); }
   else if(m.type==='mm-edit-redo'){ redo(); }
   else if(m.type==='mm-edit-upload'&&m.path&&m.dataUrl){ cvUploadDataUrl(m.path,m.name,m.dataUrl); }
