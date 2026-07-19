@@ -3,6 +3,7 @@
 The live snapshot of where the site is. The arc is in `ROADMAP.md`; how work runs + how to onboard is in `ORCHESTRATION.md`. Provenance: **Verified** = read from the live file/git or headless-tested · **Decided** = Julia's call · **Open** = needs Julia/Matt.
 
 ## Last touched
+- **2026-07-19** — Image crop tool (`60070a7`). Non-destructive crop — **aspect + draggable focal point + zoom** — on standalone image blocks, media-image blocks, and image+text rows. Editor gets an aspect/zoom picker with a WYSIWYG focal-point drag; the renderer wraps the image in a fixed-aspect box (`object-fit:cover` + `object-position`), so height locks and grid cards baseline-align. Original files untouched. Render verified headless (0 errors); editor parses clean.
 - **2026-07-19** — Video + titles (session "Mode Mode project status review"). Editor `media` video blocks now take a native **MP4 upload** with **Loop / Autoplay (muted)** toggles; the renderer emits a native `<video>`, Vimeo still works alongside. Image / media-image cards now show their **Title** instead of the `IMG-NN` auto-label; untitled cards keep auto-numbering (untitled-only count). Renderer verified headless (0 console errors); pushed `b60ca88`. Repo now cloned locally at `~/Documents/GitHub/modemode`.
 - **2026-06-28** — Initial snapshot: CMS live, six case-study pages, Supabase backend.
 
@@ -35,7 +36,7 @@ The full site is live and CMS-driven — a field-map homepage + six case-study p
 - **Split-spine** (the real architectural item): node geometry/labels/colours live in the homepage roster AND are copied into each project doc's `nodes[].geom`, joined only by `code`, with **no live link** — move a node on the homepage and the saved minimap goes stale. Decide the single source of truth (field-studio writes geometry to Supabase, vs. homepage-master + a sync step). Surface to Julia before building.
 - **Real content/photos from Matt:** copy is sample-grade (his site text); Eyeknow event photos are designed placeholders (Kyle's links purged per Julia's rule); the full 22-card tarot deck (6 in repo). See `media-sourcing-policy` (memory): sources = Matt's site / Julia's drive / her Google Drive portfolio; never Kyle.
 - **Media own-hosting:** migrate Matt's ~35 Squarespace hotlinks into the `project-media` bucket; repoint `src`.
-- **Editor v2:** **image crop** — non-destructive (aspect + focal point), applies to standalone image blocks *and* image+text rows so heights lock and cards baseline-align; **this is the active next build**. Plus drag-drop reorder and the `embed` block (from the memo).
+- **Editor v2:** ✅ **image crop shipped** (`60070a7`, non-destructive: aspect + focal point + zoom). Remaining: block drag-drop reorder, and the `embed` block (from the memo).
 - **Rotate the editor password** — `modemode2026` is in this public repo (see Backend). Change it, then scrub the doc.
 - **Content hygiene:** delete leftover placeholder blocks in the live docs — eyeknow-manor currently has a blank-title `description` text block (Installation design node) and a `test`/`test` text block (Possessed Ouija Board node) rendering on the live page.
 - **Homepage:** cursor becomes the "view project" tab on blob hover (no hand) — the last item from the Jun-28 notes.
