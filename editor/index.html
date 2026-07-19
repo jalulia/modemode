@@ -97,6 +97,22 @@
   .savebar{position:fixed;bottom:0;left:240px;right:0;z-index:20;display:flex;align-items:center;gap:14px;
     padding:12px 30px;background:var(--paper);border-top:1px solid var(--hair);}
   .savebar .sp{flex:1;}
+  /* page-background control — circle above the savebar, bottom right */
+  .gswatch{position:fixed;right:30px;bottom:62px;z-index:21;width:30px;height:30px;border-radius:50%;
+    border:1px solid var(--hair);background:#FFFFFF;cursor:pointer;padding:0;
+    box-shadow:0 2px 9px rgba(22,22,15,.14);transition:transform .12s;}
+  .gswatch:hover{transform:scale(1.09);}
+  .gpop{position:fixed;right:30px;bottom:102px;z-index:22;width:212px;background:var(--paper);
+    border:1px solid var(--hair);border-radius:8px;padding:12px;box-shadow:0 10px 30px rgba(22,22,15,.17);}
+  .gpop h4{margin:0 0 9px;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--grey);font-weight:400;}
+  .gpop .grow{display:flex;gap:7px;align-items:center;}
+  .gpop input[type=color]{width:34px;height:30px;padding:0;border:1px solid var(--hair);border-radius:4px;background:none;cursor:pointer;}
+  .gpop input[type=text]{flex:1;min-width:0;font-family:var(--mono);font-size:11.5px;padding:6px 8px;
+    border:1px solid var(--hair);border-radius:4px;background:var(--paper);color:var(--ink);text-transform:uppercase;}
+  .gpop .gmeta{margin-top:9px;font-size:10px;color:var(--grey);line-height:1.5;min-height:15px;}
+  .gpop .gmeta.warn{color:var(--accent);}
+  .gpop .greset{margin-top:8px;font-size:10px;color:var(--grey);background:none;border:0;padding:0;
+    cursor:pointer;text-decoration:underline;}
   .dirty{color:var(--accent);font-size:11px;}
   #raw{width:100%;min-height:420px;font-size:11.5px;line-height:1.5;}
   .modeswitch{display:flex;gap:6px;}
@@ -182,6 +198,14 @@
     <button class="btn" id="save" disabled>Save</button>
   </div>
 
+<button class="gswatch hidden" id="gswatch" title="Page background"></button>
+<div class="gpop hidden" id="gpop">
+  <h4>Page background</h4>
+  <div class="grow"><input type="color" id="gcolor"><input type="text" id="ghex" maxlength="7" spellcheck="false"></div>
+  <div class="gmeta" id="gmeta"></div>
+  <button class="greset" id="greset">Reset to white</button>
+</div>
+
 <input type="file" id="cvfile" accept="image/*,video/*" class="hidden">
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
@@ -199,7 +223,7 @@ async function refreshAuth(){
   const inApp=!!session;
   $('login').classList.toggle('hidden',inApp);
   $('editor').classList.toggle('hidden',!inApp);
-  $('savebar').classList.toggle('hidden',!inApp);
+  $('savebar').classList.toggle('hidden',!inApp); $('gswatch').classList.toggle('hidden',!inApp);
   $('logout').classList.toggle('hidden',!inApp);
   $('pw').classList.toggle('hidden',!inApp);
   $('who').textContent= inApp ? session.user.email : '';
@@ -230,7 +254,7 @@ async function loadProjects(){
 }
 async function selectProject(slug){
   if(state.dirty && !confirm('Discard unsaved changes?')) return;
-  $('fieldmap').classList.add('hidden'); $('main').classList.remove('hidden'); $('savebar').classList.remove('hidden'); $('nav-fieldmap').classList.remove('on');
+  $('fieldmap').classList.add('hidden'); $('main').classList.remove('hidden'); $('savebar').classList.remove('hidden'); $('gswatch').classList.remove('hidden'); $('nav-fieldmap').classList.remove('on');
   setStatus('loading…');
   const { data, error }=await sb.from('projects').select('data').eq('slug',slug).single();
   if(error){ setStatus('load failed','err'); return; }
@@ -532,7 +556,7 @@ function showFieldMap(){
   if(state.dirty && !confirm('Discard unsaved project changes?')) return;
   document.querySelectorAll('.pitem').forEach(n=>n.classList.remove('on'));
   $('nav-fieldmap').classList.add('on');
-  $('main').classList.add('hidden'); $('canvaswrap').classList.add('hidden'); $('savebar').classList.add('hidden'); $('fieldmap').classList.remove('hidden');
+  $('main').classList.add('hidden'); $('canvaswrap').classList.add('hidden'); $('savebar').classList.add('hidden'); $('gswatch').classList.add('hidden'); $('gpop').classList.add('hidden'); $('fieldmap').classList.remove('hidden');
   if(!fmLoaded){ fmLoaded=true; $('fmstatus').textContent='loading…'; $('fmframe').src='../index.html?studio'; }
 }
 $('nav-fieldmap').onclick=showFieldMap;
@@ -553,10 +577,29 @@ async function saveRosterToSupabase(roster){
   if(error){ $('fmstatus').textContent='save failed'; alert('Field map save failed: '+error.message+'\n\n(If permission denied, your account may not be authorized to write.)'); return; }
   $('fmstatus').textContent='saved ✓'; setTimeout(()=>{ if($('fmstatus').textContent==='saved ✓') $('fmstatus').textContent='loaded from Supabase'; },2500);
 }
+/* ---------- page background ---------- */
+function groundVal(){ return (state.doc&&state.doc.colors&&state.doc.colors.ground)||'#FFFFFF'; }
+function paintSwatch(){ const g=groundVal(); $('gswatch').style.background=g; $('gcolor').value=g;
+  if(document.activeElement!==$('ghex')) $('ghex').value=g; }
+function setGround(hex){ if(!state.doc)return false; hex=String(hex||'').trim();
+  if(!/^#[0-9a-fA-F]{6}$/.test(hex)) return false;
+  state.doc.colors=state.doc.colors||{}; state.doc.colors.ground=hex.toUpperCase();
+  paintSwatch(); markDirty(); return true; }
+$('gswatch').onclick=ev=>{ ev.stopPropagation(); const p=$('gpop'); const opening=p.classList.contains('hidden');
+  p.classList.toggle('hidden'); if(!opening) return; paintSwatch();
+  setTimeout(()=>document.addEventListener('mousedown',function h(e2){
+    if(!p.contains(e2.target)&&e2.target!==$('gswatch')){ p.classList.add('hidden'); document.removeEventListener('mousedown',h); } }),0); };
+$('gcolor').oninput=()=>setGround($('gcolor').value);
+$('ghex').oninput=()=>{ let v=$('ghex').value.trim(); if(v&&v[0]!=='#') v='#'+v; setGround(v); };
+$('greset').onclick=()=>{ setGround('#FFFFFF'); $('ghex').value='#FFFFFF'; };
+
 window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='object') return;
   if(m.type==='mm-studio-ready'){ $('fmSave').disabled=false; pushRosterToStudio(); }
   else if(m.type==='mm-roster'){ saveRosterToSupabase(m.data); }
   else if(m.type==='mm-edit-ready'){ const f=$('cvframe'); if(f&&f.contentWindow&&state.doc) f.contentWindow.postMessage({type:'mm-edit-load',doc:state.doc},'*'); }
+  else if(m.type==='mm-palette'){ const g=$('gmeta'); if(g){
+      g.textContent='ink '+m.ink+' · '+m.contrast+':1'+(m.contrast<4.5?'  — low contrast':'');
+      g.classList.toggle('warn',m.contrast<4.5); } }
   else if(m.type==='mm-edit-doc'&&m.doc){ _applyingCanvasEdit=true; state.doc=m.doc; markDirty(); _applyingCanvasEdit=false; }
   else if(m.type==='mm-edit-fields'&&m.path){ openBlockDrawer(m.path); }
   else if(m.type==='mm-edit-undo'){ undo(); }

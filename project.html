@@ -646,7 +646,9 @@ function updatePortrait(){
 /* ===================== render ===================== */
 function render(p){
   state.project=p; state.nodes=p.nodes||[]; state.accent=(p.colors&&p.colors.core)||p.accent||[196,0,33];
-  applyPalette((p.colors&&p.colors.ground)||'#FFFFFF');   /* must precede legibleInk — it reads --ground */
+  const _pal=applyPalette((p.colors&&p.colors.ground)||'#FFFFFF');   /* must precede legibleInk — it reads --ground */
+  if(EDIT){ try{ parent.postMessage({type:'mm-palette',ground:RGBHEX(_pal.ground),ink:RGBHEX(_pal.ink.map(Math.round)),
+    contrast:+contrastOn(_pal.ink.map(Math.round),_pal.ground).toFixed(2)},'*'); }catch(_){} }
   state.ink=legibleInk(state.accent); state.imgN=0;
   state.activeKey=''; state.hoverNodeId=null;
   state.contentNodes=state.nodes.filter(hasContent).sort((a,b)=>((a.content.order||0)-(b.content.order||0)));
