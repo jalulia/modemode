@@ -222,13 +222,24 @@ async function selectProject(slug){
   setStatus('loading…');
   const { data, error }=await sb.from('projects').select('data').eq('slug',slug).single();
   if(error){ setStatus('load failed','err'); return; }
-  state.slug=slug; state.doc=data.data; state.dirty=false;
+  state.slug=slug; state.doc=data.data; state.dirty=false; histInit();
   document.querySelectorAll('.pitem').forEach(n=>n.classList.toggle('on',n.dataset.slug===slug));
   $('previewBtn').href='../project.html?p='+encodeURIComponent(slug);
   setStatus(''); markClean(); applyMode();
 }
-function markDirty(){ state.dirty=true; $('dirtyFlag').classList.remove('hidden'); $('save').disabled=false; }
+function markDirty(){ state.dirty=true; $('dirtyFlag').classList.remove('hidden'); $('save').disabled=false; histPush(); }
 function markClean(){ state.dirty=false; $('dirtyFlag').classList.add('hidden'); $('save').disabled=true; }
+/* ---------- undo / redo history ---------- */
+let _hist=[], _hp=-1, _histT=null;
+function _snap(){ try{ return JSON.stringify(state.doc); }catch(e){ return null; } }
+function histInit(){ _hist=[]; _hp=-1; const s=_snap(); if(s!=null){ _hist=[s]; _hp=0; } }
+function histPush(){ clearTimeout(_histT); _histT=setTimeout(()=>{ if(!state.doc)return; const s=_snap(); if(s==null||(_hp>=0&&_hist[_hp]===s))return; _hist=_hist.slice(0,_hp+1); _hist.push(s); if(_hist.length>40)_hist.shift(); _hp=_hist.length-1; }, 350); }
+function _histRestore(s){ try{ state.doc=JSON.parse(s); }catch(e){ return; } render(); const f=$('cvframe'); if(f&&f.contentWindow) f.contentWindow.postMessage({type:'mm-edit-load',doc:state.doc},'*'); state.dirty=true; $('dirtyFlag').classList.remove('hidden'); $('save').disabled=false; }
+function undo(){ clearTimeout(_histT); if(_hp>0){ _hp--; _histRestore(_hist[_hp]); setStatus('undo','ok'); } else setStatus('nothing to undo'); }
+function redo(){ clearTimeout(_histT); if(_hp<_hist.length-1){ _hp++; _histRestore(_hist[_hp]); setStatus('redo','ok'); } }
+document.addEventListener('keydown',e=>{ if(!(e.metaKey||e.ctrlKey))return; const k=(e.key||'').toLowerCase(); if(k!=='z'&&k!=='y')return;
+  const t=e.target; if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable))return;
+  e.preventDefault(); if(k==='y'||(k==='z'&&e.shiftKey)) redo(); else undo(); });
 
 /* ---------- field helpers ---------- */
 function inputField(label, obj, key, opts={}){
@@ -520,6 +531,8 @@ window.addEventListener('message',ev=>{ const m=ev.data; if(!m||typeof m!=='obje
   else if(m.type==='mm-roster'){ saveRosterToSupabase(m.data); }
   else if(m.type==='mm-edit-ready'){ const f=$('cvframe'); if(f&&f.contentWindow&&state.doc) f.contentWindow.postMessage({type:'mm-edit-load',doc:state.doc},'*'); }
   else if(m.type==='mm-edit-doc'&&m.doc){ state.doc=m.doc; markDirty(); }
+  else if(m.type==='mm-edit-undo'){ undo(); }
+  else if(m.type==='mm-edit-redo'){ redo(); }
   else if(m.type==='mm-edit-pick-image'&&m.path){ cvPickImage(m.path); }
 });
 let pendingImgPath=null;
