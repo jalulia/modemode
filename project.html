@@ -831,9 +831,15 @@ function pbStyle(){ if(document.getElementById('mm-pb-style'))return; const st=d
    +'.mm-build{position:fixed;left:8px;bottom:8px;z-index:55;font:10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:var(--grey-2);background:var(--panel);border:1px solid var(--hair);border-radius:4px;padding:4px 7px;pointer-events:none;opacity:.8;}';
   document.head.appendChild(st); }
 function arrPath(p){ return p.split('.').slice(0,-1).join('.'); }
+/* A block can never be dropped into itself or into one of its own descendants.
+   Without this, dragging a stack onto one of its own children splices the stack
+   out of the document and re-inserts it inside itself — the stack's children are
+   orphaned and silently vanish. A stack cell covers the same screen area as its
+   children, so that drop is easy to make by accident, not an edge case. */
+function isInside(dst,src){ return dst===src || String(dst).indexOf(src+'.')===0; }
 // Bump on every project.html change that ships. Shown bottom-left in edit mode so
 // Julia and I can both tell at a glance which build the canvas is actually running.
-const MM_BUILD='r10 · stacks';
+const MM_BUILD='r11 · self-drop guard';
 function buildChip(){ if(!EDIT||document.getElementById('mm-build'))return;
   const b=document.createElement('div'); b.id='mm-build'; b.className='mm-build'; b.textContent=MM_BUILD;
   b.setAttribute('contenteditable','false'); document.body.appendChild(b); }
@@ -866,7 +872,7 @@ function normalizeStacks(doc){
   ((doc&&doc.nodes)||[]).forEach(n=>{ if(n&&n.content)walk(n.content.blocks); });
 }
 function stackDrop(src,dst){
-  if(!src||!dst||src===dst)return false;
+  if(!src||!dst||isInside(dst,src))return false;
   const sArr=getByPath(DOC,arrPath(src)); if(!Array.isArray(sArr))return false;
   const si=+src.split('.').pop(); if(!(si>=0&&si<sArr.length))return false;
   const tgt=getByPath(DOC,dst); if(!tgt||typeof tgt!=='object')return false;
@@ -906,7 +912,7 @@ function fitRow(movedPath,targetPath){
 }
 function delBlock(path){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1],1); normalizeStacks(DOC); renderDoc(DOC); postDoc(); }
 function addAfter(path,type){ const sp=path.split('.'), arr=getByPath(DOC,sp.slice(0,-1).join('.')); if(!Array.isArray(arr))return; arr.splice(+sp[sp.length-1]+1,0,newBlock(type)); renderDoc(DOC); postDoc(); }
-function reorder(src,dst,after){ if(!src||!dst||src===dst)return; const sp=src.split('.'), dp=dst.split('.'); const sa=arrPath(src), da=arrPath(dst); const sArr=getByPath(DOC,sa), dArr=getByPath(DOC,da); if(!Array.isArray(sArr)||!Array.isArray(dArr))return; const si=+sp[sp.length-1]; let di=+dp[dp.length-1]; if(!(si>=0&&si<sArr.length)||!(di>=0&&di<dArr.length))return; const [it]=sArr.splice(si,1); if(sa===da&&si<di)di--; const ins=after?di+1:di; dArr.splice(ins,0,it); normalizeStacks(DOC); renderDoc(DOC); postDoc(); return da+'.'+ins; }
+function reorder(src,dst,after){ if(!src||!dst||isInside(dst,src))return; const sp=src.split('.'), dp=dst.split('.'); const sa=arrPath(src), da=arrPath(dst); const sArr=getByPath(DOC,sa), dArr=getByPath(DOC,da); if(!Array.isArray(sArr)||!Array.isArray(dArr))return; const si=+sp[sp.length-1]; let di=+dp[dp.length-1]; if(!(si>=0&&si<sArr.length)||!(di>=0&&di<dArr.length))return; const [it]=sArr.splice(si,1); if(sa===da&&si<di)di--; const ins=after?di+1:di; dArr.splice(ins,0,it); normalizeStacks(DOC); renderDoc(DOC); postDoc(); return da+'.'+ins; }
 let _mmImgPanel=null;
 function closeImgPanel(){ if(_mmImgPanel){ _mmImgPanel.remove(); _mmImgPanel=null; } }
 function imgPanelStyle(){ if(document.getElementById('mm-img-style'))return; const st=document.createElement('style'); st.id='mm-img-style';
@@ -1094,10 +1100,10 @@ function enablePageBuilder(){ if(!EDIT)return; pbStyle(); buildChip();
     card.appendChild(tools);
     card.addEventListener('dragstart',e=>{ _dragSrc=path; card.classList.add('mm-dragging'); if(e.dataTransfer){e.dataTransfer.effectAllowed='move'; try{e.dataTransfer.setData('text/plain',path);}catch(_){}}});
     card.addEventListener('dragend',()=>{ card.classList.remove('mm-dragging'); card.removeAttribute('draggable'); document.querySelectorAll('.mm-drop-l,.mm-drop-r,.mm-drop-t,.mm-drop-b').forEach(x=>x.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b')); _dragSrc=null; });
-    card.addEventListener('dragenter',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='move'; });
-    card.addEventListener('dragover',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='move'; const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); card.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b'); card.classList.add(mn===dl?'mm-drop-l':mn===dr?'mm-drop-r':mn===dt?'mm-drop-t':'mm-drop-b'); });
+    card.addEventListener('dragenter',e=>{ if(!_dragSrc||isInside(path,_dragSrc))return; e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='move'; });
+    card.addEventListener('dragover',e=>{ if(!_dragSrc||isInside(path,_dragSrc))return; e.preventDefault(); if(e.dataTransfer)e.dataTransfer.dropEffect='move'; const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); card.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b'); card.classList.add(mn===dl?'mm-drop-l':mn===dr?'mm-drop-r':mn===dt?'mm-drop-t':'mm-drop-b'); });
     card.addEventListener('dragleave',()=>card.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b'));
-    card.addEventListener('drop',e=>{ if(!_dragSrc||_dragSrc===path)return; e.preventDefault(); e.stopPropagation(); const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); const edge=(mn===dl?'l':mn===dr?'r':mn===dt?'t':'b'); const after=(edge==='r'||edge==='b'); const s=_dragSrc; _dragSrc=null; document.querySelectorAll('.mm-drop-l,.mm-drop-r,.mm-drop-t,.mm-drop-b,.mm-dragging').forEach(x=>x.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b','mm-dragging')); document.querySelectorAll('[data-block][draggable]').forEach(x=>x.removeAttribute('draggable')); if(edge==='b'&&widthOf(getByPath(DOC,path))!=='full'&&stackDrop(s,path))return; const np=reorder(s,path,after); if(np) fitRow(np,path); });
+    card.addEventListener('drop',e=>{ if(!_dragSrc||isInside(path,_dragSrc))return; e.preventDefault(); e.stopPropagation(); const r=card.getBoundingClientRect(); const dl=e.clientX-r.left,dr=r.right-e.clientX,dt=e.clientY-r.top,db=r.bottom-e.clientY,mn=Math.min(dl,dr,dt,db); const edge=(mn===dl?'l':mn===dr?'r':mn===dt?'t':'b'); const after=(edge==='r'||edge==='b'); const s=_dragSrc; _dragSrc=null; document.querySelectorAll('.mm-drop-l,.mm-drop-r,.mm-drop-t,.mm-drop-b,.mm-dragging').forEach(x=>x.classList.remove('mm-drop-l','mm-drop-r','mm-drop-t','mm-drop-b','mm-dragging')); document.querySelectorAll('[data-block][draggable]').forEach(x=>x.removeAttribute('draggable')); if(edge==='b'&&widthOf(getByPath(DOC,path))!=='full'&&stackDrop(s,path))return; const np=reorder(s,path,after); if(np) fitRow(np,path); });
   });
   document.querySelectorAll('[data-img]').forEach(img=>{ if(img._mmImg)return; img._mmImg=true; const p=img.dataset.img;
     img.addEventListener('click',e=>{ e.preventDefault(); e.stopPropagation(); if(!real(getByPath(DOC,p))) openImagePanel(p); else selectImage(img, p); });
