@@ -72,7 +72,8 @@
   .nav-item.muted .mk{border-color:var(--grey-2);} .nav-item.muted .lab{color:var(--grey-2);}
   .nav-item.active .mk{background:var(--accent);} .nav-item.active .lab{font-family:var(--disp);}
 
-  .pager{flex:0 0 auto;display:flex;justify-content:space-between;gap:10px;padding-top:16px;
+  /* margin-bottom clears the bottom-left index menu pill (assets/mm-menu.js) */
+  .pager{flex:0 0 auto;display:flex;justify-content:space-between;gap:10px;padding-top:16px;margin-bottom:52px;
     font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2);}
   .pager a{color:var(--grey);transition:color .15s;} .pager a:hover{color:var(--accent);}
   .pager .here{color:var(--accent);}
@@ -1200,5 +1201,10 @@ if(EDIT) document.addEventListener('keydown',e=>{ if(!(e.metaKey||e.ctrlKey))ret
     fail(m); } })();
 })();
 </script>
+<script src="assets/mm-menu.js"></script>
+<script>(function(){ var q=new URLSearchParams(location.search);
+  if(q.has('edit'))return;                       // editor canvas iframe: the edit tools own the bottom-left
+  var slug=(q.get('p')||location.hash.replace(/^#/,'')||'nightmare-kart').trim();
+  window.MMMenu&&window.MMMenu.mount({current:slug}); })();</script>
 </body>
 </html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<link rel="icon" href="data:,">
+<title>About — MODE MODE</title>
+<style>
+  @font-face{font-family:'BB Strata Pro';src:url('assets/fonts/BBStrataProSEF-Bold.woff2') format('woff2'),
+    url('assets/fonts/BBStrataProSEF-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap;}
+  @font-face{font-family:'BB Strata ML';src:url('assets/fonts/BBStrata-MLRegular.woff2') format('woff2'),
+    url('assets/fonts/BBStrata-MLRegular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap;}
+  :root{ color-scheme:light;
+    --ground:#FFFFFF; --panel:#FFFFFF; --ink:#15140F; --grey:#7E7D75; --grey-2:#B6B5AD;
+    --hair:rgba(18,16,12,.17); --hair-2:rgba(18,16,12,.08);
+    --disp:'BB Strata Pro','Arial Narrow',sans-serif;
+    --text:'BB Strata ML',ui-monospace,'SFMono-Regular',Menlo,monospace;
+    --accent:#C40021; --r:3px; }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html,body{margin:0;padding:0;background:var(--ground);}
+  body{font-family:var(--text);color:var(--ink);background:var(--ground);
+    -webkit-font-smoothing:antialiased;font-size:14px;line-height:1.68;}
+  a{color:inherit;text-decoration:none;}
+
+  .corner{position:fixed;width:14px;height:14px;border:1px solid var(--grey-2);pointer-events:none;opacity:.5;z-index:60;}
+  .corner.tl{top:18px;left:18px;border-right:0;border-bottom:0;} .corner.tr{top:18px;right:18px;border-left:0;border-bottom:0;}
+  .corner.bl{bottom:18px;left:18px;border-right:0;border-top:0;} .corner.br{bottom:18px;right:18px;border-left:0;border-top:0;}
+
+  .wordmark{position:fixed;top:30px;left:36px;width:94px;z-index:60;opacity:.92;transition:opacity .15s;}
+  .wordmark:hover{opacity:.6;} .wordmark img{display:block;width:94px;height:auto;}
+  .home{position:fixed;top:34px;right:40px;z-index:60;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--grey);display:inline-flex;align-items:center;gap:8px;}
+  .home:hover{color:var(--ink);} .home svg{display:block;}
+
+  /* ABOUT is deliberately NOT the project template: one wide editorial column,
+     no left field-rail, no card grid — a plainer, quieter register. */
+  .wrap{max-width:1180px;margin:0 auto;padding:172px 54px 140px;}
+  .kicker{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin:0 0 30px;}
+  .lede{font-family:var(--disp);font-weight:700;font-size:clamp(30px,4.6vw,62px);line-height:1.04;
+    letter-spacing:-.01em;max-width:16ch;margin:0 0 8px;}
+  .lede .em{color:var(--grey-2);}
+
+  .rule{height:1px;background:var(--hair);margin:64px 0 0;}
+  .row{display:grid;grid-template-columns:200px minmax(0,640px);gap:48px;padding:34px 0;border-bottom:1px solid var(--hair-2);align-items:baseline;}
+  .row h2{margin:0;font-family:var(--text);font-weight:400;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey);}
+  .row .body{font-size:15.5px;line-height:1.72;color:var(--ink);}
+  .row .body p{margin:0 0 14px;} .row .body p:last-child{margin:0;}
+
+  .people{display:flex;flex-wrap:wrap;gap:40px;}
+  .person .nm{font-family:var(--disp);font-weight:700;font-size:20px;letter-spacing:-.01em;}
+  .person .ro{font-size:12px;color:var(--grey);letter-spacing:.04em;margin-top:2px;}
+  .contact a{color:var(--accent);border-bottom:1px solid rgba(196,0,33,.35);}
+  .contact a:hover{border-color:var(--accent);}
+
+  @media (max-width:760px){
+    .wrap{padding:132px 22px 120px;}
+    .row{grid-template-columns:1fr;gap:12px;}
+    .home{right:20px;}
+  }
+</style>
+</head>
+<body>
+  <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+  <a class="wordmark" href="index.html" aria-label="MODE MODE — home"><img src="assets/mode-mode-logo.svg" alt="MODE MODE"></a>
+  <a class="home" href="index.html" aria-label="Back to the field map">Field map
+    <svg viewBox="0 0 22 12" width="22" height="12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square"><path d="M2 6 H22 M16.5 0.5 L22 6 L16.5 11.5"/></svg>
+  </a>
+  <main class="wrap" id="wrap"><div class="kicker">Loading…</div></main>
+
+<script>
+/* Editable About content: prefer a CMS-authored Supabase doc (slug 'about'), then the
+   bundled content/about.json, then the inline default below — the same load-boundary
+   pattern as the project pages, so About can move into the CMS later without a rewrite. */
+const SUPABASE={ url:'https://vjvjparfulrtsxdslrpg.supabase.co',
+  anon:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdmpwYXJmdWxydHN4ZHNscnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODM1ODIsImV4cCI6MjA5ODI1OTU4Mn0._A1WCuNyCtnJ2Y3U4iqWjvWQe2ANTA6i-sYfuhhcFq4' };
+const DEFAULT_ABOUT={ kicker:'MODE MODE — FIELD STUDIO',
+  lede:'A field studio for spatial, physical, and digital work.',
+  sections:[{h:'About',body:'Mode Mode is a shared studio. Add your story in content/about.json.'}],
+  people:[], contact:{} };
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const paras=t=>String(t||'').split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('');
+async function loadAbout(){
+  try{ const r=await fetch(`${SUPABASE.url}/rest/v1/projects?slug=eq.about&select=data`,
+      { headers:{apikey:SUPABASE.anon,Authorization:`Bearer ${SUPABASE.anon}`}, cache:'no-cache' });
+    if(r.ok){ const rows=await r.json(); if(rows.length&&rows[0].data) return rows[0].data; } }catch(e){}
+  try{ const r=await fetch('content/about.json',{cache:'no-cache'}); if(r.ok) return await r.json(); }catch(e){}
+  return DEFAULT_ABOUT;
+}
+function render(a){
+  const wrap=document.getElementById('wrap');
+  const secs=(a.sections||[]).map(s=>`<div class="row"><h2>${esc(s.h||'')}</h2><div class="body">${paras(s.body)}</div></div>`).join('');
+  const people=(a.people||[]).length?`<div class="row"><h2>Studio</h2><div class="body people">`+
+    a.people.map(p=>`<div class="person"><div class="nm">${esc(p.name||'')}</div><div class="ro">${esc(p.role||'')}</div></div>`).join('')+`</div></div>`:'';
+  const c=a.contact||{}; const contact=(c.email||c.note)?`<div class="row contact"><h2>Contact</h2><div class="body">`+
+    (c.note?`<p>${esc(c.note)}</p>`:'')+(c.email?`<p><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></p>`:'')+`</div></div>`:'';
+  wrap.innerHTML=`<div class="kicker">${esc(a.kicker||'ABOUT')}</div>`+
+    `<h1 class="lede">${esc(a.lede||'')}</h1>`+`<div class="rule"></div>`+secs+people+contact;
+  document.title='About — MODE MODE';
+}
+loadAbout().then(render);
+</script>
+<script src="assets/mm-menu.js"></script>
+<script>window.MMMenu&&window.MMMenu.mount({current:'about'});</script>
+</body>
+</html>

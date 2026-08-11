@@ -142,6 +142,12 @@
   .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;transition:.2s;}
   .lg-row:hover,.lg-row.active{background:var(--panel);border-color:var(--hair);}
   .lg-row.dim{opacity:.4;}
+  /* About — sits below the index, deliberately unlike a project row: no colour dot, a
+     hairline above, an arrow. It's a page, not a node on the field. */
+  .lg-about{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:9px;padding:9px 8px 2px 4px;
+    border-top:1px solid var(--hair-2);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);cursor:pointer;transition:color .2s;}
+  .lg-about:hover{color:var(--ink);} .lg-about .ar{color:var(--accent);transition:transform .2s;} .lg-about:hover .ar{transform:translateX(3px);}
+  body.darkbg .lg-about{color:#8A8A84;border-color:#26262C;} body.darkbg .lg-about:hover{color:#EDEDE8;}
   .lg-dot{width:9px;height:9px;border-radius:50%;flex:none;}
   .lg-code{font-size:9.5px;letter-spacing:.1em;color:var(--grey);width:30px;flex:none;}
   .lg-name{font-size:10.5px;}
@@ -767,7 +773,10 @@ function buildLegend(){ const vis=projects.filter(p=>p.code!=='P-07'); legendEl.
     row.onmouseenter=()=>{if(!lock){hover=p.id;syncLegend();updateReadout();}};
     row.onmouseleave=()=>{if(!lock){hover=null;syncLegend();updateReadout();}};
     row.onclick=()=>{ if(PAGES[p.code]) location.href='project.html?p='+encodeURIComponent(PAGES[p.code]); };
-    legendEl.appendChild(row);}); }
+    legendEl.appendChild(row);});
+  const ab=document.createElement('a'); ab.className='lg-about'; ab.href='about.html';
+  ab.innerHTML='<span>About the studio</span><span class="ar">→</span>';
+  legendEl.appendChild(ab); }
 function syncLegend(){const fi=lock||hover;legendEl.querySelectorAll('.lg-row').forEach(r=>{r.classList.toggle('active',r.dataset.id===fi);r.classList.toggle('dim',fi&&r.dataset.id!==fi);});}
 function updateReadout(){const fi=lock||hover;const pv=document.getElementById('hoverPreview');
   if(!fi){readoutEl.classList.remove('show');if(pv)pv.classList.remove('show');return;}const p=getProj(fi);if(!p)return;

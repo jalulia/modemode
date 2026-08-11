@@ -1,0 +1,27 @@
+{
+  "code": "ABOUT",
+  "kicker": "MODE MODE — FIELD STUDIO",
+  "lede": "Mode Mode is a studio for spatial, physical, and digital work — a shared field where each project is a mode of the same practice.",
+  "sections": [
+    {
+      "h": "What it is",
+      "body": "A studio run by Julia and Matt. We design experiences that move between screens, objects, and rooms: haunted mansions and arcade cabinets, streaming spectacles and printed matter. The homepage is a live field map — every project is a cloud of positions across two axes, Digital ↔ Physical and Object ↔ Spatial, and overlap reads as density rather than category. This page is the plain-language version of that map."
+    },
+    {
+      "h": "How we work",
+      "body": "One idea, authored across modes. We treat the medium as a setting on the same instrument — the same concept re-voiced as an installation, a video, a game, a booth. Nothing is a deliverable in isolation; each project is a station in a longer walk."
+    },
+    {
+      "h": "Selected work",
+      "body": "Eyeknow Manor · Nightmare Kart · GIF · 65 Porter · Massive · Selected Arcade. Open any of them from the index, bottom-left, or the field map on the home page."
+    }
+  ],
+  "people": [
+    { "name": "Julia Compton", "role": "Design & direction" },
+    { "name": "Matt Fryed", "role": "Design & direction" }
+  ],
+  "contact": {
+    "note": "Say hello",
+    "email": "hello@modemode.studio"
+  }
+}
