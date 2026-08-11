@@ -110,7 +110,8 @@
   .readout{position:absolute;left:36px;top:96px;width:232px;background:var(--panel);border:1px solid var(--hair);padding:14px 16px 15px;opacity:0;transform:translateY(4px);transition:.35s;pointer-events:none;z-index:6;}
   .readout.show{opacity:1;transform:translateY(0);}
   .readout .r-code{font-size:10px;letter-spacing:.18em;color:var(--grey);}
-  .readout .r-name{font-size:14px;font-weight:700;margin:5px 0 12px;}
+  .readout .r-name{font-size:14px;font-weight:700;margin:5px 0 10px;}
+  .readout .r-desc{font-size:11px;line-height:1.45;color:var(--grey);margin:0 0 12px;}
   .readout .r-row{display:flex;justify-content:space-between;font-size:10.5px;padding:4px 0;border-top:1px solid var(--hair-2);}
   .readout .r-row span:first-child{color:var(--grey);}
   .readout .r-sw{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:middle;}
@@ -324,6 +325,28 @@ const PREVIEW={
   'P-02':{src:'https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/53e770ab-11fd-4e59-ba67-13442feda437/massive-main.png',cap:'MASSIVE'},
   'P-06':{src:'https://images.squarespace-cdn.com/content/v1/5eb3104d0e74237ec948380b/59d5dffe-567b-4c10-83dc-ee30fe12e1d8/cab-photoshoot-521.png',cap:'SELECTED ARCADE'}
 };
+/* one-line homepage hover descriptions by code — authored in the CMS (loadAuthored fills this) */
+const DESC={};
+const escHtml=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* Pull CMS-authored homepage identity (preview image + one-line description) from the backend,
+   keyed by project code, and merge OVER the built-in defaults above. Read-only + best-effort:
+   if the backend is unreachable the hardcoded PREVIEW still stands and DESC stays empty. */
+const SUPABASE_HP={ url:'https://vjvjparfulrtsxdslrpg.supabase.co',
+  anon:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdmpwYXJmdWxydHN4ZHNscnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODM1ODIsImV4cCI6MjA5ODI1OTU4Mn0._A1WCuNyCtnJ2Y3U4iqWjvWQe2ANTA6i-sYfuhhcFq4' };
+async function loadAuthored(){
+  try{
+    const res=await fetch(`${SUPABASE_HP.url}/rest/v1/projects?select=data`,
+      { headers:{ apikey:SUPABASE_HP.anon, Authorization:`Bearer ${SUPABASE_HP.anon}` }, cache:'no-cache' });
+    if(!res.ok)return;
+    const rows=await res.json();
+    rows.forEach(r=>{ const d=r&&r.data; if(!d||!d.code)return;
+      if(d.tagline!=null&&String(d.tagline).trim()) DESC[d.code]=String(d.tagline).trim();
+      const src=d.preview&&d.preview.src;
+      if(src&&String(src).trim()) PREVIEW[d.code]={src:String(src).trim(),cap:(d.name||(PREVIEW[d.code]&&PREVIEW[d.code].cap)||'')};
+    });
+    if(mode==='present') updateReadout();
+  }catch(e){ /* offline / backend down → built-in defaults stand */ }
+}
 
 /* storage */
 const store={async save(){const s=JSON.stringify({v:2,projects,fx,blend:blendMode});
@@ -757,6 +780,7 @@ function updateReadout(){const fi=lock||hover;const pv=document.getElementById('
   const f=v=>(v>=0?'+':'')+v.toFixed(2);
   readoutEl.innerHTML=`<div class="r-code">${p.code}${lock===fi?' · LOCKED':''}</div>`+
     `<div class="r-name"><span class="r-sw" style="background:${rgbStr(p.colors.core)}"></span>${p.name}</div>`+
+    (DESC[p.code]?`<div class="r-desc">${escHtml(DESC[p.code])}</div>`:'')+
     `<div class="r-row"><span>DIGITAL ⟷ PHYSICAL</span><span>${f(xmin)} … ${f(xmax)}</span></div>`+
     `<div class="r-row"><span>OBJECT ⟷ SPATIAL</span><span>${f(ymin)} … ${f(ymax)}</span></div>`+
     `<div class="r-row"><span>NODES</span><span>${p.nodes.length}</span></div>`;
@@ -1107,6 +1131,7 @@ async function loadRosterRemote(){ const U='https://vjvjparfulrtsxdslrpg.supabas
   if(ub)ub.onclick=undo; if(rb)rb.onclick=redo; updateUndoUI();
   requestAnimationFrame(render);
   setMode('present');   // default to PRESENT (viewer) mode; EDIT is one toggle away
+  loadAuthored();       // pull CMS-authored hover descriptions + preview images (best-effort)
   // ?focus=<code> (from a project-page back-link) → lock that project
   let focused=false;
   try{ const fc=new URLSearchParams(location.search).get('focus');

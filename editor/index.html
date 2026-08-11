@@ -473,6 +473,12 @@ function render(){
   const meta=section('Identity', d.slug);
   const r1=el('div','row'); r1.appendChild(inputField('Code',d,'code')); r1.appendChild(inputField('Name',d,'name')); meta._b.appendChild(r1);
   const r2=el('div','row'); r2.appendChild(inputField('Prev (slug)',d,'prev')); r2.appendChild(inputField('Next (slug)',d,'next')); meta._b.appendChild(r2);
+  // Homepage identity — what this project shows on the field map itself, distinct from
+  // the case-study hero: a one-line hover description + a hover preview image.
+  d.preview=d.preview||{src:'',alt:''};
+  meta._b.appendChild(inputField('Homepage description  ·  one line, shown on hover', d, 'tagline', {ph:'e.g. Haunted mansion for Fernet-Branca, New Orleans'}));
+  meta._b.appendChild(imageField('Homepage preview image  ·  shown on hover (not the page hero)', d.preview, 'src', {}));
+  meta._b.appendChild(inputField('Preview alt', d.preview, 'alt'));
   d.colors=d.colors||{edge:[0,0,0],core:[0,0,0]};
   const colW=el('div','fieldwrap'); colW.appendChild(el('label',null,'Palette  ·  edge → core (RGB, from the field map)'));
   const cr=el('div','row');
