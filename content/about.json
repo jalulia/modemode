@@ -1,27 +1,28 @@
 {
   "code": "ABOUT",
-  "kicker": "MODE MODE — FIELD STUDIO",
-  "lede": "Mode Mode is a studio for spatial, physical, and digital work — a shared field where each project is a mode of the same practice.",
+  "name": "About",
+  "kicker": "Lorem Ipsum — Dolor Sit Amet",
+  "lede": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
   "sections": [
     {
-      "h": "What it is",
-      "body": "A studio run by Julia and Matt. We design experiences that move between screens, objects, and rooms: haunted mansions and arcade cabinets, streaming spectacles and printed matter. The homepage is a live field map — every project is a cloud of positions across two axes, Digital ↔ Physical and Object ↔ Spatial, and overlap reads as density rather than category. This page is the plain-language version of that map."
+      "h": "Lorem ipsum",
+      "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
     },
     {
-      "h": "How we work",
-      "body": "One idea, authored across modes. We treat the medium as a setting on the same instrument — the same concept re-voiced as an installation, a video, a game, a booth. Nothing is a deliverable in isolation; each project is a station in a longer walk."
+      "h": "Dolor sit amet",
+      "body": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
     },
     {
-      "h": "Selected work",
-      "body": "Eyeknow Manor · Nightmare Kart · GIF · 65 Porter · Massive · Selected Arcade. Open any of them from the index, bottom-left, or the field map on the home page."
+      "h": "Consectetur",
+      "body": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
     }
   ],
   "people": [
-    { "name": "Julia Compton", "role": "Design & direction" },
-    { "name": "Matt Fryed", "role": "Design & direction" }
+    { "name": "Lorem Ipsum", "role": "Dolor sit amet" },
+    { "name": "Consectetur Adipiscing", "role": "Sed do eiusmod" }
   ],
   "contact": {
-    "note": "Say hello",
-    "email": "hello@modemode.studio"
+    "note": "Lorem ipsum dolor sit amet",
+    "email": "hello@example.com"
   }
 }

@@ -74,10 +74,10 @@
    pattern as the project pages, so About can move into the CMS later without a rewrite. */
 const SUPABASE={ url:'https://vjvjparfulrtsxdslrpg.supabase.co',
   anon:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdmpwYXJmdWxydHN4ZHNscnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODM1ODIsImV4cCI6MjA5ODI1OTU4Mn0._A1WCuNyCtnJ2Y3U4iqWjvWQe2ANTA6i-sYfuhhcFq4' };
-const DEFAULT_ABOUT={ kicker:'MODE MODE — FIELD STUDIO',
-  lede:'A field studio for spatial, physical, and digital work.',
-  sections:[{h:'About',body:'Mode Mode is a shared studio. Add your story in content/about.json.'}],
-  people:[], contact:{} };
+const DEFAULT_ABOUT={ kicker:'Lorem Ipsum — Dolor Sit Amet',
+  lede:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.',
+  sections:[{h:'Lorem ipsum',body:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}],
+  people:[{name:'Lorem Ipsum',role:'Dolor sit amet'}], contact:{note:'Lorem ipsum dolor',email:'hello@example.com'} };
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const paras=t=>String(t||'').split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('');
 async function loadAbout(){

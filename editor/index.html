@@ -248,9 +248,13 @@ async function loadProjects(){
   const { data, error }=await sb.from('projects').select('slug,code,name').order('code');
   if(error){ setStatus('load failed','err'); return; }
   const list=$('plist'); list.innerHTML='';
-  data.forEach(p=>{ const it=el('div','pitem'+(p.slug===state.slug?' on':'')); it.dataset.slug=p.slug;
+  data.filter(p=>p.slug!=='about').forEach(p=>{ const it=el('div','pitem'+(p.slug===state.slug?' on':'')); it.dataset.slug=p.slug;
     it.appendChild(el('span','c',p.code||'')); it.appendChild(el('span','n',p.name||p.slug));
     it.onclick=()=>selectProject(p.slug); list.appendChild(it); });
+  // Always-present About entry (its own editor; sits apart from the projects)
+  const ab=el('div','pitem about'+('about'===state.slug?' on':'')); ab.dataset.slug='about';
+  ab.appendChild(el('span','c','—')); ab.appendChild(el('span','n','About page'));
+  ab.onclick=()=>selectAbout(); list.appendChild(ab);
 }
 async function selectProject(slug){
   if(state.dirty && !confirm('Discard unsaved changes?')) return;
@@ -468,6 +472,7 @@ function section(title, meta, mutedCls){ const s=el('div','sec'+(mutedCls?' '+mu
 function render(){
   const main=$('main'); main.innerHTML='';
   if(state.mode==='raw'){ renderRaw(main); return; }
+  if(state.slug==='about'){ renderAbout(main); return; }
   const d=state.doc; if(!d){ main.innerHTML='<div class="empty">Select a project.</div>'; return; }
   // meta
   const meta=section('Identity', d.slug);
@@ -518,6 +523,52 @@ function render(){
     main.appendChild(sec);
   });
 }
+/* About page — a fully CMS-editable document (kicker, lede, sections, studio people,
+   contact). Saved as the projects row slug='about' via the same upsert path; about.html
+   reads it (falling back to content/about.json). */
+function renderAbout(main){
+  const d=state.doc; if(!d){ main.innerHTML='<div class="empty">Loading…</div>'; return; }
+  const meta=section('About — identity', 'about page');
+  meta._b.appendChild(inputField('Kicker  ·  small label above the headline', d, 'kicker', {ph:'MODE MODE — FIELD STUDIO'}));
+  meta._b.appendChild(inputField('Lede  ·  the big headline', d, 'lede', {area:true}));
+  main.appendChild(meta);
+
+  d.sections=d.sections||[];
+  const secs=section('Sections', 'heading + body, in order');
+  secs._b.appendChild(subEditor('Sections', d.sections, ()=>({h:'',body:''}), (host,it)=>{
+    host.appendChild(inputField('Heading', it, 'h'));
+    host.appendChild(inputField('Body', it, 'body', {area:true}));
+  }));
+  main.appendChild(secs);
+
+  d.people=d.people||[];
+  const ppl=section('Studio', 'names + roles — leave empty to hide');
+  ppl._b.appendChild(subEditor('People', d.people, ()=>({name:'',role:''}), (host,it)=>{
+    const r=el('div','row'); r.appendChild(inputField('Name', it, 'name')); r.appendChild(inputField('Role', it, 'role')); host.appendChild(r);
+  }));
+  main.appendChild(ppl);
+
+  d.contact=d.contact||{};
+  const con=section('Contact', 'optional');
+  con._b.appendChild(inputField('Note', d.contact, 'note', {ph:'Say hello'}));
+  con._b.appendChild(inputField('Email', d.contact, 'email', {ph:'hello@example.com'}));
+  main.appendChild(con);
+}
+async function selectAbout(){
+  if(state.dirty && !confirm('Discard unsaved changes?')) return;
+  $('fieldmap').classList.add('hidden'); $('main').classList.remove('hidden'); $('savebar').classList.remove('hidden'); $('nav-fieldmap').classList.remove('on');
+  $('gswatch').classList.add('hidden');                 // the About page has no per-page background control
+  setStatus('loading…');
+  let doc=null;
+  try{ const { data }=await sb.from('projects').select('data').eq('slug','about').maybeSingle(); if(data&&data.data)doc=data.data; }catch(e){}
+  if(!doc){ try{ const r=await fetch('../content/about.json',{cache:'no-cache'}); if(r.ok)doc=await r.json(); }catch(e){} }
+  if(!doc) doc={code:'ABOUT',name:'About',kicker:'ABOUT',lede:'',sections:[],people:[],contact:{}};
+  doc.code='ABOUT'; doc.name=doc.name||'About';
+  state.slug='about'; state.doc=doc; state.dirty=false; histInit();
+  document.querySelectorAll('.pitem').forEach(n=>n.classList.toggle('on',n.dataset.slug==='about'));
+  $('previewBtn').href='../about.html';
+  state.mode='form'; setStatus(''); markClean(); applyMode();
+}
 function renderRaw(main){
   const wrap=el('div','sec'); const h=el('h2'); h.appendChild(el('span',null,'Raw JSON')); h.appendChild(el('span','sp')); h.appendChild(el('span','meta','full document · power-edit')); wrap.appendChild(h);
   const b=el('div','body'); const ta=el('textarea'); ta.id='raw'; ta.value=JSON.stringify(state.doc,null,2);
@@ -525,8 +576,9 @@ function renderRaw(main){
   const msg=el('div','hint','Edit the document directly. It is validated as JSON on save.'); b.appendChild(msg);
   wrap.appendChild(b); main.appendChild(wrap);
 }
-function openCanvas(){ const f=$('cvframe'); if(!f||!state.slug) return; f.src='../project.html?p='+encodeURIComponent(state.slug)+'&edit&t='+Date.now(); }
-function applyMode(){ const m=state.mode;
+function openCanvas(){ const f=$('cvframe'); if(!f||!state.slug||state.slug==='about') return; f.src='../project.html?p='+encodeURIComponent(state.slug)+'&edit&t='+Date.now(); }
+function applyMode(){ if(state.slug==='about' && state.mode==='canvas') state.mode='form';   // About has no field-canvas view
+  const m=state.mode;
   $('mCanvas').classList.toggle('on',m==='canvas'); $('mForm').classList.toggle('on',m==='form'); $('mRaw').classList.toggle('on',m==='raw');
   $('canvaswrap').classList.toggle('hidden',m!=='canvas'); $('main').classList.toggle('hidden',m==='canvas');
   if(m==='canvas') openCanvas(); else render();
