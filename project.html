@@ -708,7 +708,9 @@ function render(p){
   const wm=el('a','wordmark',LOGO); wm.href='index.html'; wm.setAttribute('aria-label','MODE MODE — home'); rail.appendChild(wm);
   const ident=el('div','ident',`<div class="code-row"><span class="code">${esc(p.code||'')}</span></div><h1 class="name">${esc(p.name||'')}</h1>`);
   const back=el('a','back','<svg viewBox="0 0 20 12" width="20" height="12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square" role="img" aria-label="Back to MODE MODE"><path d="M20 6 H0 M5.5 0.5 L0 6 L5.5 11.5"/></svg>');
-  back.href = p.code ? `index.html?focus=${encodeURIComponent(p.code)}` : 'index.html';
+  // Back returns to a clean homepage — no project left locked/selected (the ?focus
+  // lock read as a bug: the field stayed pinned on the project you just left).
+  back.href = 'index.html';
   ident.querySelector('.code-row').appendChild(back);
   const railTop=el('div','rail-top');
   railTop.appendChild(el('div','field','<canvas id="minimap"></canvas>'));
@@ -723,7 +725,9 @@ function render(p){
       it.addEventListener('pointerleave',()=>{state.hoverNodeId=null;syncNavHover();}); }
     nav.appendChild(it); };
   navRow('classification','CLASSIFICATION',true,true);
-  state.nodes.forEach(n=>{ if(n.label&&n.label.trim()) navRow(n.id, n.label, hasContent(n), false); });
+  // Only labelled nodes that actually carry content appear in the chapter nav —
+  // a mapped-but-empty subsection is hidden here (still shapes the blob / minimap).
+  state.nodes.forEach(n=>{ if(n.label&&n.label.trim()&&hasContent(n)) navRow(n.id, n.label, true, false); });
   rail.appendChild(nav);
   const pg=el('div','pager');
   pg.innerHTML=`${p.prev?`<a href="project.html?p=${esc(p.prev)}">‹ ${esc(slugName(p.prev))}</a>`:'<span></span>'}`+
