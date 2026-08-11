@@ -423,14 +423,25 @@ function setupField(cv,nodes,edge,core,ink){
   let mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
   raw.forEach(o=>{ if(o.R<=0)return; mnx=Math.min(mnx,o.px-o.R);mxx=Math.max(mxx,o.px+o.R);mny=Math.min(mny,o.py-o.R);mxy=Math.max(mxy,o.py+o.R); });
   if(!isFinite(mnx)){mnx=0;mny=0;mxx=W;mxy=H;}
-  const bw=Math.max(1,mxx-mnx), bh=Math.max(1,mxy-mny), cover=Math.min(W/bw,H/bh)*0.66;
-  F.fit={ cover, cx:(mnx+mxx)/2, cy:(mny+mxy)/2, provMin }; F.mfd=provMin*cover;
+  const bw=Math.max(1,mxx-mnx), bh=Math.max(1,mxy-mny);
+  F.baseCover=Math.min(W/bw,H/bh)*0.66;                 // auto contain-fit before authored framing
+  F.fitBase={ cx:(mnx+mxx)/2, cy:(mny+mxy)/2, provMin };
+  applyFraming((state.project&&state.project.field)||{});
+}
+/* Author-controlled framing of the ambient field: zoom multiplies the auto contain-fit,
+   x/y pan the blob as a fraction of the canvas. Defaults (zoom 1, x/y 0) reproduce the
+   original auto-fit exactly. Kept off the noise/canvas rebuild so drags stay smooth. */
+function applyFraming(fr){ fr=fr||{}; if(!F.fitBase)return;
+  const z=(+fr.zoom>0?+fr.zoom:1), cover=F.baseCover*z;
+  F.fit={ cover, cx:F.fitBase.cx, cy:F.fitBase.cy, provMin:F.fitBase.provMin,
+          panX:(+fr.x||0)*F.lowW, panY:(+fr.y||0)*F.lowH };
+  F.mfd=F.fitBase.provMin*cover;
 }
 function drawField(t){
   if(!F.ctx)return; const W=F.lowW,H=F.lowH,fit=F.fit; const Sa=new Float32Array(W*H), Ha=new Float32Array(W*H); F.nodeLow={};
   F.nodes.forEach(n=>{ const g=n.geom; if(g.r<=0)return; const pt=MMA.on?nodePert(n,t,F.mfd*0.55):null;
     const bpx=(g.x+1)/2*W, bpy=H-(g.y+1)/2*H;
-    const px=fit.cover*(bpx-fit.cx)+W/2+(pt?pt.ox:0), py=fit.cover*(bpy-fit.cy)+H/2+(pt?pt.oy:0);
+    const px=fit.cover*(bpx-fit.cx)+W/2+(fit.panX||0)+(pt?pt.ox:0), py=fit.cover*(bpy-fit.cy)+H/2+(fit.panY||0)+(pt?pt.oy:0);
     const Rx=g.r*fit.provMin*fit.cover*(pt?pt.sx:1), Ry=g.r*fit.provMin*fit.cover*(pt?pt.sy:1);
     if(n.label&&n.label.trim()) F.nodeLow[n.id]=[px/W*F.cssW, py/H*F.cssH];
     if(Rx<=0||Ry<=0)return; const ni=g.i*(pt?pt.di:1), nf=g.f*(pt?pt.df:1), irx2=1/(Rx*Rx), iry2=1/(Ry*Ry);
@@ -795,7 +806,62 @@ function postDoc(){ clearTimeout(_postT); _postT=setTimeout(()=>{ try{ parent.po
    ragged columns and floating voids. Rows stay tidy. clearSpans() exists so any
    stale inline grid-row from that build can't survive a re-render. */
 function clearSpans(){ document.querySelectorAll('.cards > .card').forEach(c=>{ if(c.style.gridRowEnd) c.style.gridRowEnd=''; }); }
-function renderDoc(doc){ DOC=doc; try{ render(doc); }catch(e){ fail(e&&e.message||String(e)); return; } if(EDIT){ enableInlineEdit(); enablePageBuilder(); } }
+function renderDoc(doc){ DOC=doc; try{ render(doc); }catch(e){ fail(e&&e.message||String(e)); return; } if(EDIT){ enableInlineEdit(); enablePageBuilder(); enableFieldFraming(); } }
+/* ── ambient-field framing tool (edit only) — drag to position the blob, scroll to zoom.
+   Writes DOC.field {zoom,x,y}; applyFraming() reflects it live, postDoc() persists. ── */
+let _fieldFraming=false;
+function fieldFramingStyle(){ if(document.getElementById('mm-ff-style'))return; const st=document.createElement('style'); st.id='mm-ff-style';
+  st.textContent='.mm-ff-tb{position:fixed;left:8px;bottom:34px;z-index:101;display:flex;align-items:center;gap:3px;background:var(--panel);border:1px solid var(--hair);border-radius:6px;padding:3px;box-shadow:0 3px 12px rgba(18,16,12,.18);font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;}'
+   +'.mm-ff-tb button{border:1px solid transparent;background:none;border-radius:4px;height:24px;min-width:26px;padding:0 8px;font:inherit;color:var(--grey);cursor:pointer;line-height:1;letter-spacing:.04em;}'
+   +'.mm-ff-tb button:hover{color:var(--ink);background:rgba(18,16,12,.06);}'
+   +'.mm-ff-tb button.on{color:var(--accent);background:rgba(196,0,33,.09);}'
+   +'.mm-ff-tb .sep{width:1px;height:16px;background:var(--hair);margin:0 2px;}'
+   +'.mm-ff-scrim{position:fixed;z-index:100;cursor:grab;touch-action:none;}'
+   +'.mm-ff-scrim.drag{cursor:grabbing;}'
+   +'.mm-ff-hint{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(18,16,12,.82);color:#fff;font:10px/1 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;padding:6px 11px;border-radius:5px;pointer-events:none;white-space:nowrap;}';
+  document.head.appendChild(st); }
+function enableFieldFraming(){ if(!EDIT)return; fieldFramingStyle();
+  let tb=document.getElementById('mm-ff-tb');
+  if(!tb){ tb=document.createElement('div'); tb.id='mm-ff-tb'; tb.className='mm-ff-tb'; tb.setAttribute('contenteditable','false');
+    tb.innerHTML='<button class="mm-ff-toggle" title="Position & zoom the ambient field">⤢ Frame field</button>'
+      +'<span class="sep" style="display:none"></span><button class="mm-ff-out" title="Zoom out" style="display:none">−</button>'
+      +'<button class="mm-ff-in" title="Zoom in" style="display:none">＋</button>'
+      +'<button class="mm-ff-reset" title="Reset framing" style="display:none">Reset</button>'
+      +'<button class="mm-ff-done" title="Done" style="display:none">Done</button>';
+    document.body.appendChild(tb);
+    const q=s=>tb.querySelector(s);
+    const setActive=on=>{ _fieldFraming=on; q('.mm-ff-toggle').classList.toggle('on',on);
+      ['.sep','.mm-ff-out','.mm-ff-in','.mm-ff-reset','.mm-ff-done'].forEach(s=>q(s).style.display=on?'':'none');
+      q('.mm-ff-toggle').textContent=on?'⤢ Framing…':'⤢ Frame field';
+      if(on) openScrim(); else closeScrim(); };
+    const nudgeZoom=k=>{ DOC.field=DOC.field||{}; const z=(+DOC.field.zoom>0?+DOC.field.zoom:1)*k; DOC.field.zoom=Math.max(0.4,Math.min(3,z)); applyFraming(DOC.field); postDoc(); };
+    q('.mm-ff-toggle').onclick=()=>setActive(!_fieldFraming);
+    q('.mm-ff-in').onclick=()=>nudgeZoom(1.1);
+    q('.mm-ff-out').onclick=()=>nudgeZoom(1/1.1);
+    q('.mm-ff-reset').onclick=()=>{ DOC.field={}; applyFraming(DOC.field); postDoc(); };
+    q('.mm-ff-done').onclick=()=>setActive(false);
+    tb._setActive=setActive;
+  }
+}
+let _ffScrim=null,_ffReposition=null;
+function closeScrim(){ if(_ffReposition){ window.removeEventListener('resize',_ffReposition); _ffReposition=null; } if(_ffScrim){ _ffScrim.remove(); _ffScrim=null; } }
+function openScrim(){ closeScrim(); const cv=document.getElementById('minimap'); const cont=cv&&cv.parentElement; if(!cont)return;
+  const sc=document.createElement('div'); sc.className='mm-ff-scrim'; sc.setAttribute('contenteditable','false');
+  sc.innerHTML='<div class="mm-ff-hint">Drag to position · scroll to zoom</div>';
+  const place=()=>{ const r=cont.getBoundingClientRect(); sc.style.left=r.left+'px'; sc.style.top=r.top+'px'; sc.style.width=r.width+'px'; sc.style.height=r.height+'px'; };
+  place(); document.body.appendChild(sc); _ffScrim=sc; _ffReposition=place; window.addEventListener('resize',place);
+  let drag=null;
+  sc.addEventListener('pointerdown',e=>{ DOC.field=DOC.field||{}; drag={sx:e.clientX,sy:e.clientY,x0:+DOC.field.x||0,y0:+DOC.field.y||0};
+    sc.classList.add('drag'); try{sc.setPointerCapture(e.pointerId);}catch(_){} });
+  sc.addEventListener('pointermove',e=>{ if(!drag)return; const W=F.cssW||cont.clientWidth||1, H=F.cssH||cont.clientHeight||1;
+    DOC.field.x=Math.max(-1.5,Math.min(1.5, drag.x0+(e.clientX-drag.sx)/W));
+    DOC.field.y=Math.max(-1.5,Math.min(1.5, drag.y0+(e.clientY-drag.sy)/H));
+    applyFraming(DOC.field); });
+  const end=()=>{ if(drag){ drag=null; sc.classList.remove('drag'); postDoc(); } };
+  sc.addEventListener('pointerup',end); sc.addEventListener('pointercancel',end);
+  sc.addEventListener('wheel',e=>{ e.preventDefault(); DOC.field=DOC.field||{}; const z=(+DOC.field.zoom>0?+DOC.field.zoom:1)*(e.deltaY<0?1.06:1/1.06);
+    DOC.field.zoom=Math.max(0.4,Math.min(3,z)); applyFraming(DOC.field); postDoc(); },{passive:false});
+}
 function enableInlineEdit(){
   if(!document.getElementById('mm-ed-style')){ const st=document.createElement('style'); st.id='mm-ed-style';
     st.textContent='.mm-ed{outline:1px dashed transparent;outline-offset:3px;border-radius:2px;transition:outline-color .12s,background .12s;cursor:text;}.mm-ed:hover{outline-color:rgba(196,0,33,.4);}.mm-ed:focus{outline:1px solid var(--accent,#C40021);background:rgba(196,0,33,.05);}';

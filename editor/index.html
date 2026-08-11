@@ -479,6 +479,7 @@ function render(){
   meta._b.appendChild(inputField('Homepage description  ·  one line, shown on hover', d, 'tagline', {ph:'e.g. Haunted mansion for Fernet-Branca, New Orleans'}));
   meta._b.appendChild(imageField('Homepage preview image  ·  shown on hover (not the page hero)', d.preview, 'src', {}));
   meta._b.appendChild(inputField('Preview alt', d.preview, 'alt'));
+  meta._b.appendChild(el('div','hint','Ambient field: position & zoom the blob behind the title on the Canvas tab — the “⤢ Frame field” button, bottom-left.'));
   d.colors=d.colors||{edge:[0,0,0],core:[0,0,0]};
   const colW=el('div','fieldwrap'); colW.appendChild(el('label',null,'Palette  ·  edge → core (RGB, from the field map)'));
   const cr=el('div','row');
