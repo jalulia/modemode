@@ -14,7 +14,7 @@ One self-contained JSON document per project. Live data is in **Supabase** (`pro
 Serve over HTTP — GitHub Pages or a local server; the pages fetch their data, so `file://` won't work. No build step, no dependencies.
 
 ## Deploy
-GitHub Pages serves the repository root. Live at `https://jalulia.github.io/modemode/`.
+GitHub Pages serves the repository root on the `main` branch — pushing to `main` deploys (rebuild ~1 min, then hard-refresh). Live at `https://jalulia.github.io/modemode/`. Push works from Julia's Mac (HTTPS remote + `gh` auth) via the clone at `~/modemode-deploy`; Cowork/cloud sessions can't push directly. Full process: **`docs/DEPLOY.md`**.
 
 ## Docs
 `docs/STATUS.md` — current state · `docs/ROADMAP.md` — the arc · `docs/ORCHESTRATION.md` — how work runs and how to onboard.

@@ -5,12 +5,12 @@ How work happens on MODE MODE and how to bring a fresh chat up to speed.
 > **Current mode: one standing chat.** Julia runs build + coordination through a single ongoing chat; we spin up a separate focused chat only when a chunk is big enough to isolate (Julia calls it). The handoff discipline below applies either way.
 
 ## Who does what
-- **Julia** makes the product/creative calls, pushes commits, and owns the Supabase project + accounts.
-- **The assistant (this chat)** orients, builds, verifies headless, reviews its own output, and keeps the docs current. It hands Julia exact commit commands and never runs git on the mounted repo.
-- **A focused side-chat (optional)** takes one scoped piece from a `handoff_*.md`, builds + tests it, and reports back for Julia to commit.
+- **Julia** makes the product/creative calls, owns the Supabase project + accounts, and owns the live push (her Mac is the only place with push credentials).
+- **The assistant (this chat)** orients, builds, verifies headless, reviews its own output, and keeps the docs current. It commits its work and gets it live via the Mac clone at `~/modemode-deploy` — see **`docs/DEPLOY.md`**. A cloud/Cowork session **cannot push directly** (the git proxy blocks this repo), so it moves commits to that clone and pushes from there.
+- **A focused side-chat (optional)** takes one scoped piece from a `handoff_*.md`, builds + tests it, and reports back to be pushed per `docs/DEPLOY.md`.
 
 ## Source of truth
-- **Repo** `git@github.com:jalulia/modemode.git` → live at `https://jalulia.github.io/modemode/`. Nothing is real until committed + pushed.
+- **Repo** `https://github.com/jalulia/modemode.git` (HTTPS; there's no SSH key — don't use `git@…`) → live at `https://jalulia.github.io/modemode/`. Pages serves `main`; **push to `main` to deploy — see `docs/DEPLOY.md`.** Nothing is real until pushed.
 - **`docs/STATUS.md`** — the live snapshot (read first). `ROADMAP.md` — the arc.
 - **Supabase** (`vjvjparfulrtsxdslrpg`) — the live project data (the `projects` table). The repo's `content/*.json` are the seed + offline fallback; the editor writes Supabase. `docs/supabase/` documents schema/seed.
 - **`project-pages_architecture_2026-06-26.md`** — architecture + data model (design record). The schema/invariants are frozen — change them deliberately, not casually.
@@ -38,11 +38,11 @@ How work happens on MODE MODE and how to bring a fresh chat up to speed.
 ## Forking a focused side-chat
 1. Write the scope + acceptance + the files it may touch (disjoint where possible) in `docs/handoff_*.md`.
 2. Julia opens the side-chat and points it at the handoff.
-3. It builds, tests headless (0 console errors), reports; Julia commits/pushes.
+3. It builds, tests headless (0 console errors), reports; the change is pushed to `main` per `docs/DEPLOY.md`.
 4. Reconcile its output back into the canon — update `STATUS.md` + `ROADMAP.md`, flag any drift.
 
 ## Onboarding prompt (paste into a fresh chat)
-> You're my standing partner on MODE MODE — my studio site (a field-map homepage `index.html` plus per-project case-study pages `project.html`, each rendered from one JSON document), in the "Matt / Mode Mode" Cowork project. Orient first: read the repo at `_Mode Mode/modemode` (request the `modemode` folder if you can't read it) — `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/ORCHESTRATION.md`, `docs/project-pages_architecture_2026-06-26.md`, `docs/cms-plan.md`, `docs/supabase/README.md`, the `docs/handoff_*.md` — and your saved memory. Then `index.html` / `project.html` / `editor/index.html` as needed. Confirm current state before acting. The site is live on GitHub Pages; **project data lives in Supabase** (`vjvjparfulrtsxdslrpg`, edited via `editor/`), with `content/*.json` as fallback. Keep the docs current, keep the schema/invariants frozen, build + verify headless (0 console errors), and hand me exact commit/push commands (never run git on the mounted repo). Match how I work — terse, decisive, high-craft, verify-before-done. Start by confirming current state from `STATUS.md` and proposing the next moves.
+> You're my standing partner on MODE MODE — my studio site (a field-map homepage `index.html` plus per-project case-study pages `project.html`, each rendered from one JSON document), in the "Matt / Mode Mode" Cowork project. Orient first: read the repo at `_Mode Mode/modemode` (request the `modemode` folder if you can't read it) — `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/ORCHESTRATION.md`, `docs/project-pages_architecture_2026-06-26.md`, `docs/cms-plan.md`, `docs/supabase/README.md`, the `docs/handoff_*.md` — and your saved memory. Then `index.html` / `project.html` / `editor/index.html` as needed. Confirm current state before acting. The site is live on GitHub Pages; **project data lives in Supabase** (`vjvjparfulrtsxdslrpg`, edited via `editor/`), with `content/*.json` as fallback. Keep the docs current, keep the schema/invariants frozen, build + verify headless (0 console errors), and get changes live via the `~/modemode-deploy` clone per `docs/DEPLOY.md` (Pages serves `main`; cloud sessions can't push directly). Match how I work — terse, decisive, high-craft, verify-before-done. Start by confirming current state from `STATUS.md` and proposing the next moves.
 
 ## Scoped side-chat prompt (paste when forking)
-> You're on a focused MODE MODE task — **<task>**, in the "Matt / Mode Mode" Cowork project. Read first: `_Mode Mode/modemode/docs/<handoff>.md`, then `STATUS.md` + the architecture doc + any data it points to. Build only that task, honoring the standards + invariants in `ORCHESTRATION.md`. Test headless (zero console errors). Don't touch files outside your scope. Report the build + test results for Julia to commit, plus a one-paragraph summary.
+> You're on a focused MODE MODE task — **<task>**, in the "Matt / Mode Mode" Cowork project. Read first: `_Mode Mode/modemode/docs/<handoff>.md`, then `STATUS.md` + the architecture doc + any data it points to. Build only that task, honoring the standards + invariants in `ORCHESTRATION.md`. Test headless (zero console errors). Don't touch files outside your scope. Report the build + test results (to be pushed per `docs/DEPLOY.md`), plus a one-paragraph summary.
