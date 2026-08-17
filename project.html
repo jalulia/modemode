@@ -80,12 +80,13 @@
 
   /* ===================== MAIN — masonry + full-width feature cards ===================== */
   .main{padding:78px 0 64px;}
-  /* align-items:start (not stretch): cards take their natural height. A short
-     card no longer stretches to its row's tallest peer, so there's no white gap
-     below its content — ragged bottoms are fine (Julia's call). Per-card height
-     set by the resize handles now actually takes effect instead of being fought
-     by stretch. */
-  .cards{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:22px;align-items:start;}
+  /* Rows STRETCH so IMAGE cards keep matched baselines (bottom edges align) — the
+     previous-commit behavior Julia wants back. Text / non-image cards and stacks
+     opt OUT via align-self:start, so they take their natural height (short, ragged
+     bottom fine) with no white gap padded under their content. */
+  .cards{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:22px;align-items:stretch;}
+  .cards > .card:not(:has(img)):not(:has(video)),
+  .cards > .stackcell{ align-self:start; }
   .card{grid-column:span 6;border:1px solid var(--hair);border-radius:var(--r);background:var(--panel);
     scroll-margin-top:26px;transition:border-color .18s;overflow:hidden;
     opacity:0;transform:translateY(9px);animation:rise .55s cubic-bezier(.2,.7,.2,1) forwards;}
@@ -95,11 +96,12 @@
   /* per-block widths on the 12-col grid */
   .card.w-full{grid-column:1 / -1;} .card.w-tt{grid-column:span 8;} .card.w-half{grid-column:span 6;} .card.w-third{grid-column:span 4;}
   .card.wide{grid-column:1 / -1;}
-  /* A stack occupies ONE cell of the 12-col row and divides its height between
-     its children, so the row's top and bottom edges stay aligned. Children are
-     a nested 1-col grid, so their own w-* spans must be neutralised or they'd
-     create implicit columns inside the cell. */
-  .stackcell{display:grid;grid-auto-rows:1fr;gap:22px;grid-column:span 6;position:relative;}
+  /* A stack occupies ONE cell of the 12-col row. Children take their NATURAL
+     height (grid-auto-rows:min-content) — a text child stays short instead of
+     being stretched to match a taller image sibling (which caused huge gaps and
+     made resize snap back). Children are a nested 1-col grid, so their own w-*
+     spans must be neutralised or they'd create implicit columns inside the cell. */
+  .stackcell{display:grid;grid-auto-rows:min-content;gap:22px;grid-column:span 6;position:relative;}
   /* the stack's own toolbar sits left so it can't collide with its first child's */
   .stackcell > .mm-tools{left:6px;right:auto;}
   .stackcell.w-full{grid-column:1 / -1;} .stackcell.w-tt{grid-column:span 8;}
@@ -926,7 +928,7 @@ function arrPath(p){ return p.split('.').slice(0,-1).join('.'); }
 function isInside(dst,src){ return dst===src || String(dst).indexOf(src+'.')===0; }
 // Bump on every project.html change that ships. Shown bottom-left in edit mode so
 // Julia and I can both tell at a glance which build the canvas is actually running.
-const MM_BUILD='r13 · ragged rows + text height';
+const MM_BUILD='r14 · images baseline, text ragged';
 function buildChip(){ if(!EDIT||document.getElementById('mm-build'))return;
   const b=document.createElement('div'); b.id='mm-build'; b.className='mm-build'; b.textContent=MM_BUILD;
   b.setAttribute('contenteditable','false'); document.body.appendChild(b); }
