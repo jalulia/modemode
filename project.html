@@ -116,7 +116,12 @@
   .card.lead{margin-bottom:2px;}
   .card.lead .card-b{padding:32px 30px;}
   .classlead-copy .card.lead .body{max-width:64ch;}
-  .card.lead .body p{font-size:15.5px;line-height:1.74;}
+  /* Lead card = ONE opening emphasis (the lede, :first-child) then body copy.
+     The old 15.5px middle tier on every following paragraph read as an ambiguous
+     deck/caption: a scope line like 65porter's "Office space design, 2019–2021…"
+     looked like a tag rather than copy. Follow-on paragraphs are now plain body —
+     the lede carries the emphasis, everything under it reads as prose. */
+  .card.lead .body p{font-size:14px;line-height:1.78;}
   .card.lead .body p:first-child{font-size:20px;line-height:1.56;color:var(--ink);margin-bottom:16px;}
 
   .body p{margin:0 0 14px;font-size:14px;line-height:1.78;color:var(--ink);}
@@ -910,7 +915,7 @@ function arrPath(p){ return p.split('.').slice(0,-1).join('.'); }
 function isInside(dst,src){ return dst===src || String(dst).indexOf(src+'.')===0; }
 // Bump on every project.html change that ships. Shown bottom-left in edit mode so
 // Julia and I can both tell at a glance which build the canvas is actually running.
-const MM_BUILD='r11 · self-drop guard';
+const MM_BUILD='r12 · lead type hierarchy';
 function buildChip(){ if(!EDIT||document.getElementById('mm-build'))return;
   const b=document.createElement('div'); b.id='mm-build'; b.className='mm-build'; b.textContent=MM_BUILD;
   b.setAttribute('contenteditable','false'); document.body.appendChild(b); }
