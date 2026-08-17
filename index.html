@@ -5,13 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
 <title>MODE MODE — Field Studio</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+  @font-face{font-family:'BB Strata ML';src:url('assets/fonts/BBStrata-MLRegular.woff2') format('woff2'),
+    url('assets/fonts/BBStrata-MLRegular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap;}
   :root{ color-scheme:light;
     --ground:#F3F3F0; --panel:#FBFBF9; --ink:#16160F; --grey:#8C8C86; --grey-2:#B4B4AE;
-    --hair:rgba(22,22,15,.14); --hair-2:rgba(22,22,15,.07); --mono:'JetBrains Mono',ui-monospace,Menlo,monospace; }
+    --hair:rgba(22,22,15,.14); --hair-2:rgba(22,22,15,.07); --mono:'BB Strata ML',ui-monospace,Menlo,monospace; }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;height:100%;background:#F3F3F0;}
   body{font-family:var(--mono);color:var(--ink);background:var(--ground);overflow:hidden;-webkit-font-smoothing:antialiased;}
@@ -512,8 +511,8 @@ function drawHandles(){const p=getProj(selProj);if(!p)return;const lp=live[p.id]
     ctx.beginPath();ctx.arc(x,y,sel?7:5.5,0,6.283);ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=sel?2:1.4;ctx.strokeStyle=deep;ctx.stroke();
     ctx.beginPath();ctx.arc(x,y,n.core?2.4:1.4,0,6.283);ctx.fillStyle=deep;ctx.fill();
     if(sel)drawNodeLabel(n,x,y,p.colors.core);
-    if(n.core){ctx.font='8px JetBrains Mono,monospace';ctx.fillStyle=deep;ctx.textAlign='center';ctx.fillText('CORE',x,y-R-7);}});}
-function labelFontStr(){ return (fx.label.size||10)+'px JetBrains Mono,monospace'; }
+    if(n.core){ctx.font='8px "BB Strata ML",ui-monospace,monospace';ctx.fillStyle=deep;ctx.textAlign='center';ctx.fillText('CORE',x,y-R-7);}});}
+function labelFontStr(){ return (fx.label.size||10)+'px "BB Strata ML",ui-monospace,monospace'; }
 function nodeLabelAnchor(n,x,y){ const la=n.la||0, d=(fx.label.dist!=null?fx.label.dist:10);   // offset from node CENTER, not outer radius (size-independent)
   const lx=x+Math.cos(la)*d, ly=y+Math.sin(la)*d, c=Math.cos(la);
   const align=c>0.34?'left':(c<-0.34?'right':'center'); return {lx,ly,align}; }
@@ -1139,6 +1138,7 @@ async function loadRosterRemote(){ const U='https://vjvjparfulrtsxdslrpg.supabas
   const ub=document.getElementById('undoBtn'),rb=document.getElementById('redoBtn');
   if(ub)ub.onclick=undo; if(rb)rb.onclick=redo; updateUndoUI();
   requestAnimationFrame(render);
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{ fxChanged=true; dirty=true; });   // repaint once BB Strata ML resolves — canvas text doesn't reflow on web-font load
   setMode('present');   // default to PRESENT (viewer) mode; EDIT is one toggle away
   loadAuthored();       // pull CMS-authored hover descriptions + preview images (best-effort)
   // ?focus=<code> (from a project-page back-link) → lock that project
