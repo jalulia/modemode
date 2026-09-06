@@ -11,52 +11,58 @@
     url('assets/fonts/BBStrataProSEF-Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:swap;}
   @font-face{font-family:'BB Strata ML';src:url('assets/fonts/BBStrata-MLRegular.woff2') format('woff2'),
     url('assets/fonts/BBStrata-MLRegular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap;}
-  :root{ color-scheme:light;
-    --ground:#FFFFFF; --panel:#FFFFFF; --ink:#15140F; --grey:#7E7D75; --grey-2:#B6B5AD;
-    --hair:rgba(18,16,12,.17); --hair-2:rgba(18,16,12,.08);
+  :root{
+    color-scheme:light;
+    --ground:#f5f5f2; --paper:#fbfbf9; --ink:#15140f; --grey:#7e7d75; --grey-2:#b6b5ad;
+    --hair:rgba(18,16,12,.17); --hair-2:rgba(18,16,12,.08); --accent:#c40021;
     --disp:'BB Strata Pro','Arial Narrow',sans-serif;
     --text:'BB Strata ML',ui-monospace,'SFMono-Regular',Menlo,monospace;
-    --accent:#C40021; --r:3px; }
+  }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
-  html,body{margin:0;padding:0;background:var(--ground);}
-  body{font-family:var(--text);color:var(--ink);background:var(--ground);
-    -webkit-font-smoothing:antialiased;font-size:14px;line-height:1.68;}
+  html,body{margin:0;min-height:100%;background:var(--ground);color:var(--ink);}
+  body{overflow:hidden;font-family:var(--text);font-size:14px;line-height:1.66;-webkit-font-smoothing:antialiased;}
   a{color:inherit;text-decoration:none;}
 
   .corner{position:fixed;width:14px;height:14px;border:1px solid var(--grey-2);pointer-events:none;opacity:.5;z-index:60;}
-  .corner.tl{top:18px;left:18px;border-right:0;border-bottom:0;} .corner.tr{top:18px;right:18px;border-left:0;border-bottom:0;}
-  .corner.bl{bottom:18px;left:18px;border-right:0;border-top:0;} .corner.br{bottom:18px;right:18px;border-left:0;border-top:0;}
-
+  .corner.tl{top:18px;left:18px;border-right:0;border-bottom:0;}
+  .corner.tr{top:18px;right:18px;border-left:0;border-bottom:0;}
+  .corner.bl{bottom:18px;left:18px;border-right:0;border-top:0;}
+  .corner.br{bottom:18px;right:18px;border-left:0;border-top:0;}
   .wordmark{position:fixed;top:30px;left:36px;width:94px;z-index:60;opacity:.92;transition:opacity .15s;}
   .wordmark:hover{opacity:.6;} .wordmark img{display:block;width:94px;height:auto;}
   .home{position:fixed;top:34px;right:40px;z-index:60;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--grey);display:inline-flex;align-items:center;gap:8px;}
   .home:hover{color:var(--ink);} .home svg{display:block;}
 
-  /* ABOUT is deliberately NOT the project template: one wide editorial column,
-     no left field-rail, no card grid — a plainer, quieter register. */
-  .wrap{max-width:1180px;margin:0 auto;padding:172px 54px 140px;}
-  .kicker{font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin:0 0 30px;}
-  .lede{font-family:var(--disp);font-weight:700;font-size:clamp(30px,4.6vw,62px);line-height:1.04;
-    letter-spacing:-.01em;max-width:16ch;margin:0 0 8px;}
-  .lede .em{color:var(--grey-2);}
+  .plate{position:fixed;inset:18px;border:1px solid var(--hair);display:grid;grid-template-columns:400px minmax(0,1fr);background:var(--paper);}
+  /* Notes column — kicker · lede · body · meta. Matt's authoring layout,
+     verbatim. Meta pins to the bottom of the column. */
+  .notes{border-right:1px solid var(--hair);padding:96px 36px 34px;display:flex;flex-direction:column;justify-content:flex-start;min-width:0;background:rgba(251,251,249,.97);z-index:3;overflow-y:auto;overscroll-behavior:contain;}
+  .notes .kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin:0 0 26px;}
+  .notes .lede{font-family:var(--disp);font-weight:700;font-size:clamp(28px,2.5vw,38px);line-height:1.07;letter-spacing:-.012em;max-width:14ch;margin:0 0 26px;}
+  .notes .body{font-size:14px;line-height:1.66;max-width:40ch;}
+  .notes .body p{margin:0 0 14px;} .notes .body p:last-child{margin:0;}
+  .notes .meta{margin-top:auto;padding-top:24px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);line-height:1.8;}
 
-  .rule{height:1px;background:var(--hair);margin:64px 0 0;}
-  .row{display:grid;grid-template-columns:200px minmax(0,640px);gap:48px;padding:34px 0;border-bottom:1px solid var(--hair-2);align-items:baseline;}
-  .row h2{margin:0;font-family:var(--text);font-weight:400;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--grey);}
-  .row .body{font-size:15.5px;line-height:1.72;color:var(--ink);}
-  .row .body p{margin:0 0 14px;} .row .body p:last-child{margin:0;}
+  .figure{position:relative;min-width:0;overflow:hidden;background:var(--ground);isolation:isolate;}
+  .cvwrap{position:absolute;inset:0;}
+  #cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab;z-index:0;}
+  #cv.dragging{cursor:grabbing;}
+  .shell-svg{position:absolute;inset:0;width:100%;height:100%;display:block;overflow:visible;pointer-events:none;z-index:1;shape-rendering:geometricPrecision;}
+  .shell-svg path{fill:none;stroke:var(--ink);vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round;}
+  .glfail{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:40px;text-align:center;color:var(--grey);font-size:11px;letter-spacing:.13em;text-transform:uppercase;}
 
-  .people{display:flex;flex-wrap:wrap;gap:40px;}
-  .person .nm{font-family:var(--disp);font-weight:700;font-size:20px;letter-spacing:-.01em;}
-  .person .ro{font-size:12px;color:var(--grey);letter-spacing:.04em;margin-top:2px;}
-  .contact a{color:var(--accent);border-bottom:1px solid rgba(196,0,33,.35);}
-  .contact a:hover{border-color:var(--accent);}
-
-  @media (max-width:760px){
-    .wrap{padding:132px 22px 120px;}
-    .row{grid-template-columns:1fr;gap:12px;}
-    .home{right:20px;}
+  @media (max-width:960px){
+    body{overflow:auto;}
+    .plate{position:relative;inset:auto;margin:14px;grid-template-columns:1fr;min-height:calc(100vh - 28px);}
+    .notes{border-right:0;border-bottom:1px solid var(--hair);padding:100px 22px 34px;overflow:visible;}
+    .figure{height:64vh;min-height:400px;}
+    .corner{display:none;}
+    .home{right:22px;}
+  }
+  @media (max-width:620px){
+    .figure{height:58vh;min-height:340px;}
+    .wordmark{width:78px;top:22px;left:20px;} .wordmark img{width:78px;}
+    .home{top:26px;right:20px;}
   }
 </style>
 </head>
@@ -66,39 +72,785 @@
   <a class="home" href="index.html" aria-label="Back to the field map">Field map
     <svg viewBox="0 0 22 12" width="22" height="12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square"><path d="M2 6 H22 M16.5 0.5 L22 6 L16.5 11.5"/></svg>
   </a>
-  <main class="wrap" id="wrap"><div class="kicker">Loading…</div></main>
+<main class="plate">
+  <section class="notes" id="copy"></section>
+  <section class="figure" id="stage" aria-label="A morphing wireframe vessel with drifting matter fields inside">
+    <div class="cvwrap"><canvas id="cv"></canvas><svg class="shell-svg" id="shellSvg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg><div class="glfail" id="glfail">This figure requires WebGL 2.</div></div>
+  </section>
+</main>
 
 <script>
-/* Editable About content: prefer a CMS-authored Supabase doc (slug 'about'), then the
-   bundled content/about.json, then the inline default below — the same load-boundary
-   pattern as the project pages, so About can move into the CMS later without a rewrite. */
-const SUPABASE={ url:'https://vjvjparfulrtsxdslrpg.supabase.co',
-  anon:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdmpwYXJmdWxydHN4ZHNscnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODM1ODIsImV4cCI6MjA5ODI1OTU4Mn0._A1WCuNyCtnJ2Y3U4iqWjvWQe2ANTA6i-sYfuhhcFq4' };
-const DEFAULT_ABOUT={ kicker:'Lorem Ipsum — Dolor Sit Amet',
-  lede:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.',
-  sections:[{h:'Lorem ipsum',body:'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.'}],
-  people:[{name:'Lorem Ipsum',role:'Dolor sit amet'}], contact:{note:'Lorem ipsum dolor',email:'hello@example.com'} };
-const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const paras=t=>String(t||'').split(/\n{2,}/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('');
-async function loadAbout(){
-  try{ const r=await fetch(`${SUPABASE.url}/rest/v1/projects?slug=eq.about&select=data`,
-      { headers:{apikey:SUPABASE.anon,Authorization:`Bearer ${SUPABASE.anon}`}, cache:'no-cache' });
-    if(r.ok){ const rows=await r.json(); if(rows.length&&rows[0].data) return rows[0].data; } }catch(e){}
-  try{ const r=await fetch('content/about.json',{cache:'no-cache'}); if(r.ok) return await r.json(); }catch(e){}
-  return DEFAULT_ABOUT;
-}
-function render(a){
-  const wrap=document.getElementById('wrap');
-  const secs=(a.sections||[]).map(s=>`<div class="row"><h2>${esc(s.h||'')}</h2><div class="body">${paras(s.body)}</div></div>`).join('');
-  const people=(a.people||[]).length?`<div class="row"><h2>Studio</h2><div class="body people">`+
-    a.people.map(p=>`<div class="person"><div class="nm">${esc(p.name||'')}</div><div class="ro">${esc(p.role||'')}</div></div>`).join('')+`</div></div>`:'';
-  const c=a.contact||{}; const contact=(c.email||c.note)?`<div class="row contact"><h2>Contact</h2><div class="body">`+
-    (c.note?`<p>${esc(c.note)}</p>`:'')+(c.email?`<p><a href="mailto:${esc(c.email)}">${esc(c.email)}</a></p>`:'')+`</div></div>`:'';
-  wrap.innerHTML=`<div class="kicker">${esc(a.kicker||'ABOUT')}</div>`+
-    `<h1 class="lede">${esc(a.lede||'')}</h1>`+`<div class="rule"></div>`+secs+people+contact;
-  document.title='About — MODE MODE';
-}
-loadAbout().then(render);
+(() => {
+  'use strict';
+  /* -------------------------------------------------------------------------
+     CONSTRUCT
+     The outside and the inside remain distinct fields, but now share a hidden
+     six-node discipline-driver system:
+       • the shell volume is implicit, while a sampled six-face lattice lies exactly on
+         its zero-surface and is drawn as resolution-independent SVG vector linework;
+       • the colored matter is a tunable population of varied metaballs carried by
+         six abstract discipline drivers;
+       • the same drivers can press gently into the shell, with adjustable influence
+         and elastic lag. At zero influence the two systems separate completely.
+     The boundary cube stays mathematically exact at rest; responsiveness is
+     introduced only as that condition gives way to the other forms.
+     ------------------------------------------------------------------------- */
+
+  const DEFAULT_CONFIG={
+    version:3,
+    disciplines:[
+      {id:'spatial',label:'Spatial',edge:'#DDDAFC',core:'#D70359'},
+      {id:'digital',label:'Digital',edge:'#8BFFCC',core:'#1E6FE0'},
+      {id:'physical',label:'Physical',edge:'#FECDC2',core:'#F9F90B'},
+      {id:'visual',label:'Visual',edge:'#D4FFC0',core:'#00A7FF'},
+      {id:'experiential',label:'Experiential',edge:'#FFD233',core:'#C40021'},
+      {id:'play',label:'Play',edge:'#7FFFEB',core:'#88D420'}
+    ],
+    states:[
+      {id:'boundary',label:'Boundary',count:12,meanSize:.102,sizeRange:.66},
+      {id:'cell',label:'Cell',count:15,meanSize:.091,sizeRange:.82},
+      {id:'interface',label:'Interface',count:14,meanSize:.095,sizeRange:.74},
+      {id:'fold',label:'Fold',count:16,meanSize:.087,sizeRange:.90}
+    ],
+    motion:{cloud:0,softness:.24,drift:.68,spread:1.00,coupling:.24,lag:.32,rotationSpeed:1.00,restSeconds:7.2,transitionSpeed:1.00}
+  };
+  const STORAGE_KEY='mm-edge-condition-authoring-v3';
+  const LEGACY_STORAGE_KEY='mm-edge-condition-authoring-v2';
+  const clone=o=>JSON.parse(JSON.stringify(o));
+  const validHex=s=>typeof s==='string'&&/^#[0-9a-f]{6}$/i.test(s);
+  function clampNum(v,a,b,f){v=Number(v);return Number.isFinite(v)?Math.max(a,Math.min(b,v)):f;}
+  function normalizeConfig(raw){
+    const out=clone(DEFAULT_CONFIG);
+    if(raw&&Array.isArray(raw.disciplines))out.disciplines=out.disciplines.map((d,i)=>{
+      const q=raw.disciplines[i]||{};
+      return {...d,
+        label:typeof q.label==='string'&&q.label.trim()?q.label.trim().slice(0,28):d.label,
+        edge:validHex(q.edge)?q.edge.toUpperCase():d.edge,
+        core:validHex(q.core)?q.core.toUpperCase():d.core};
+    });
+    if(raw&&Array.isArray(raw.states))out.states=out.states.map((s,i)=>{
+      const q=raw.states[i]||{};
+      return {...s,
+        count:Math.round(clampNum(q.count,4,16,s.count)),
+        meanSize:clampNum(q.meanSize,.045,.145,s.meanSize),
+        sizeRange:clampNum(q.sizeRange,0,1,s.sizeRange)};
+    });
+    if(raw&&raw.motion){
+      const q=raw.motion;
+      out.motion={
+        cloud:clampNum(q.cloud,0,1,out.motion.cloud),
+        softness:clampNum(q.softness,0,1,out.motion.softness),
+        drift:clampNum(q.drift,0,1,out.motion.drift),
+        spread:clampNum(q.spread,0,1.8,out.motion.spread),
+        coupling:clampNum(q.coupling,0,1,out.motion.coupling),
+        lag:clampNum(q.lag,0,1,out.motion.lag),
+        rotationSpeed:clampNum(q.rotationSpeed,0,2.5,out.motion.rotationSpeed),
+        restSeconds:clampNum(q.restSeconds,1,30,out.motion.restSeconds),
+        transitionSpeed:clampNum(q.transitionSpeed,.25,2.5,out.motion.transitionSpeed)
+      };
+    }
+    return out;
+  }
+  let config=clone(DEFAULT_CONFIG);
+  try{
+    const saved=localStorage.getItem(STORAGE_KEY)||localStorage.getItem(LEGACY_STORAGE_KEY);
+    if(saved)config=normalizeConfig(JSON.parse(saved));
+  }catch(_){}
+  let data=config.disciplines;
+  const M = window.MMA || null;
+
+  /* Copy loader — matches the site's project pages: prefer a Supabase-authored
+     doc (row slug='about'), then a bundled JSON, then a minimal inline default.
+     Renders kicker · lede · sections[] · studio (people) · contact into the
+     notes column. Also merges any authored `figure` block into the runtime
+     config below, so palette/states/motion are CMS-editable per Supabase row. */
+  const SUPABASE_URL='https://vjvjparfulrtsxdslrpg.supabase.co';
+  const SUPABASE_ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqdmpwYXJmdWxydHN4ZHNscnBnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI2ODM1ODIsImV4cCI6MjA5ODI1OTU4Mn0._A1WCuNyCtnJ2Y3U4iqWjvWQe2ANTA6i-sYfuhhcFq4';
+  // Matt's copy from the authoring file, verbatim. kicker · lede · body ·
+  // meta. Body + meta are single strings; blank-line splits paragraphs in
+  // the body, single-newline splits lines in the meta.
+  const DEFAULT_COPY={
+    kicker:'MODE MODE — ABOUT',
+    lede:'Strange and beautiful things emerge where disciplines lose their edges.',
+    body:'MODE MODE is a studio working between creative technology, experiential design, fabrication, visual systems, art, and play.\n\nThe figure at right is not a map of those disciplines. It is a container whose definition keeps changing while the material inside finds new relationships.',
+    meta:'BROOKLYN, NEW YORK\nINDEPENDENT / COLLABORATIVE / VARIABLE'
+  };
+  const escHTML=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const paras=t=>String(t||'').split(/\x0a{2,}/).map(p=>`<p>${escHTML(p).replace(/\x0a/g,'<br>')}</p>`).join('');
+  const lines=t=>String(t||'').split(/\x0a+/).map(l=>escHTML(l)).join('<br>');
+  function renderCopy(a){
+    const host=document.getElementById('copy'); if(!host) return;
+    const kicker=a.kicker?`<div class="kicker">${escHTML(a.kicker)}</div>`:'';
+    const lede=a.lede?`<h1 class="lede">${escHTML(a.lede)}</h1>`:'';
+    const body=a.body?`<div class="body">${paras(a.body)}</div>`:'';
+    const meta=a.meta?`<div class="meta">${lines(a.meta)}</div>`:'';
+    host.innerHTML=kicker+lede+body+meta;
+  }
+  async function loadAboutDoc(){
+    try{
+      const r=await fetch(`${SUPABASE_URL}/rest/v1/projects?slug=eq.about&select=data`,
+        {headers:{apikey:SUPABASE_ANON,Authorization:`Bearer ${SUPABASE_ANON}`},cache:'no-cache'});
+      if(r.ok){ const rows=await r.json(); if(rows.length&&rows[0].data) return rows[0].data; }
+    }catch(_){}
+    try{ const r=await fetch('content/about.json',{cache:'no-cache'}); if(r.ok) return await r.json(); }catch(_){}
+    return DEFAULT_COPY;
+  }
+  // Paint the default copy immediately so nothing flashes empty, then swap.
+  renderCopy(DEFAULT_COPY);
+  let pendingFigure=null;
+  loadAboutDoc().then(doc=>{
+    renderCopy(doc);
+    if(doc && doc.figure) pendingFigure=doc.figure;
+    applyFigureConfig();
+  }).catch(()=>{});
+
+  let focus=-1,focusTarget=-1; // discipline focus retained for the shader; no legend renders now
+  function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+  const canvas=document.getElementById('cv');
+  const gl=canvas.getContext('webgl2',{alpha:false,antialias:false,premultipliedAlpha:false,preserveDrawingBuffer:false,powerPreference:'high-performance'});
+  if(!gl){ document.getElementById('glfail').style.display='flex'; canvas.style.display='none'; return; }
+
+  const VERT=`#version 300 es
+  in vec2 aPosition;
+  out vec2 vUv;
+  void main(){vUv=aPosition*.5+.5;gl_Position=vec4(aPosition,0.,1.);}`;
+
+  const FRAG=`#version 300 es
+  precision highp float;
+  precision highp int;
+  #define BALLS 96
+  #define DRIVERS 6
+  #define BPG 16
+  #define PI 3.141592653589793
+  uniform vec2 uResolution;
+  uniform float uTime;
+  uniform float uMorph;
+  uniform int uShapeA;
+  uniform int uShapeB;
+  uniform float uYaw;
+  uniform float uPitch;
+  uniform float uRoll;
+  uniform float uFocus;
+  uniform float uCloudiness;
+  uniform float uSoftness;
+  uniform float uActivity;
+  uniform float uSpread;
+  uniform float uCoupling;
+  uniform vec3 uMatterA;
+  uniform vec3 uMatterB;
+  uniform vec4 uBalls[BALLS];
+  uniform vec4 uMatterDrivers[DRIVERS];
+  uniform vec4 uShellDrivers[DRIVERS];
+  uniform vec3 uCore[DRIVERS];
+  uniform vec3 uEdge[DRIVERS];
+  out vec4 fragColor;
+
+  mat2 r2(float a){float c=cos(a),s=sin(a);return mat2(c,-s,s,c);}
+  float smin(float a,float b,float k){float h=clamp(.5+.5*(b-a)/k,0.,1.);return mix(b,a,h)-k*h*(1.-h);}
+  float sdBox(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.);}
+  float sdRoundBox(vec3 p,vec3 b,float r){vec3 q=abs(p)-b;return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.)-r;}
+  float sdCapsule(vec3 p,vec3 a,vec3 b,float r){vec3 pa=p-a,ba=b-a;float h=clamp(dot(pa,ba)/dot(ba,ba),0.,1.);return length(pa-ba*h)-r;}
+
+  float boundary(vec3 p){
+    return sdBox(p,vec3(.58));
+  }
+  float cell(vec3 p){
+    float d=length(p)-.60;
+    d=smin(d,length(p-vec3(.42,.22,.10))-.43,.25);
+    d=smin(d,length(p-vec3(-.38,-.27,.18))-.41,.24);
+    d=smin(d,length(p-vec3(.02,.36,-.38))-.43,.25);
+    d=smin(d,length(p-vec3(-.13,.02,.46))-.35,.22);
+    return d;
+  }
+  float interfaceForm(vec3 p){
+    vec3 q=p;
+    q.xz=r2(.10)*q.xz;
+    float dx=sdCapsule(q,vec3(-.54,0.,0.),vec3(.54,0.,0.),.39);
+    float dy=sdCapsule(q,vec3(0.,-.52,0.),vec3(0.,.52,0.),.39);
+    float dz=sdCapsule(q,vec3(0.,0.,-.52),vec3(0.,0.,.52),.39);
+    float d=smin(smin(dx,dy,.24),dz,.24);
+    return smin(d,length(q)-.58,.20);
+  }
+  float foldForm(vec3 p){
+    vec3 q=p;
+    q.xz=r2(.83*q.y+.12)*q.xz;
+    q.xy=r2(-.46*q.z)*q.xy;
+    q+=.052*sin(q.yzx*4.1+vec3(0.,2.1,4.2));
+    float d=sdRoundBox(q,vec3(.43,.61,.47),.235);
+    d=smin(d,length(q-vec3(.34,.23,.13))-.34,.18);
+    d=smin(d,length(q+vec3(.31,.18,.24))-.32,.18);
+    return d;
+  }
+  float form(vec3 p,int id){
+    if(id==0)return boundary(p);
+    if(id==1)return cell(p);
+    if(id==2)return interfaceForm(p);
+    return foldForm(p);
+  }
+  float responseFor(int id){
+    if(id==0)return 0.;
+    if(id==1)return 1.00;
+    if(id==2)return .88;
+    return .78;
+  }
+  float driverPressure(vec3 p){
+    float f=0.;
+    for(int i=0;i<DRIVERS;i++){
+      vec4 d=uShellDrivers[i];
+      vec3 q=p-d.xyz;
+      float x=clamp(1.-dot(q,q)/(d.w*d.w),0.,1.);
+      f+=x*x*(3.-2.*x);
+    }
+    return min(f,1.55);
+  }
+  float scene(vec3 p){
+    float d=mix(form(p,uShapeA),form(p,uShapeB),uMorph);
+    d-=.035*sin(PI*uMorph);
+    float response=mix(responseFor(uShapeA),responseFor(uShapeB),uMorph);
+    if(response>.0001&&uCoupling>.001)d-=uCoupling*response*.085*(driverPressure(p)-.065);
+    return d;
+  }
+  vec3 normalAt(vec3 p){
+    float e=.0026;
+    return normalize(vec3(scene(p+vec3(e,0,0))-scene(p-vec3(e,0,0)),scene(p+vec3(0,e,0))-scene(p-vec3(0,e,0)),scene(p+vec3(0,0,e))-scene(p-vec3(0,0,e))));
+  }
+  vec2 raySphere(vec3 ro,vec3 rd,float r){
+    float b=dot(ro,rd),c=dot(ro,ro)-r*r,h=b*b-c;
+    if(h<0.)return vec2(-1.);
+    h=sqrt(h);return vec2(-b-h,-b+h);
+  }
+  float refineRoot(vec3 ro,vec3 rd,float ta,float tb,float da){
+    float a=ta,b=tb,sa=da;
+    for(int j=0;j<8;j++){
+      float m=(a+b)*.5,sm=scene(ro+rd*m);
+      if((sa<0.)==(sm<0.)){a=m;sa=sm;}else b=m;
+    }
+    return (a+b)*.5;
+  }
+  bool shellHit(vec3 ro,vec3 rd,out float tin,out float tout,out vec3 nin,out vec3 nout){
+    vec2 bs=raySphere(ro,rd,1.34);if(bs.x<0.)return false;
+    float t=max(bs.x,0.),end=bs.y;
+    float d=scene(ro+rd*t);
+    bool inside=d<0.,haveIn=inside,haveOut=false;
+    if(inside){tin=t;nin=normalAt(ro+rd*t);}
+    for(int i=0;i<148;i++){
+      if(t>=end)break;
+      float stepLen=clamp(abs(d)*.43+.0025,.0025,.058);
+      float nt=min(end,t+stepLen),nd=scene(ro+rd*nt);
+      if(!inside && d>=0. && nd<0.){
+        float hit=refineRoot(ro,rd,t,nt,d);
+        if(!haveIn){tin=hit;nin=normalAt(ro+rd*hit);haveIn=true;}
+        inside=true;
+      }else if(inside && d<=0. && nd>0.){
+        float hit=refineRoot(ro,rd,t,nt,d);
+        tout=hit;nout=normalAt(ro+rd*hit);haveOut=true;inside=false;
+        // Keep scanning. A non-convex vessel can have several interior spans;
+        // transparent matter uses the first entry and final exit so a nearer
+        // lobe never falsely erases color contained in a farther lobe.
+      }
+      t=nt;d=nd;
+    }
+    return haveIn&&haveOut&&tout-tin>.0015;
+  }
+  float hash12(vec2 p){vec3 p3=fract(vec3(p.xyx)*.1031);p3+=dot(p3,p3.yzx+33.33);return fract((p3.x+p3.y)*p3.z);}
+
+  vec3 animatedCentre(int i,vec4 b){
+    float fi=float(i),g=floor(fi/float(BPG));
+    int gi=i/BPG;
+    vec3 c=uMatterDrivers[gi].xyz;
+    vec3 local=b.xyz*uSpread;
+    float gp=g*1.713+.4;
+    float h=fract(sin(fi*91.713+g*17.17)*43758.5453);
+    float act=clamp(uActivity,0.,1.);
+    float speed=1.45*act;
+    float orbit=uTime*(.105+.105*h)*speed;
+    local.xz=r2(orbit+gp+.22*act*sin(uTime*.29+fi*.83))*local.xz;
+    local.xy=r2(-orbit*.57+.16*act*sin(uTime*.23+gp*1.37))*local.xy;
+    local.yz=r2(.10*act*sin(uTime*.31+fi*1.19))*local.yz;
+    local*=1.+act*(.045*sin(uTime*.43+gp+fi*.31)+.025*sin(uTime*.77+fi));
+    c+=local;
+    c+=act*(.009+.013*h)*vec3(
+      sin(uTime*(.43+.15*h)+fi*2.19),
+      cos(uTime*(.37+.12*h)+fi*1.73),
+      sin(uTime*(.33+.17*h)+fi*2.71));
+    return c;
+  }
+
+  void main(){
+    vec2 sp=(gl_FragCoord.xy*2.-uResolution.xy)/uResolution.y;
+    vec3 roC=vec3(0.,0.,3.15);
+    vec3 rdC=normalize(vec3(sp*.82,-2.25));
+    float cy=cos(uYaw),sy=sin(uYaw),cx=cos(uPitch),sx=sin(uPitch),cz=cos(uRoll),sz=sin(uRoll);
+    mat3 ry=mat3(cy,0.,sy, 0.,1.,0., -sy,0.,cy);
+    mat3 rx=mat3(1.,0.,0., 0.,cx,-sx, 0.,sx,cx);
+    mat3 rz=mat3(cz,sz,0., -sz,cz,0., 0.,0.,1.);
+    mat3 invR=transpose(rz*ry*rx);
+    vec3 ro=invR*roC,rd=invR*rdC;
+
+    vec3 bg=vec3(.962,.962,.949);
+    float tin=0.,tout=0.;vec3 nin=vec3(0),nout=vec3(0);
+    if(!shellHit(ro,rd,tin,tout,nin,nout)){
+      float grain=(hash12(gl_FragCoord.xy+floor(uTime*8.))-.5)*.007;
+      fragColor=vec4(bg+grain,1.);return;
+    }
+
+    float span=max(.02,tout-tin);
+    vec3 absorb=vec3(0.),pigment=vec3(0.);float total=0.;
+    float soft=clamp(uSoftness,0.,1.);
+    vec3 matterSpec=mix(uMatterA,uMatterB,uMorph);
+    float bodyCount=matterSpec.x,meanSize=matterSpec.y,sizeRange=matterSpec.z;
+    for(int i=0;i<BALLS;i++){
+      float fi=float(i),group=floor(fi/float(BPG));
+      int gi=i/BPG,li=i-gi*BPG;
+      float enabled=1.-smoothstep(bodyCount-.18,bodyCount+.18,float(li)+.5);
+      if(enabled<.001)continue;
+      vec4 b=uBalls[i];vec3 c=animatedCentre(i,b);
+      float tcRaw=dot(c-ro,rd);
+      float inset=min(.002,span*.20);
+      float tc=clamp(tcRaw,tin+inset,tout-inset);
+      float z=clamp((tc-tin)/span,0.,1.);
+      float sizeShape=exp((b.w-.5)*2.*sizeRange*.64);
+      float depthSpread=mix(.035,.17,soft);
+      float rr=clamp(meanSize*sizeShape,.026,.205)*(1.+depthSpread*z)*(.97+.05*sin(uTime*.42+fi*1.37));
+      vec3 nearp=ro+rd*tc;float d2=dot(nearp-c,nearp-c);
+      float q2=d2/(rr*rr);
+      float support=mix(1.02,2.30,smoothstep(.40,.98,soft));
+      float edgeGate=1.-smoothstep(support*.88,support,q2);
+      float compact=pow(max(0.,1.-q2),mix(1.05,1.72,soft));
+      float gaussian=exp(-mix(6.3,1.95,soft)*q2);
+      float kernel=mix(compact,gaussian,smoothstep(.34,.90,soft))*edgeGate;
+      float sizeWeight=mix(.58,1.24,smoothstep(.040,.175,rr));
+      float depthFade=mix(mix(1.,.88,z),mix(1.,.59,z),soft);
+      float den=kernel*sizeWeight*depthFade*enabled;
+      if(uFocus>-0.5){float same=1.-step(.25,abs(group-uFocus));den*=mix(.10,1.38,same);}
+      vec3 bc=mix(uEdge[gi],uCore[gi],.22+.78*smoothstep(.045,.74,den));
+      absorb+=(vec3(1.)-bc)*den*mix(1.24,.98,soft);
+      pigment+=bc*den;total+=den;
+    }
+    vec3 diffuseCol=exp(-absorb*mix(1.48,1.16,soft));
+    vec3 firmCol=pigment/max(total,.001);
+    firmCol*=exp(-absorb*.36);
+    vec3 col=mix(firmCol,diffuseCol,smoothstep(.24,.88,soft));
+    float diffuseMatter=1.-exp(-total*1.03);
+    float level=mix(.29,.12,soft);
+    float band=max(mix(.016,.16,soft),fwidth(total)*1.15);
+    float boundedMatter=smoothstep(level-band,level+band,total);
+    float matter=mix(boundedMatter,diffuseMatter,smoothstep(.48,.96,soft));
+    col=mix(bg,col,mix(.985,.93,soft)*matter);
+
+    float cloud=clamp(uCloudiness,0.,1.);
+    float ndv=clamp(dot(nin,-rd),0.,1.);
+    float grazing=pow(1.-ndv,2.1);
+    // Frost is based on the stable front surface and a clamped interior span.
+    // The back-face Fresnel term and bounding-sphere fallback that produced
+    // bright tangential crescents are deliberately absent.
+    float bodyFog=1.-exp(-min(span,1.18)*1.35);
+    float veil=cloud*(.060+.500*bodyFog+.035*grazing);
+    col=mix(col,vec3(.986,.985,.975),clamp(veil,0.,.58));
+    col=mix(col,vec3(.22,.215,.20),cloud*smoothstep(.78,1.,grazing)*.045);
+
+    float grain=(hash12(gl_FragCoord.xy+floor(uTime*10.))-.5)*(.004+.008*cloud);
+    col+=grain;
+    fragColor=vec4(clamp(col,0.,1.),1.);
+  }`;
+
+  function shader(type,src){
+    const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
+    if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  let prog;
+  try{
+    prog=gl.createProgram();gl.attachShader(prog,shader(gl.VERTEX_SHADER,VERT));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,FRAG));gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(prog));
+  }catch(err){console.error(err);document.getElementById('glfail').textContent='The figure could not compile on this browser.';document.getElementById('glfail').style.display='flex';canvas.style.display='none';return;}
+  gl.useProgram(prog);
+  const quadVAO=gl.createVertexArray();gl.bindVertexArray(quadVAO);
+  const quad=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,quad);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+  const ap=gl.getAttribLocation(prog,'aPosition');gl.enableVertexAttribArray(ap);gl.vertexAttribPointer(ap,2,gl.FLOAT,false,0,0);
+  gl.bindVertexArray(null);
+
+  const U={};['uResolution','uTime','uMorph','uShapeA','uShapeB','uYaw','uPitch','uRoll','uFocus','uCloudiness','uSoftness','uActivity','uSpread','uCoupling','uMatterA','uMatterB','uBalls[0]','uMatterDrivers[0]','uShellDrivers[0]','uCore[0]','uEdge[0]'].forEach(n=>U[n]=gl.getUniformLocation(prog,n));
+
+  /* The shell linework is an SVG vector overlay rather than WebGL GL_LINES.
+     The same six-face lattice is projected onto the implicit zero-surface on the
+     CPU, grouped into a small set of opacity bands, and written as SVG paths.
+     Geometry therefore remains resolution-independent and anti-aliased at any DPR;
+     WebGL is reserved for the chromatic volume behind it. */
+  const shellSvg=document.getElementById('shellSvg');
+  const SVG_NS='http://www.w3.org/2000/svg';
+  const VECTOR_BINS=5,VECTOR_N=12;
+  const vectorPoints=[],vectorSegments=[];
+  const pointIndex=new Map(),segmentIndex=new Map();
+  function vPoint(p){
+    const key=p.map(v=>v.toFixed(6)).join(',');
+    if(pointIndex.has(key))return pointIndex.get(key);
+    const i=vectorPoints.length;vectorPoints.push(p);pointIndex.set(key,i);return i;
+  }
+  function vSegment(pa,pb,kind){
+    const ia=vPoint(pa),ib=vPoint(pb),lo=Math.min(ia,ib),hi=Math.max(ia,ib),key=lo+':'+hi;
+    const old=segmentIndex.get(key);
+    if(old!==undefined){vectorSegments[old][2]=Math.max(vectorSegments[old][2],kind);return;}
+    segmentIndex.set(key,vectorSegments.length);vectorSegments.push([ia,ib,kind]);
+  }
+  function facePoint(face,u,v){
+    if(face===0)return [ 1,u,v]; if(face===1)return [-1,u,-v];
+    if(face===2)return [u, 1,v]; if(face===3)return [u,-1,-v];
+    if(face===4)return [u,v, 1]; return [-u,v,-1];
+  }
+  for(let f=0;f<6;f++){
+    for(let j=0;j<=VECTOR_N;j++)for(let i=0;i<VECTOR_N;i++){
+      const u0=-1+2*i/VECTOR_N,u1=-1+2*(i+1)/VECTOR_N,v=-1+2*j/VECTOR_N;
+      vSegment(facePoint(f,u0,v),facePoint(f,u1,v),(j===0||j===VECTOR_N)?2:0);
+    }
+    for(let i=0;i<=VECTOR_N;i++)for(let j=0;j<VECTOR_N;j++){
+      const v0=-1+2*j/VECTOR_N,v1=-1+2*(j+1)/VECTOR_N,u=-1+2*i/VECTOR_N;
+      vSegment(facePoint(f,u,v0),facePoint(f,u,v1),(i===0||i===VECTOR_N)?2:0);
+    }
+    for(let j=0;j<VECTOR_N;j++)for(let i=0;i<VECTOR_N;i++){
+      const u0=-1+2*i/VECTOR_N,u1=-1+2*(i+1)/VECTOR_N,v0=-1+2*j/VECTOR_N,v1=-1+2*(j+1)/VECTOR_N;
+      if((i+j)&1)vSegment(facePoint(f,u0,v1),facePoint(f,u1,v0),1);
+      else vSegment(facePoint(f,u0,v0),facePoint(f,u1,v1),1);
+    }
+  }
+  const vectorPaths=Array.from({length:3},()=>Array(VECTOR_BINS));
+  const vectorWidths=[.56,.32,.88],vectorKindAlpha=[1,.20,1.55],vectorAlpha=[.13,.205,.285,.385,.48];
+  [1,0,2].forEach(kind=>{
+    for(let bin=0;bin<VECTOR_BINS;bin++){
+      const p=document.createElementNS(SVG_NS,'path');
+      p.setAttribute('stroke-width',String(vectorWidths[kind]));
+      p.setAttribute('stroke','rgb(21,20,15)');
+      shellSvg.appendChild(p);vectorPaths[kind][bin]=p;
+    }
+  });
+  const vectorSurface=new Float32Array(vectorPoints.length*3);
+  const vectorNormal=new Float32Array(vectorPoints.length*3);
+  const vectorScreen=new Float32Array(vectorPoints.length*2);
+  const vectorFace=new Float32Array(vectorPoints.length);
+  const jsMix=(x,y,t)=>x+(y-x)*t;
+  const jsSmooth=(a,b,x)=>{const t0=Math.max(0,Math.min(1,(x-a)/(b-a)));return t0*t0*(3-2*t0);};
+  const jsSmin=(aa,bb,k)=>{const h=Math.max(0,Math.min(1,.5+.5*(bb-aa)/k));return jsMix(bb,aa,h)-k*h*(1-h);};
+  function jsBox(x,y,z,bx,by,bz){
+    const qx=Math.abs(x)-bx,qy=Math.abs(y)-by,qz=Math.abs(z)-bz;
+    return Math.hypot(Math.max(qx,0),Math.max(qy,0),Math.max(qz,0))+Math.min(Math.max(qx,Math.max(qy,qz)),0);
+  }
+  function jsRoundBox(x,y,z,bx,by,bz,r){return jsBox(x,y,z,bx,by,bz)-r;}
+  function jsCapsule(px,py,pz,ax,ay,az,bx,by,bz,r){
+    const pax=px-ax,pay=py-ay,paz=pz-az,bax=bx-ax,bay=by-ay,baz=bz-az;
+    const h=Math.max(0,Math.min(1,(pax*bax+pay*bay+paz*baz)/(bax*bax+bay*bay+baz*baz)));
+    return Math.hypot(pax-bax*h,pay-bay*h,paz-baz*h)-r;
+  }
+  function jsForm(x,y,z,id){
+    if(id===0)return jsBox(x,y,z,.58,.58,.58);
+    if(id===1){
+      let d=Math.hypot(x,y,z)-.60;
+      d=jsSmin(d,Math.hypot(x-.42,y-.22,z-.10)-.43,.25);
+      d=jsSmin(d,Math.hypot(x+.38,y+.27,z-.18)-.41,.24);
+      d=jsSmin(d,Math.hypot(x-.02,y-.36,z+.38)-.43,.25);
+      d=jsSmin(d,Math.hypot(x+.13,y-.02,z-.46)-.35,.22);
+      return d;
+    }
+    if(id===2){
+      const ca=Math.cos(.10),sa=Math.sin(.10),qx=ca*x+sa*z,qz=-sa*x+ca*z,qy=y;
+      const dx=jsCapsule(qx,qy,qz,-.54,0,0,.54,0,0,.39);
+      const dy=jsCapsule(qx,qy,qz,0,-.52,0,0,.52,0,.39);
+      const dz=jsCapsule(qx,qy,qz,0,0,-.52,0,0,.52,.39);
+      return jsSmin(jsSmin(jsSmin(dx,dy,.24),dz,.24),Math.hypot(qx,qy,qz)-.58,.20);
+    }
+    let qx=x,qy=y,qz=z;
+    {const an=.83*qy+.12,c=Math.cos(an),s=Math.sin(an),nx=c*qx+s*qz,nz=-s*qx+c*qz;qx=nx;qz=nz;}
+    {const an=-.46*qz,c=Math.cos(an),s=Math.sin(an),nx=c*qx+s*qy,ny=-s*qx+c*qy;qx=nx;qy=ny;}
+    {const ox=qx,oy=qy,oz=qz;qx+=.052*Math.sin(oy*4.1);qy+=.052*Math.sin(oz*4.1+2.1);qz+=.052*Math.sin(ox*4.1+4.2);}
+    let d=jsRoundBox(qx,qy,qz,.43,.61,.47,.235);
+    d=jsSmin(d,Math.hypot(qx-.34,qy-.23,qz-.13)-.34,.18);
+    d=jsSmin(d,Math.hypot(qx+.31,qy+.18,qz+.24)-.32,.18);
+    return d;
+  }
+  const jsResponse=id=>id===0?0:id===1?1:id===2?.88:.78;
+  function jsPressure(x,y,z){
+    let f=0;
+    for(let i=0;i<6;i++){
+      const k=i*4,dx=x-shellDrivers[k],dy=y-shellDrivers[k+1],dz=z-shellDrivers[k+2],r=shellDrivers[k+3];
+      const q=Math.max(0,Math.min(1,1-(dx*dx+dy*dy+dz*dz)/(r*r)));
+      f+=q*q*(3-2*q);
+    }
+    return Math.min(f,1.55);
+  }
+  function jsScene(x,y,z){
+    let d=jsMix(jsForm(x,y,z,a),jsForm(x,y,z,b),morph)-.035*Math.sin(Math.PI*morph);
+    const response=jsMix(jsResponse(a),jsResponse(b),morph);
+    if(response>.0001&&coupling>.001)d-=coupling*response*.085*(jsPressure(x,y,z)-.065);
+    return d;
+  }
+  function jsSurface(cube,out,k){
+    if(a===0&&b===0){out[k]=cube[0]*.58;out[k+1]=cube[1]*.58;out[k+2]=cube[2]*.58;return;}
+    const il=1/(Math.hypot(cube[0],cube[1],cube[2])||1),dx=cube[0]*il,dy=cube[1]*il,dz=cube[2]*il;
+    let lo=0,hi=1.34;
+    for(let j=0;j<16;j++){const m=(lo+hi)*.5;if(jsScene(dx*m,dy*m,dz*m)<0)lo=m;else hi=m;}
+    const r=(lo+hi)*.5;out[k]=dx*r;out[k+1]=dy*r;out[k+2]=dz*r;
+  }
+  function jsNormal(x,y,z,out,k){
+    const e=.0032,nx=jsScene(x+e,y,z)-jsScene(x-e,y,z),ny=jsScene(x,y+e,z)-jsScene(x,y-e,z),nz=jsScene(x,y,z+e)-jsScene(x,y,z-e);
+    const il=1/(Math.hypot(nx,ny,nz)||1);out[k]=nx*il;out[k+1]=ny*il;out[k+2]=nz*il;
+  }
+  function rotate3(x,y,z,yaw0,pitch0,roll0){
+    const cx=Math.cos(pitch0),sx=Math.sin(pitch0),cy=Math.cos(yaw0),sy=Math.sin(yaw0),cz=Math.cos(roll0),sz=Math.sin(roll0);
+    const y1=cx*y+sx*z,z1=-sx*y+cx*z;
+    const x2=cy*x-sy*z1,z2=sy*x+cy*z1;
+    return [cz*x2-sz*y1,sz*x2+cz*y1,z2];
+  }
+  function renderVectorShell(yaw0,pitch0,roll0){
+    shellSvg.setAttribute('viewBox',`0 0 ${cssW} ${cssH}`);
+    const aspect=cssW/cssH;
+    for(let i=0;i<vectorPoints.length;i++){
+      const k=i*3,s=i*2;jsSurface(vectorPoints[i],vectorSurface,k);
+      jsNormal(vectorSurface[k],vectorSurface[k+1],vectorSurface[k+2],vectorNormal,k);
+      const p=rotate3(vectorSurface[k],vectorSurface[k+1],vectorSurface[k+2],yaw0,pitch0,roll0);
+      const n=rotate3(vectorNormal[k],vectorNormal[k+1],vectorNormal[k+2],yaw0,pitch0,roll0);
+      const depth=Math.max(.25,3.15-p[2]),scale=(2.25/.82)/depth;
+      vectorScreen[s]=(.5+(p[0]*scale/aspect)*.5)*cssW;
+      vectorScreen[s+1]=(.5-p[1]*scale*.5)*cssH;
+      vectorFace[i]=n[2];
+    }
+    const buckets=Array.from({length:3*VECTOR_BINS},()=>[]);
+    for(const seg of vectorSegments){
+      const ia=seg[0],ib=seg[1],kind=seg[2],sa=ia*2,sb=ib*2;
+      const face=(vectorFace[ia]+vectorFace[ib])*.5;
+      const alpha=.13+(.48-.13)*jsSmooth(-.42,.82,face);
+      const bin=Math.max(0,Math.min(VECTOR_BINS-1,Math.round((alpha-.13)/(.48-.13)*(VECTOR_BINS-1))));
+      buckets[kind*VECTOR_BINS+bin].push(`M${vectorScreen[sa].toFixed(2)} ${vectorScreen[sa+1].toFixed(2)}L${vectorScreen[sb].toFixed(2)} ${vectorScreen[sb+1].toFixed(2)}`);
+    }
+    const cloudFade=jsMix(1,.72,cloud);
+    for(let kind=0;kind<3;kind++)for(let bin=0;bin<VECTOR_BINS;bin++){
+      const p=vectorPaths[kind][bin];
+      p.setAttribute('d',buckets[kind*VECTOR_BINS+bin].join(''));
+      p.setAttribute('stroke-opacity',String(Math.min(.92,vectorAlpha[bin]*vectorKindAlpha[kind]*cloudFade)));
+    }
+  }
+
+  // Six abstract discipline fields × sixteen possible kernels. Each field has
+  // a deterministic hierarchy: a dense anchor, middle bodies, then progressively
+  // smaller satellites. State controls decide how many are active and how broad
+  // their radius distribution becomes; Cluster spread scales only their distance
+  // from the hidden field origin.
+  const DRIVER_LAYOUTS=[
+    [
+      [.40,.33,.22], [.39,-.37,.16], [-.42,-.24,-.10],
+      [-.41,.31,.08], [.02,-.30,.27], [.03,.27,-.31]
+    ],
+    [
+      [.39,.22,.08], [.18,-.23,.20], [-.34,-.23,.14],
+      [-.01,.34,-.29], [-.12,.02,.36], [.02,.10,-.04]
+    ],
+    [
+      [.42,.01,.05], [-.42,-.01,-.04], [.01,.41,.02],
+      [-.01,-.41,.07], [.02,.02,.41], [-.04,.02,-.41]
+    ],
+    [
+      [.31,.35,.16], [.28,-.33,-.11], [-.30,-.27,.18],
+      [-.31,.28,-.12], [.04,-.08,.31], [-.02,.16,-.31]
+    ]
+  ];
+  const driverPhase=[.40,2.11,3.82,5.53,7.24,8.95];
+  const matterDrivers=new Float32Array(6*4),shellDrivers=new Float32Array(6*4),shellState=new Float32Array(6*3);
+  let driversReady=false;
+
+  let seed=2147483646;
+  const rnd=()=>{seed=seed*16807%2147483647;return seed/2147483647;};
+  const balls=[];
+  for(let g=0;g<6;g++){
+    for(let k=0;k<16;k++){
+      const ang=rnd()*Math.PI*2,z=rnd()*2-1;
+      const tier=k/15;
+      const spread0=k===0?.018:(.045+Math.pow(tier,.70)*.275*(.76+rnd()*.24));
+      const ring=Math.sqrt(Math.max(0,1-z*z))*spread0;
+      const local=[Math.cos(ang)*ring,Math.sin(ang)*ring,z*spread0];
+      const sizeSeed=Math.max(0,Math.min(1,1-tier+(rnd()-.5)*.10));
+      balls.push(local[0],local[1],local[2],sizeSeed);
+    }
+  }
+  gl.useProgram(prog);
+  gl.uniform4fv(U['uBalls[0]'],new Float32Array(balls));
+  let colorDirty=true;
+  function hexRGB(hex){
+    const n=parseInt(hex.slice(1),16);
+    return [(n>>16&255)/255,(n>>8&255)/255,(n&255)/255];
+  }
+  function syncColorUniforms(){
+    const core=[],edge=[];
+    data.forEach(d=>{core.push(...hexRGB(d.core));edge.push(...hexRGB(d.edge));});
+    gl.useProgram(prog);
+    gl.uniform3fv(U['uCore[0]'],new Float32Array(core));
+    gl.uniform3fv(U['uEdge[0]'],new Float32Array(edge));
+    colorDirty=false;
+  }
+  syncColorUniforms();
+
+  function updateDrivers(t,dt,still){
+    const tau=lag<=.005?0:.04+lag*3.15;
+    const alpha=still||tau===0?1:1-Math.exp(-Math.min(dt,.10)/tau);
+    for(let g=0;g<6;g++){
+      const p0=DRIVER_LAYOUTS[a][g],p1=DRIVER_LAYOUTS[b][g],ph=driverPhase[g];
+      const base=[
+        p0[0]+(p1[0]-p0[0])*morph,
+        p0[1]+(p1[1]-p0[1])*morph,
+        p0[2]+(p1[2]-p0[2])*morph
+      ];
+      const motion=still?0:activity;
+      const speed=.55+activity*1.20;
+      const collective=[
+        Math.sin(t*.095*speed)*.017,
+        Math.cos(t*.082*speed+.8)*.014,
+        Math.sin(t*.071*speed+1.7)*.015
+      ];
+      const drift=[
+        Math.sin(t*.224*speed+ph)*.052+Math.sin(t*.107*speed+ph*.43)*.017,
+        Math.cos(t*.191*speed+ph*1.31)*.047+Math.sin(t*.096*speed+ph*.71)*.015,
+        Math.sin(t*.167*speed+ph*1.77)*.050+Math.cos(t*.083*speed+ph*.53)*.015
+      ];
+      const x=base[0]+motion*(collective[0]+drift[0]);
+      const y=base[1]+motion*(collective[1]+drift[1]);
+      const zc=base[2]+motion*(collective[2]+drift[2]);
+      const j=g*4,s=g*3;
+      matterDrivers[j]=x;matterDrivers[j+1]=y;matterDrivers[j+2]=zc;matterDrivers[j+3]=1;
+      if(!driversReady){shellState[s]=x;shellState[s+1]=y;shellState[s+2]=zc;}
+      else{
+        shellState[s]+=(x-shellState[s])*alpha;
+        shellState[s+1]+=(y-shellState[s+1])*alpha;
+        shellState[s+2]+=(zc-shellState[s+2])*alpha;
+      }
+      shellDrivers[j]=shellState[s];shellDrivers[j+1]=shellState[s+1];shellDrivers[j+2]=shellState[s+2];
+      shellDrivers[j+3]=.405+(g%3)*.012;
+    }
+    driversReady=true;
+  }
+
+  let cssW=1,cssH=1;
+  function resize(){
+    const r=canvas.getBoundingClientRect();cssW=Math.max(1,r.width);cssH=Math.max(1,r.height);
+    const dpr=Math.min(devicePixelRatio||1,1.25),maxPx=1_050_000;
+    const scale=Math.min(1,Math.sqrt(maxPx/(cssW*cssH*dpr*dpr)));
+    const w=Math.max(2,Math.round(cssW*dpr*scale)),h=Math.max(2,Math.round(cssH*dpr*scale));
+    if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;gl.viewport(0,0,w,h);}
+  }
+  addEventListener('resize',resize,{passive:true});resize();
+
+  const params=new URLSearchParams(location.search);
+  const NAMES=['BOUNDARY','CELL','INTERFACE','FOLD'];
+  // The chrome that formerly labelled the state — formname/transition readouts,
+  // the four form buttons — is intentionally not present on the public page.
+  const formName=null, transition=null, formButtons=[];
+  const readParam=(key,fallback,min=0,max=1)=>{
+    const n=params.has(key)?Number(params.get(key)):Number(fallback);
+    return Number.isFinite(n)?Math.max(min,Math.min(max,n)):fallback;
+  };
+  const pct=v=>String(Math.round(v*100)).padStart(2,'0')+'%';
+  const spreadText=v=>Math.round(v*100)+'%';
+  const lagText=v=>(v*3.2).toFixed(1)+'s';
+  const rotationText=v=>v<.005?'still':v.toFixed(2)+'×';
+  const secondsText=v=>Number(v).toFixed(1)+'s';
+  const transitionText=v=>v.toFixed(2)+'× · '+(5.2/v).toFixed(1)+'s';
+  let cloud=readParam('cloud',config.motion.cloud);
+  let softness=readParam('soft',config.motion.softness);
+  let activity=readParam('drift',config.motion.drift);
+  let spread=readParam('spread',config.motion.spread,0,1.8);
+  let coupling=readParam('couple',config.motion.coupling);
+  let lag=readParam('lag',config.motion.lag);
+  let rotationSpeed=readParam('rotate',config.motion.rotationSpeed,0,2.5);
+  let restSeconds=readParam('rest',config.motion.restSeconds,1,30);
+  let transitionSpeed=readParam('transition',config.motion.transitionSpeed,.25,2.5);
+  Object.assign(config.motion,{cloud,softness,drift:activity,spread,coupling,lag,rotationSpeed,restSeconds,transitionSpeed});
+
+  const stage=document.getElementById('stage');
+  // saveConfig() is a no-op on the public page — no localStorage authoring cache.
+  function saveConfig(){}
+  // applyFigureConfig() lets the CMS-authored `figure` block override defaults
+  // once the Supabase doc has loaded. Called after loadAboutDoc() resolves.
+  function applyFigureConfig(){
+    if(!pendingFigure) return;
+    const cfg=normalizeConfig(Object.assign({}, DEFAULT_CONFIG, pendingFigure));
+    // Merge into the live config (palette + states + motion).
+    config.disciplines=cfg.disciplines; data=config.disciplines;
+    config.states=cfg.states;
+    Object.assign(config.motion,cfg.motion);
+    cloud=config.motion.cloud;
+    softness=config.motion.softness;
+    activity=config.motion.drift;
+    spread=config.motion.spread;
+    coupling=config.motion.coupling;
+    lag=config.motion.lag;
+    rotationSpeed=config.motion.rotationSpeed;
+    restSeconds=config.motion.restSeconds;
+    transitionSpeed=config.motion.transitionSpeed;
+    colorDirty=true;
+  }
+
+  let initial=Math.max(0,Math.min(NAMES.length-1,Number(params.get('form'))||0));
+  let a=initial,b=initial,morph=0,transitioning=false,tStart=0,lastRest=performance.now(),manualUntil=0;
+  const forcedStill=params.get('still')==='1';
+  const reduced=forcedStill||matchMedia('(prefers-reduced-motion: reduce)').matches || (M&&M.reduced&&M.reduced());
+  const ease=t=>{t=Math.max(0,Math.min(1,t));return t*t*t*(t*(t*6-15)+10);};
+  function go(to,manual=true){
+    to=(to+NAMES.length)%NAMES.length;
+    if(transitioning){a=morph<.5?a:b;}
+    else a=b;
+    if(to===a){b=a;morph=0;transitioning=false;updateUI();return;}
+    b=to;morph=0;transitioning=true;tStart=performance.now();
+    if(manual)manualUntil=performance.now()+3000;
+    updateUI();
+  }
+  function updateUI(){/* readouts + form buttons are not in the public page */}
+
+  let yaw=Number.isFinite(Number(params.get('yaw')))?Number(params.get('yaw')):.57;
+  let pitch=Number.isFinite(Number(params.get('pitch')))?Number(params.get('pitch')):-.36;
+  let drag=false,px=0,py=0,moved=0;
+  canvas.addEventListener('pointerdown',e=>{drag=true;moved=0;px=e.clientX;py=e.clientY;canvas.setPointerCapture(e.pointerId);canvas.classList.add('dragging');manualUntil=performance.now()+4000;});
+  canvas.addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-px,dy=e.clientY-py;px=e.clientX;py=e.clientY;moved+=Math.abs(dx)+Math.abs(dy);yaw+=dx*.006;pitch=Math.max(-1.05,Math.min(.45,pitch+dy*.005));});
+  canvas.addEventListener('pointerup',e=>{if(!drag)return;drag=false;canvas.classList.remove('dragging');try{canvas.releasePointerCapture(e.pointerId);}catch(_){}if(moved<7)go((transitioning?b:a)+1,true);});
+  canvas.addEventListener('pointercancel',()=>{drag=false;canvas.classList.remove('dragging');});
+  addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight'){go((transitioning?b:a)+1,true);e.preventDefault();}
+    if(e.key==='ArrowLeft'){go((transitioning?b:a)-1,true);e.preventDefault();}
+  });
+
+  let origin=performance.now(),lastFrame=0,shellClock=0;
+  function frame(now){
+    requestAnimationFrame(frame);
+    if(document.hidden)return;
+    if(now-lastFrame<1000/30)return;
+    const dt=lastFrame?Math.min(.10,(now-lastFrame)/1000):1/30;lastFrame=now;
+    resize();
+    if(transitioning){
+      const dur=reduced?1:5200/Math.max(.05,transitionSpeed),p=(now-tStart)/dur;morph=ease(p);
+      if(p>=1){a=b;morph=0;transitioning=false;lastRest=now;updateUI();}
+    }else if(!reduced&&now>manualUntil&&now-lastRest>restSeconds*1000)go((a+1)%NAMES.length,false);
+    focus+=(focusTarget-focus)*.10;
+    const t=reduced?0:(now-origin)/1000;
+    updateDrivers(t,dt,reduced);
+    if(!reduced)shellClock+=dt*rotationSpeed;
+    const s=shellClock;
+    const autoYaw=reduced?0:s*.045+.20*(Math.sin(s*.092+.4)-Math.sin(.4))+.055*(Math.sin(s*.193+1.2)-Math.sin(1.2));
+    const autoPitch=reduced?0:.22*(Math.sin(s*.112+1.1)-Math.sin(1.1))+.07*(Math.sin(s*.231+.2)-Math.sin(.2));
+    const autoRoll=reduced?0:.15*(Math.sin(s*.087+2.0)-Math.sin(2.0))+.055*(Math.sin(s*.179+.75)-Math.sin(.75));
+    const drawYaw=yaw+autoYaw,drawPitch=Math.max(-1.28,Math.min(.72,pitch+autoPitch)),drawRoll=autoRoll;
+    gl.disable(gl.BLEND);gl.disable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);
+    gl.useProgram(prog);gl.bindVertexArray(quadVAO);
+    gl.uniform2f(U.uResolution,canvas.width,canvas.height);
+    gl.uniform1f(U.uTime,t);gl.uniform1f(U.uMorph,morph);gl.uniform1i(U.uShapeA,a);gl.uniform1i(U.uShapeB,b);
+    if(colorDirty)syncColorUniforms();
+    gl.uniform1f(U.uYaw,drawYaw);gl.uniform1f(U.uPitch,drawPitch);gl.uniform1f(U.uRoll,drawRoll);gl.uniform1f(U.uFocus,focus);gl.uniform1f(U.uCloudiness,cloud);
+    gl.uniform1f(U.uSoftness,softness);gl.uniform1f(U.uActivity,activity);gl.uniform1f(U.uSpread,spread);gl.uniform1f(U.uCoupling,coupling);
+    const sa=config.states[a],sb=config.states[b];
+    gl.uniform3f(U.uMatterA,sa.count,sa.meanSize,sa.sizeRange);
+    gl.uniform3f(U.uMatterB,sb.count,sb.meanSize,sb.sizeRange);
+    gl.uniform4fv(U['uMatterDrivers[0]'],matterDrivers);gl.uniform4fv(U['uShellDrivers[0]'],shellDrivers);
+    gl.drawArrays(gl.TRIANGLES,0,6);
+    gl.bindVertexArray(null);
+    renderVectorShell(drawYaw,drawPitch,drawRoll);
+  }
+  updateUI();requestAnimationFrame(frame);
+})();
 </script>
 <script src="assets/mm-menu.js"></script>
 <script>window.MMMenu&&window.MMMenu.mount({current:'about'});</script>

@@ -1,28 +1,8 @@
 {
   "code": "ABOUT",
   "name": "About",
-  "kicker": "Lorem Ipsum — Dolor Sit Amet",
-  "lede": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
-  "sections": [
-    {
-      "h": "Lorem ipsum",
-      "body": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-    },
-    {
-      "h": "Dolor sit amet",
-      "body": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo."
-    },
-    {
-      "h": "Consectetur",
-      "body": "Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt."
-    }
-  ],
-  "people": [
-    { "name": "Lorem Ipsum", "role": "Dolor sit amet" },
-    { "name": "Consectetur Adipiscing", "role": "Sed do eiusmod" }
-  ],
-  "contact": {
-    "note": "Lorem ipsum dolor sit amet",
-    "email": "hello@example.com"
-  }
+  "kicker": "MODE MODE — ABOUT",
+  "lede": "Strange and beautiful things emerge where disciplines lose their edges.",
+  "body": "MODE MODE is a studio working between creative technology, experiential design, fabrication, visual systems, art, and play.\n\nThe figure at right is not a map of those disciplines. It is a container whose definition keeps changing while the material inside finds new relationships.",
+  "meta": "BROOKLYN, NEW YORK\nINDEPENDENT / COLLABORATIVE / VARIABLE"
 }

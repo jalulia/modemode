@@ -139,6 +139,23 @@
   #dwBody{padding:14px 15px 60px;}
   #dwBody .dwtype{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey-2);margin:0 0 12px;}
   .hidden{display:none!important;}
+
+  /* ---- figure controls (About page vessel) ---- */
+  .figrow{display:grid;grid-template-columns:20px 1fr 34px 34px 60px;gap:8px;align-items:center;padding:8px 0;border-top:1px solid var(--hair-2);}
+  .figrow:first-of-type{border-top:0;}
+  .figrow .fnum{font-size:9.5px;letter-spacing:.14em;color:var(--grey-2);}
+  .figrow input[type=text]{padding:5px 7px;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;}
+  .figrow .cbox{position:relative;width:34px;height:24px;border:1px solid var(--hair);overflow:hidden;padding:0;background:#fff;cursor:pointer;}
+  .figrow .cbox input{position:absolute;inset:-8px;width:52px;height:40px;border:0;padding:0;cursor:pointer;background:none;}
+  .figrow .grad{height:20px;border:1px solid var(--hair);}
+  .figstate{border-top:1px solid var(--hair-2);padding:12px 0;} .figstate:first-of-type{border-top:0;padding-top:2px;}
+  .figstate .fname{display:flex;align-items:baseline;gap:9px;margin:0 0 8px;}
+  .figstate .fname input{max-width:180px;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;padding:5px 7px;}
+  .fslider{display:grid;grid-template-columns:170px 1fr 62px;gap:10px;align-items:center;padding:5px 0;}
+  .fslider>span{font-size:10.5px;letter-spacing:.06em;color:var(--grey);}
+  .fslider input[type=range]{width:100%;}
+  .fslider output{font-size:10.5px;color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;}
+  .fignote{font-size:10.5px;line-height:1.55;color:var(--grey);margin:0 0 10px;}
 </style>
 </head>
 <body>
@@ -524,35 +541,114 @@ function render(){
   });
 }
 /* About page — a fully CMS-editable document (kicker, lede, sections, studio people,
-   contact). Saved as the projects row slug='about' via the same upsert path; about.html
-   reads it (falling back to content/about.json). */
+   contact, PLUS the figure config: palette / states / motion). Saved as the projects
+   row slug='about' via the same upsert path; about.html reads it (falling back to
+   content/about.json). data.figure mirrors the shape of the authoring config Matt
+   built — same field names — so the public page can drop it in unchanged. */
+const FIGURE_DEFAULT={
+  version:3,
+  disciplines:[
+    {id:'spatial',label:'Spatial',edge:'#DDDAFC',core:'#D70359'},
+    {id:'digital',label:'Digital',edge:'#8BFFCC',core:'#1E6FE0'},
+    {id:'physical',label:'Physical',edge:'#FECDC2',core:'#F9F90B'},
+    {id:'visual',label:'Visual',edge:'#D4FFC0',core:'#00A7FF'},
+    {id:'experiential',label:'Experiential',edge:'#FFD233',core:'#C40021'},
+    {id:'play',label:'Play',edge:'#7FFFEB',core:'#88D420'}
+  ],
+  states:[
+    {id:'boundary',label:'Boundary',count:12,meanSize:.102,sizeRange:.66},
+    {id:'cell',label:'Cell',count:15,meanSize:.091,sizeRange:.82},
+    {id:'interface',label:'Interface',count:14,meanSize:.095,sizeRange:.74},
+    {id:'fold',label:'Fold',count:16,meanSize:.087,sizeRange:.90}
+  ],
+  motion:{cloud:0,softness:.24,drift:.68,spread:1.00,coupling:.24,lag:.32,rotationSpeed:1.00,restSeconds:7.2,transitionSpeed:1.00}
+};
+function ensureFigure(d){
+  if(!d.figure) d.figure=JSON.parse(JSON.stringify(FIGURE_DEFAULT));
+  else{
+    const f=d.figure;
+    if(!Array.isArray(f.disciplines)||f.disciplines.length!==6) f.disciplines=JSON.parse(JSON.stringify(FIGURE_DEFAULT.disciplines));
+    if(!Array.isArray(f.states)||f.states.length!==4) f.states=JSON.parse(JSON.stringify(FIGURE_DEFAULT.states));
+    if(!f.motion||typeof f.motion!=='object') f.motion=JSON.parse(JSON.stringify(FIGURE_DEFAULT.motion));
+    for(const k in FIGURE_DEFAULT.motion) if(f.motion[k]==null) f.motion[k]=FIGURE_DEFAULT.motion[k];
+    f.version=3;
+  }
+  return d.figure;
+}
+function sliderRow(host, label, obj, key, min, max, step, fmt){
+  const row=el('div','fslider');
+  const l=el('span',null,label); row.appendChild(l);
+  const inp=el('input'); inp.type='range'; inp.min=String(min); inp.max=String(max); inp.step=String(step);
+  inp.value=String(obj[key]==null?min:obj[key]);
+  row.appendChild(inp);
+  const out=el('output',null,fmt(+inp.value)); row.appendChild(out);
+  inp.oninput=()=>{ const v=+inp.value; obj[key]=(step>=1?Math.round(v):v); out.textContent=fmt(obj[key]); markDirty(); };
+  host.appendChild(row);
+}
+function colorInput(hex, onChange){
+  const box=el('label','cbox'); box.style.background=hex||'#ffffff';
+  const inp=el('input'); inp.type='color'; inp.value=(hex||'#ffffff').toLowerCase();
+  inp.oninput=()=>{ box.style.background=inp.value; onChange(inp.value.toUpperCase()); };
+  box.appendChild(inp); return box;
+}
 function renderAbout(main){
   const d=state.doc; if(!d){ main.innerHTML='<div class="empty">Loading…</div>'; return; }
-  const meta=section('About — identity', 'about page');
-  meta._b.appendChild(inputField('Kicker  ·  small label above the headline', d, 'kicker', {ph:'MODE MODE — FIELD STUDIO'}));
-  meta._b.appendChild(inputField('Lede  ·  the big headline', d, 'lede', {area:true}));
-  main.appendChild(meta);
+  const cp=section('About — copy', 'kicker · lede · body · meta');
+  cp._b.appendChild(inputField('Kicker  ·  small label above the headline', d, 'kicker', {ph:'MODE MODE — ABOUT'}));
+  cp._b.appendChild(inputField('Lede  ·  the big headline', d, 'lede', {area:true, ph:'Strange and beautiful things emerge where disciplines lose their edges.'}));
+  cp._b.appendChild(inputField('Body  ·  paragraphs (separate with a blank line)', d, 'body', {area:true, ph:'MODE MODE is a studio working between…\n\nThe figure at right is not a map of those disciplines…'}));
+  cp._b.appendChild(inputField('Meta  ·  small caps at the bottom (one per line)', d, 'meta', {area:true, ph:'BROOKLYN, NEW YORK\nINDEPENDENT / COLLABORATIVE / VARIABLE'}));
+  main.appendChild(cp);
 
-  d.sections=d.sections||[];
-  const secs=section('Sections', 'heading + body, in order');
-  secs._b.appendChild(subEditor('Sections', d.sections, ()=>({h:'',body:''}), (host,it)=>{
-    host.appendChild(inputField('Heading', it, 'h'));
-    host.appendChild(inputField('Body', it, 'body', {area:true}));
-  }));
-  main.appendChild(secs);
+  /* ---- figure config ---- */
+  const fig=ensureFigure(d);
 
-  d.people=d.people||[];
-  const ppl=section('Studio', 'names + roles — leave empty to hide');
-  ppl._b.appendChild(subEditor('People', d.people, ()=>({name:'',role:''}), (host,it)=>{
-    const r=el('div','row'); r.appendChild(inputField('Name', it, 'name')); r.appendChild(inputField('Role', it, 'role')); host.appendChild(r);
-  }));
-  main.appendChild(ppl);
+  const pal=section('Figure · palette', 'six discipline fields — diffuse edge to dense center');
+  const palNote=el('div','fignote','Each row is one discipline. Left color is the diffuse edge, right is the dense center. Names are shown as tooltips only — they no longer appear as a legend on the public page.');
+  pal._b.appendChild(palNote);
+  fig.disciplines.forEach((disc,i)=>{
+    const row=el('div','figrow');
+    row.appendChild(el('span','fnum',String(i+1).padStart(2,'0')));
+    const nm=el('input'); nm.type='text'; nm.value=disc.label||''; nm.maxLength=28;
+    nm.oninput=()=>{ disc.label=nm.value.trim()||FIGURE_DEFAULT.disciplines[i].label; markDirty(); };
+    row.appendChild(nm);
+    const grad=el('div','grad'); grad.style.background=`linear-gradient(90deg,${disc.edge},${disc.core})`;
+    const edgeBox=colorInput(disc.edge, v=>{ disc.edge=v; grad.style.background=`linear-gradient(90deg,${disc.edge},${disc.core})`; markDirty(); });
+    const coreBox=colorInput(disc.core, v=>{ disc.core=v; grad.style.background=`linear-gradient(90deg,${disc.edge},${disc.core})`; markDirty(); });
+    row.appendChild(edgeBox); row.appendChild(coreBox); row.appendChild(grad);
+    pal._b.appendChild(row);
+  });
+  main.appendChild(pal);
 
-  d.contact=d.contact||{};
-  const con=section('Contact', 'optional');
-  con._b.appendChild(inputField('Note', d.contact, 'note', {ph:'Say hello'}));
-  con._b.appendChild(inputField('Email', d.contact, 'email', {ph:'hello@example.com'}));
-  main.appendChild(con);
+  const st=section('Figure · states', 'four vessel conditions the shell morphs between');
+  st._b.appendChild(el('div','fignote','Bodies is per-discipline (4–16). Mean radius sets the baseline body size; spread scales the difference between the anchor and its satellites.'));
+  fig.states.forEach((s,i)=>{
+    const card=el('div','figstate');
+    const head=el('div','fname');
+    const nm=el('input'); nm.type='text'; nm.value=s.label||''; nm.maxLength=20;
+    nm.oninput=()=>{ s.label=nm.value.trim()||FIGURE_DEFAULT.states[i].label; markDirty(); };
+    const num=el('span'); num.style.cssText='font-size:9.5px;letter-spacing:.14em;color:var(--grey-2);'; num.textContent='STATE '+String(i+1).padStart(2,'0');
+    head.appendChild(num); head.appendChild(nm);
+    card.appendChild(head);
+    sliderRow(card,'Bodies / discipline',s,'count',4,16,1,v=>String(Math.round(v)));
+    sliderRow(card,'Mean body radius',s,'meanSize',.045,.145,.001,v=>Number(v).toFixed(3));
+    sliderRow(card,'Body size spread',s,'sizeRange',0,1,.01,v=>Math.round(v*100)+'%');
+    st._b.appendChild(card);
+  });
+  main.appendChild(st);
+
+  const mo=section('Figure · motion', 'shell tumble, matter drift, transition timing');
+  const m=fig.motion;
+  sliderRow(mo._b,'Shell cloudiness',m,'cloud',0,1,.01,v=>Math.round(v*100)+'%');
+  sliderRow(mo._b,'Matter softness',m,'softness',0,1,.01,v=>Math.round(v*100)+'%');
+  sliderRow(mo._b,'Matter drift',m,'drift',0,1,.01,v=>Math.round(v*100)+'%');
+  sliderRow(mo._b,'Cluster spread',m,'spread',0,1.8,.01,v=>Math.round(v*100)+'%');
+  sliderRow(mo._b,'Matter → shell',m,'coupling',0,1,.01,v=>Math.round(v*100)+'%');
+  sliderRow(mo._b,'Shell lag',m,'lag',0,1,.01,v=>(v*3.2).toFixed(1)+'s');
+  sliderRow(mo._b,'Shell rotation speed',m,'rotationSpeed',0,2.5,.01,v=>v<.005?'still':v.toFixed(2)+'×');
+  sliderRow(mo._b,'Static state length',m,'restSeconds',1,30,.1,v=>Number(v).toFixed(1)+'s');
+  sliderRow(mo._b,'State transition speed',m,'transitionSpeed',.25,2.5,.01,v=>v.toFixed(2)+'× · '+(5.2/v).toFixed(1)+'s');
+  main.appendChild(mo);
 }
 async function selectAbout(){
   if(state.dirty && !confirm('Discard unsaved changes?')) return;
@@ -562,7 +658,7 @@ async function selectAbout(){
   let doc=null;
   try{ const { data }=await sb.from('projects').select('data').eq('slug','about').maybeSingle(); if(data&&data.data)doc=data.data; }catch(e){}
   if(!doc){ try{ const r=await fetch('../content/about.json',{cache:'no-cache'}); if(r.ok)doc=await r.json(); }catch(e){} }
-  if(!doc) doc={code:'ABOUT',name:'About',kicker:'ABOUT',lede:'',sections:[],people:[],contact:{}};
+  if(!doc) doc={code:'ABOUT',name:'About',kicker:'MODE MODE — ABOUT',lede:'',body:'',meta:''};
   doc.code='ABOUT'; doc.name=doc.name||'About';
   state.slug='about'; state.doc=doc; state.dirty=false; histInit();
   document.querySelectorAll('.pitem').forEach(n=>n.classList.toggle('on',n.dataset.slug==='about'));
