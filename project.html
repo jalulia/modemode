@@ -33,26 +33,30 @@
   .corner.tl{top:18px;left:18px;border-right:0;border-bottom:0;} .corner.tr{top:18px;right:18px;border-left:0;border-bottom:0;}
   .corner.bl{bottom:18px;left:18px;border-right:0;border-top:0;} .corner.br{bottom:18px;right:18px;border-left:0;border-top:0;}
 
-  .stage{max-width:1720px;margin:0 auto;padding:0 54px;}
+  /* Anchored to the left with a hard content cap — on wide laptops/monitors
+     the page no longer stretches to fill the viewport. */
+  .stage{max-width:1280px;margin:0;padding:0 54px;}
   .page{display:grid;grid-template-columns:368px minmax(0,1fr);gap:60px;align-items:start;}
 
   /* ===================== LEFT RAIL — anchored, locked, ALWAYS fits (never scrolls) ===================== */
-  .rail{position:sticky;top:0;height:100vh;height:100dvh;overflow:visible;
-    display:flex;flex-direction:column;padding:96px 14px 22px 0;}
+  /* Rail is now a single scrollable column: wordmark → code + name →
+     ambient field → section nav → site index (mm-menu, inline). No
+     fixed-position overlays; the two navs stack in hierarchy. */
+  .rail{position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto;overflow-x:visible;
+    display:flex;flex-direction:column;padding:96px 14px 34px 0;scrollbar-width:thin;}
   /* one fixed logo lockup — identical viewport position on every page, never jumps */
-  .wordmark{position:fixed;top:30px;left:36px;width:94px;z-index:60;color:var(--ink);transition:opacity .15s;}
+  /* Wordmark is larger + doubles as the "back to homepage" affordance. The
+     separate back-chevron is gone. */
+  .wordmark{position:fixed;top:30px;left:36px;width:136px;z-index:60;color:var(--ink);transition:opacity .15s;cursor:pointer;}
   .wordmark:hover{opacity:.7;}
-  .mm-logo{display:block;width:94px;height:auto;}
-  .back{position:absolute;left:-38px;top:50%;transform:translateY(-50%);display:inline-flex;align-items:center;color:var(--grey-2);opacity:.7;transition:color .15s,opacity .15s;}
-  .back svg{display:block;}
-  .back:hover{color:var(--ink);opacity:1;}
+  .mm-logo{display:block;width:136px;height:auto;}
   .ident{flex:0 0 auto;position:relative;z-index:2;} .code-row{position:relative;display:inline-block;margin-bottom:14px;}
   .ident .code{font-size:11.5px;letter-spacing:.28em;color:var(--accent);}
   .ident .name{font-family:var(--disp);font-size:clamp(40px,4vw,58px);line-height:.86;letter-spacing:.004em;
     color:var(--accent);margin:0 0 18px;text-transform:uppercase;hyphens:none;}
 
   /* ambient project field — the homepage blob: large, borderless, animated + textured, bleeding behind the title (mock #2) */
-  .rail-top{position:relative;flex:3 1 auto;min-height:172px;display:flex;flex-direction:column;}
+  .rail-top{position:relative;flex:0 0 auto;min-height:172px;display:flex;flex-direction:column;}
   .field{position:fixed;top:0;left:0;width:46vw;height:100vh;z-index:0;overflow:hidden;pointer-events:none;}
   .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)));}
   #minimap{display:block;width:100%;height:100%;cursor:default;}
@@ -61,9 +65,10 @@
   .field-fade{position:absolute;left:-30px;right:-26px;bottom:-4px;height:42%;z-index:1;pointer-events:none;
     background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)) 90%);}
 
-  /* section nav — flex-distributed so any count fits without scroll; whole row hoverable */
-  .nav{flex:2 1 auto;min-height:0;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;background:var(--panel);overflow-y:auto;scrollbar-width:thin;}
-  .nav-item{flex:1 1 auto;min-height:31px;max-height:52px;display:flex;align-items:center;gap:14px;padding:4px 14px;
+  /* section nav — flows naturally in the rail column; if the whole rail is
+     taller than the viewport it scrolls as one column (single hierarchy). */
+  .nav{flex:0 0 auto;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;background:var(--panel);}
+  .nav-item{flex:0 0 auto;min-height:34px;display:flex;align-items:center;gap:14px;padding:6px 14px;
     border-bottom:1px solid var(--hair-2);font-size:13px;letter-spacing:.02em;transition:padding-left .16s ease,color .16s;}
   .nav-item .mk{width:8px;height:8px;border-radius:50%;border:1.4px solid var(--accent);flex:none;transition:background .16s;}
   .nav-item .lab{color:var(--accent);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -72,11 +77,8 @@
   .nav-item.muted .mk{border-color:var(--grey-2);} .nav-item.muted .lab{color:var(--grey-2);}
   .nav-item.active .mk{background:var(--accent);} .nav-item.active .lab{font-family:var(--disp);}
 
-  /* margin-bottom clears the bottom-left index menu pill (assets/mm-menu.js) */
-  .pager{flex:0 0 auto;display:flex;justify-content:space-between;gap:10px;padding-top:16px;margin-bottom:52px;
-    font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2);}
-  .pager a{color:var(--grey);transition:color .15s;} .pager a:hover{color:var(--accent);}
-  .pager .here{color:var(--accent);}
+  /* Previous / next project pager removed — navigation goes through the
+     always-open Index legend at the bottom-left (assets/mm-menu.js). */
 
   /* ===================== MAIN — masonry + full-width feature cards ===================== */
   .main{padding:78px 0 64px;}
@@ -252,7 +254,7 @@
     .stage{padding:0 36px;}
     .page{grid-template-columns:1fr;gap:8px;}
     .rail{position:static;height:auto;overflow:visible;padding:84px 0 8px;}
-    .back{position:static;transform:none;margin:0 0 12px;} .code-row{display:block;}
+    .code-row{display:block;}
     .nav-item{max-height:none;padding:14px 2px;}
     .rail-top{flex:0 0 auto;min-height:230px;} .field{top:-30px;left:-16px;right:-16px;}
     .main{padding:26px 0 48px;}
@@ -738,13 +740,9 @@ function render(p){
 
   /* LEFT RAIL */
   const rail=el('aside','rail');
-  const wm=el('a','wordmark',LOGO); wm.href='index.html'; wm.setAttribute('aria-label','MODE MODE — home'); rail.appendChild(wm);
+  const wm=el('a','wordmark',LOGO); wm.href='index.html'; wm.setAttribute('aria-label','MODE MODE — back to home'); rail.appendChild(wm);
   const ident=el('div','ident',`<div class="code-row"><span class="code">${esc(p.code||'')}</span></div><h1 class="name">${esc(p.name||'')}</h1>`);
-  const back=el('a','back','<svg viewBox="0 0 20 12" width="20" height="12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square" role="img" aria-label="Back to MODE MODE"><path d="M20 6 H0 M5.5 0.5 L0 6 L5.5 11.5"/></svg>');
-  // Back returns to a clean homepage — no project left locked/selected (the ?focus
-  // lock read as a bug: the field stayed pinned on the project you just left).
-  back.href = 'index.html';
-  ident.querySelector('.code-row').appendChild(back);
+  // Wordmark is the back-to-homepage affordance — separate back-chevron removed.
   const railTop=el('div','rail-top');
   railTop.appendChild(el('div','field','<canvas id="minimap"></canvas>'));
   railTop.appendChild(el('div','field-scrim'));
@@ -762,11 +760,8 @@ function render(p){
   // a mapped-but-empty subsection is hidden here (still shapes the blob / minimap).
   state.nodes.forEach(n=>{ if(n.label&&n.label.trim()&&hasContent(n)) navRow(n.id, n.label, true, false); });
   rail.appendChild(nav);
-  const pg=el('div','pager');
-  pg.innerHTML=`${p.prev?`<a href="project.html?p=${esc(p.prev)}">‹ ${esc(slugName(p.prev))}</a>`:'<span></span>'}`+
-    `<span class="here">${esc(p.code||'')}</span>`+
-    `${p.next?`<a href="project.html?p=${esc(p.next)}">${esc(slugName(p.next))} ›</a>`:'<span></span>'}`;
-  rail.appendChild(pg);
+  // Previous / next project pager removed — the always-open Index at the
+  // bottom-left is now the site nav.
   page.appendChild(rail);
 
   /* MAIN */
@@ -1260,6 +1255,15 @@ if(EDIT) document.addEventListener('keydown',e=>{ if(!(e.metaKey||e.ctrlKey))ret
 <script>(function(){ var q=new URLSearchParams(location.search);
   if(q.has('edit'))return;                       // editor canvas iframe: the edit tools own the bottom-left
   var slug=(q.get('p')||location.hash.replace(/^#/,'')||'nightmare-kart').trim();
-  window.MMMenu&&window.MMMenu.mount({current:slug}); })();</script>
+  // Wait for the rail to render, then mount the site index INSIDE it — the
+  // legend becomes the last block in the single hierarchical column
+  // (wordmark → title → ambient field → section nav → site index).
+  function waitForRail(cb, tries){ tries=tries==null?40:tries;
+    var r=document.querySelector('.rail'); if(r){ cb(r); return; }
+    if(tries<=0)return cb(null); setTimeout(function(){ waitForRail(cb,tries-1); },80); }
+  waitForRail(function(rail){
+    if(!window.MMMenu)return;
+    window.MMMenu.mount({current:slug, container:rail || undefined});
+  }); })();</script>
 </body>
 </html>

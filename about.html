@@ -34,14 +34,18 @@
   .home:hover{color:var(--ink);} .home svg{display:block;}
 
   .plate{position:fixed;inset:18px;border:1px solid var(--hair);display:grid;grid-template-columns:400px minmax(0,1fr);background:var(--paper);}
-  /* Notes column — kicker · lede · body · meta. Matt's authoring layout,
-     verbatim. Meta pins to the bottom of the column. */
-  .notes{border-right:1px solid var(--hair);padding:96px 36px 34px;display:flex;flex-direction:column;justify-content:flex-start;min-width:0;background:rgba(251,251,249,.97);z-index:3;overflow-y:auto;overscroll-behavior:contain;}
+  /* Notes column — kicker · lede · body · meta, then the site index at the
+     very bottom (single hierarchical column: local copy above, global nav
+     below). Matt's original type scale unchanged; meta pins to the bottom
+     of #copy so it sits directly above the index divider. */
+  .notes{border-right:1px solid var(--hair);padding:96px 36px 34px;display:flex;flex-direction:column;min-width:0;background:rgba(251,251,249,.97);z-index:3;overflow-y:auto;overscroll-behavior:contain;}
+  .notes #copy{display:flex;flex-direction:column;flex:1 0 auto;}
   .notes .kicker{font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);margin:0 0 26px;}
   .notes .lede{font-family:var(--disp);font-weight:700;font-size:clamp(28px,2.5vw,38px);line-height:1.07;letter-spacing:-.012em;max-width:14ch;margin:0 0 26px;}
   .notes .body{font-size:14px;line-height:1.66;max-width:40ch;}
   .notes .body p{margin:0 0 14px;} .notes .body p:last-child{margin:0;}
   .notes .meta{margin-top:auto;padding-top:24px;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);line-height:1.8;}
+  .notes #site-index{flex:0 0 auto;}
 
   .figure{position:relative;min-width:0;overflow:hidden;background:var(--ground);isolation:isolate;}
   .cvwrap{position:absolute;inset:0;}
@@ -73,7 +77,10 @@
     <svg viewBox="0 0 22 12" width="22" height="12" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="square"><path d="M2 6 H22 M16.5 0.5 L22 6 L16.5 11.5"/></svg>
   </a>
 <main class="plate">
-  <section class="notes" id="copy"></section>
+  <section class="notes">
+    <div id="copy"></div>
+    <div id="site-index"></div>
+  </section>
   <section class="figure" id="stage" aria-label="A morphing wireframe vessel with drifting matter fields inside">
     <div class="cvwrap"><canvas id="cv"></canvas><svg class="shell-svg" id="shellSvg" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg><div class="glfail" id="glfail">This figure requires WebGL 2.</div></div>
   </section>
@@ -159,6 +166,11 @@
   let data=config.disciplines;
   const M = window.MMA || null;
 
+  /* ── inline edit (the editor's Canvas tab): gated behind ?edit, exactly like
+     project.html — edAttr()/data-edit produce nothing unless ?edit, so the
+     live view renders byte-identically. ── */
+  const EDIT = /(?:^|[?&])edit(?:=|&|$)/.test(location.search);
+
   /* Copy loader — matches the site's project pages: prefer a Supabase-authored
      doc (row slug='about'), then a bundled JSON, then a minimal inline default.
      Renders kicker · lede · sections[] · studio (people) · contact into the
@@ -178,12 +190,19 @@
   const escHTML=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   const paras=t=>String(t||'').split(/\x0a{2,}/).map(p=>`<p>${escHTML(p).replace(/\x0a/g,'<br>')}</p>`).join('');
   const lines=t=>String(t||'').split(/\x0a+/).map(l=>escHTML(l)).join('<br>');
+  // data-edit path is only ever added when EDIT — the public page's markup
+  // (and its innerHTML) stays byte-identical to before.
   function renderCopy(a){
     const host=document.getElementById('copy'); if(!host) return;
-    const kicker=a.kicker?`<div class="kicker">${escHTML(a.kicker)}</div>`:'';
-    const lede=a.lede?`<h1 class="lede">${escHTML(a.lede)}</h1>`:'';
-    const body=a.body?`<div class="body">${paras(a.body)}</div>`:'';
-    const meta=a.meta?`<div class="meta">${lines(a.meta)}</div>`:'';
+    a=a||{};
+    const ea=p=>EDIT?` data-edit="${p}"`:'';
+    // In EDIT mode every field renders (even empty) so an empty kicker/lede/
+    // meta is still there to click into; the public page keeps its original
+    // "only render if real" behavior untouched.
+    const kicker=(EDIT||a.kicker)?`<div class="kicker"${ea('kicker')}>${escHTML(a.kicker||'')}</div>`:'';
+    const lede=(EDIT||a.lede)?`<h1 class="lede"${ea('lede')}>${escHTML(a.lede||'')}</h1>`:'';
+    const body=(EDIT||a.body)?`<div class="body"${ea('body')}>${paras(a.body||'')}</div>`:'';
+    const meta=(EDIT||a.meta)?`<div class="meta"${ea('meta')}>${lines(a.meta||'')}</div>`:'';
     host.innerHTML=kicker+lede+body+meta;
   }
   async function loadAboutDoc(){
@@ -198,11 +217,26 @@
   // Paint the default copy immediately so nothing flashes empty, then swap.
   renderCopy(DEFAULT_COPY);
   let pendingFigure=null;
-  loadAboutDoc().then(doc=>{
+  /* ── canvas doc state (edit only) — mirrors project.html's DOC/postDoc. ── */
+  let DOC=null,_postT=null,_gotDoc=false;
+  function postDoc(){ clearTimeout(_postT); _postT=setTimeout(()=>{ try{ parent.postMessage({type:'mm-edit-doc',doc:DOC},'*'); }catch(e){} },200); }
+  function renderDoc(doc){
+    DOC=doc;
     renderCopy(doc);
-    if(doc && doc.figure) pendingFigure=doc.figure;
+    pendingFigure=(doc&&doc.figure)||null;
     applyFigureConfig();
-  }).catch(()=>{});
+    if(EDIT){ enableInlineEdit(); mountTunePanel(); refreshTunePanel(); }
+  }
+  if(EDIT){
+    // Same pattern as project.html: announce readiness, let the parent editor
+    // push its (possibly unsaved) state.doc via mm-edit-load, and only fall
+    // back to loading straight from Supabase/JSON if the parent never answers
+    // (e.g. the page opened directly with ?edit, outside the CMS).
+    try{ parent.postMessage({type:'mm-edit-ready',slug:'about'},'*'); }catch(_){}
+    setTimeout(()=>{ if(!_gotDoc){ loadAboutDoc().then(doc=>{ if(!_gotDoc){ _gotDoc=true; renderDoc(doc); } }).catch(()=>{}); } },700);
+  } else {
+    loadAboutDoc().then(doc=>renderDoc(doc)).catch(()=>{});
+  }
 
   let focus=-1,focusTarget=-1; // discipline focus retained for the shader; no legend renders now
   function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -786,6 +820,141 @@
     colorDirty=true;
   }
 
+  /* ── edit-mode chrome (canvas only) ───────────────────────────────────────
+     Inline contentEditable on the notes-column copy, plus Matt's Tune panel
+     (palette / states / motion) reintroduced behind ?edit so the editor's
+     Canvas tab can drive the same figure config the Form tab's sliders write
+     to data.figure. Every control here writes into DOC (the doc handed down
+     by mm-edit-load / loadAboutDoc) and calls postDoc() — same contract as
+     project.html's inline edit + page builder. */
+  function ensureEditStyle(){
+    if(document.getElementById('mm-ed-style'))return;
+    const st=document.createElement('style'); st.id='mm-ed-style';
+    st.textContent=
+       '.mm-ed{outline:1px dashed transparent;outline-offset:3px;border-radius:2px;transition:outline-color .12s,background .12s;cursor:text;}'
+      +'.mm-ed:hover{outline-color:rgba(196,0,33,.4);}'
+      +'.mm-ed:focus{outline:1px solid var(--accent,#c40021);background:rgba(196,0,33,.05);}'
+      +'#mm-tune-toggle{position:fixed;right:12px;bottom:8px;z-index:200;font:10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--grey);background:var(--paper);border:1px solid var(--hair);border-radius:6px;padding:8px 12px;cursor:pointer;box-shadow:0 3px 12px rgba(18,16,12,.18);}'
+      +'#mm-tune-toggle:hover{color:var(--ink);}'
+      +'#mm-tune-toggle.on{color:var(--accent);border-color:rgba(196,0,33,.4);}'
+      +'.mm-tune-panel{position:fixed;right:12px;bottom:44px;z-index:199;width:296px;max-height:66vh;overflow-y:auto;background:rgba(251,251,249,.98);border:1px solid var(--hair);border-radius:8px;box-shadow:0 12px 32px rgba(18,16,12,.24);padding:14px;font-size:11px;color:var(--ink);display:none;}'
+      +'.mm-tune-panel.open{display:block;}'
+      +'.mm-tune-sec{margin:0 0 16px;}'
+      +'.mm-tune-sec:last-child{margin-bottom:0;}'
+      +'.mm-tune-sec h4{margin:0 0 8px;font:9.5px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--grey);}'
+      +'.mm-tune-row{display:flex;align-items:center;gap:6px;margin-bottom:6px;}'
+      +'.mm-tune-row input[type=text]{flex:1;min-width:0;font:inherit;border:1px solid var(--hair);border-radius:4px;padding:3px 6px;background:var(--paper);color:var(--ink);}'
+      +'.mm-tune-row input[type=color]{width:22px;height:22px;padding:0;border:1px solid var(--hair);border-radius:4px;background:none;cursor:pointer;}'
+      +'.mm-tune-grad{display:block;width:34px;height:14px;border-radius:3px;border:1px solid var(--hair);flex:0 0 auto;}'
+      +'.mm-tune-state{border-top:1px solid var(--hair-2);padding-top:8px;margin-top:8px;}'
+      +'.mm-tune-state:first-of-type{border-top:0;padding-top:0;margin-top:0;}'
+      +'.mm-tune-sname{display:flex;align-items:center;gap:6px;margin-bottom:4px;}'
+      +'.mm-tune-sname b{font:9px/1 ui-monospace,monospace;letter-spacing:.1em;color:var(--grey-2);white-space:nowrap;}'
+      +'.mm-tune-sname input{flex:1;min-width:0;font:inherit;border:1px solid var(--hair);border-radius:4px;padding:2px 5px;background:var(--paper);color:var(--ink);}'
+      +'.mm-tune-slider{margin-bottom:6px;}'
+      +'.mm-tune-slider .mm-tl{display:flex;justify-content:space-between;font-size:10px;color:var(--grey);margin-bottom:2px;}'
+      +'.mm-tune-slider input[type=range]{width:100%;}';
+    document.head.appendChild(st);
+  }
+  function enableInlineEdit(){
+    ensureEditStyle();
+    document.querySelectorAll('#copy [data-edit]').forEach(node=>{
+      if(node._mmEd)return; node._mmEd=true;
+      node.setAttribute('contenteditable','true'); node.classList.add('mm-ed'); node.spellcheck=false;
+      const path=node.getAttribute('data-edit');
+      const multiline=(path==='body'||path==='meta');
+      node.addEventListener('input',()=>{
+        const val=multiline
+          ? node.innerText.replace(/ /g,' ').replace(/\n{3,}/g,'\n\n').replace(/[ \t]+\n/g,'\n').trim()
+          : node.textContent.replace(/\s+/g,' ').trim();
+        if(!DOC)return; DOC[path]=val; postDoc();
+      });
+      node.addEventListener('keydown',e=>{ if(!multiline&&e.key==='Enter'){ e.preventDefault(); node.blur(); } });
+      node.addEventListener('paste',e=>{ e.preventDefault(); const t=((e.clipboardData||window.clipboardData).getData('text')||''); document.execCommand('insertText',false,t); });
+    });
+  }
+  // ensureFigureDoc() normalizes + backfills DOC.figure in place — same intent
+  // as the editor's ensureFigure(), reusing this file's own normalizeConfig().
+  // Only called from a tune*() write, so opening the panel never marks the
+  // doc dirty on its own — currentFigureView() is the non-mutating read used
+  // to populate the panel's initial slider positions.
+  function ensureFigureDoc(){ if(!DOC)return null; DOC.figure=normalizeConfig(DOC.figure||{}); return DOC.figure; }
+  function currentFigureView(){ return normalizeConfig((DOC&&DOC.figure)||{}); }
+  function tuneDiscipline(i,key,val){ const fig=ensureFigureDoc(); if(!fig)return; fig.disciplines[i][key]=val; pendingFigure=fig; applyFigureConfig(); postDoc(); }
+  function tuneState(i,key,val){ const fig=ensureFigureDoc(); if(!fig)return; fig.states[i][key]=val; pendingFigure=fig; applyFigureConfig(); postDoc(); }
+  function tuneMotion(key,val){ const fig=ensureFigureDoc(); if(!fig)return; fig.motion[key]=val; pendingFigure=fig; applyFigureConfig(); postDoc(); }
+  function tuneSlider(container,label,val,min,max,step,onChange,fmt){
+    const row=document.createElement('div'); row.className='mm-tune-slider';
+    const top=document.createElement('div'); top.className='mm-tl';
+    const l=document.createElement('span'); l.textContent=label;
+    const out=document.createElement('span'); out.textContent=fmt(val);
+    top.appendChild(l); top.appendChild(out); row.appendChild(top);
+    const inp=document.createElement('input'); inp.type='range'; inp.min=String(min); inp.max=String(max); inp.step=String(step); inp.value=String(val);
+    inp.oninput=()=>{ const v=+inp.value; out.textContent=fmt(v); onChange(v); };
+    row.appendChild(inp); container.appendChild(row); return row;
+  }
+  function mountTunePanel(){
+    if(document.getElementById('mm-tune-panel'))return;
+    ensureEditStyle();
+    const panel=document.createElement('div'); panel.id='mm-tune-panel'; panel.className='mm-tune-panel'; panel.setAttribute('contenteditable','false');
+    document.body.appendChild(panel);
+    const tb=document.createElement('button'); tb.id='mm-tune-toggle'; tb.type='button'; tb.textContent='Tune ▴';
+    tb.setAttribute('contenteditable','false');
+    tb.onclick=()=>{ const open=panel.classList.toggle('open'); tb.classList.toggle('on',open); tb.textContent=open?'Tune ▾':'Tune ▴'; };
+    document.body.appendChild(tb);
+  }
+  function refreshTunePanel(){
+    const panel=document.getElementById('mm-tune-panel'); if(!panel)return;
+    const fig=currentFigureView();
+    panel.innerHTML='';
+
+    const pal=document.createElement('div'); pal.className='mm-tune-sec';
+    pal.appendChild(Object.assign(document.createElement('h4'),{textContent:'Palette'}));
+    fig.disciplines.forEach((d,i)=>{
+      const row=document.createElement('div'); row.className='mm-tune-row';
+      const nm=document.createElement('input'); nm.type='text'; nm.value=d.label; nm.maxLength=28;
+      nm.oninput=()=>tuneDiscipline(i,'label',nm.value.trim()||DEFAULT_CONFIG.disciplines[i].label);
+      const grad=document.createElement('span'); grad.className='mm-tune-grad'; grad.style.background=`linear-gradient(90deg,${d.edge},${d.core})`;
+      const edge=document.createElement('input'); edge.type='color'; edge.value=d.edge.toLowerCase();
+      const core=document.createElement('input'); core.type='color'; core.value=d.core.toLowerCase();
+      edge.oninput=()=>{ tuneDiscipline(i,'edge',edge.value.toUpperCase()); grad.style.background=`linear-gradient(90deg,${edge.value},${core.value})`; };
+      core.oninput=()=>{ tuneDiscipline(i,'core',core.value.toUpperCase()); grad.style.background=`linear-gradient(90deg,${edge.value},${core.value})`; };
+      row.appendChild(nm); row.appendChild(edge); row.appendChild(core); row.appendChild(grad);
+      pal.appendChild(row);
+    });
+    panel.appendChild(pal);
+
+    const stSec=document.createElement('div'); stSec.className='mm-tune-sec';
+    stSec.appendChild(Object.assign(document.createElement('h4'),{textContent:'States'}));
+    fig.states.forEach((s,i)=>{
+      const card=document.createElement('div'); card.className='mm-tune-state';
+      const head=document.createElement('div'); head.className='mm-tune-sname';
+      const tag=document.createElement('b'); tag.textContent='0'+(i+1);
+      const nm=document.createElement('input'); nm.type='text'; nm.value=s.label; nm.maxLength=20;
+      nm.oninput=()=>tuneState(i,'label',nm.value.trim()||DEFAULT_CONFIG.states[i].label);
+      head.appendChild(tag); head.appendChild(nm); card.appendChild(head);
+      tuneSlider(card,'Bodies',s.count,4,16,1,v=>tuneState(i,'count',Math.round(v)),v=>String(Math.round(v)));
+      tuneSlider(card,'Mean radius',s.meanSize,.045,.145,.001,v=>tuneState(i,'meanSize',v),v=>Number(v).toFixed(3));
+      tuneSlider(card,'Size spread',s.sizeRange,0,1,.01,v=>tuneState(i,'sizeRange',v),v=>Math.round(v*100)+'%');
+      stSec.appendChild(card);
+    });
+    panel.appendChild(stSec);
+
+    const mo=document.createElement('div'); mo.className='mm-tune-sec';
+    mo.appendChild(Object.assign(document.createElement('h4'),{textContent:'Motion'}));
+    const m=fig.motion;
+    tuneSlider(mo,'Cloudiness',m.cloud,0,1,.01,v=>tuneMotion('cloud',v),v=>Math.round(v*100)+'%');
+    tuneSlider(mo,'Softness',m.softness,0,1,.01,v=>tuneMotion('softness',v),v=>Math.round(v*100)+'%');
+    tuneSlider(mo,'Drift',m.drift,0,1,.01,v=>tuneMotion('drift',v),v=>Math.round(v*100)+'%');
+    tuneSlider(mo,'Cluster spread',m.spread,0,1.8,.01,v=>tuneMotion('spread',v),v=>Math.round(v*100)+'%');
+    tuneSlider(mo,'Matter → shell',m.coupling,0,1,.01,v=>tuneMotion('coupling',v),v=>Math.round(v*100)+'%');
+    tuneSlider(mo,'Shell lag',m.lag,0,1,.01,v=>tuneMotion('lag',v),v=>(v*3.2).toFixed(1)+'s');
+    tuneSlider(mo,'Rotation speed',m.rotationSpeed,0,2.5,.01,v=>tuneMotion('rotationSpeed',v),v=>v<.005?'still':v.toFixed(2)+'×');
+    tuneSlider(mo,'State length',m.restSeconds,1,30,.1,v=>tuneMotion('restSeconds',v),v=>Number(v).toFixed(1)+'s');
+    tuneSlider(mo,'Transition speed',m.transitionSpeed,.25,2.5,.01,v=>tuneMotion('transitionSpeed',v),v=>v.toFixed(2)+'×');
+    panel.appendChild(mo);
+  }
+
   let initial=Math.max(0,Math.min(NAMES.length-1,Number(params.get('form'))||0));
   let a=initial,b=initial,morph=0,transitioning=false,tStart=0,lastRest=performance.now(),manualUntil=0;
   const forcedStill=params.get('still')==='1';
@@ -810,6 +979,9 @@
   canvas.addEventListener('pointerup',e=>{if(!drag)return;drag=false;canvas.classList.remove('dragging');try{canvas.releasePointerCapture(e.pointerId);}catch(_){}if(moved<7)go((transitioning?b:a)+1,true);});
   canvas.addEventListener('pointercancel',()=>{drag=false;canvas.classList.remove('dragging');});
   addEventListener('keydown',e=>{
+    // Edit mode adds real form controls (Tune panel sliders, contentEditable
+    // copy) — arrow keys there must not also advance the vessel state.
+    const t=e.target; if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable))return;
     if(e.key==='ArrowRight'){go((transitioning?b:a)+1,true);e.preventDefault();}
     if(e.key==='ArrowLeft'){go((transitioning?b:a)-1,true);e.preventDefault();}
   });
@@ -849,10 +1021,18 @@
     gl.bindVertexArray(null);
     renderVectorShell(drawYaw,drawPitch,drawRoll);
   }
+  // Parent editor push: it drives the canvas the same way it drives
+  // project.html — mm-edit-load carries state.doc (including any unsaved
+  // Form/Raw-JSON edits) whenever it's ready or the doc changes underneath.
+  window.addEventListener('message',ev=>{
+    const m=ev&&ev.data; if(!m||typeof m!=='object')return;
+    if(m.type==='mm-edit-load'&&m.doc){ _gotDoc=true; renderDoc(m.doc); }
+  });
+
   updateUI();requestAnimationFrame(frame);
 })();
 </script>
 <script src="assets/mm-menu.js"></script>
-<script>window.MMMenu&&window.MMMenu.mount({current:'about'});</script>
+<script>if(!/(?:^|[?&])edit(?:=|&|$)/.test(location.search)) window.MMMenu&&window.MMMenu.mount({current:'about', container:'#site-index'});</script>
 </body>
 </html>

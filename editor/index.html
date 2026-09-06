@@ -672,8 +672,12 @@ function renderRaw(main){
   const msg=el('div','hint','Edit the document directly. It is validated as JSON on save.'); b.appendChild(msg);
   wrap.appendChild(b); main.appendChild(wrap);
 }
-function openCanvas(){ const f=$('cvframe'); if(!f||!state.slug||state.slug==='about') return; f.src='../project.html?p='+encodeURIComponent(state.slug)+'&edit&t='+Date.now(); }
-function applyMode(){ if(state.slug==='about' && state.mode==='canvas') state.mode='form';   // About has no field-canvas view
+function openCanvas(){ const f=$('cvframe'); if(!f||!state.slug) return;
+  f.src = state.slug==='about'
+    ? '../about.html?edit&t='+Date.now()
+    : '../project.html?p='+encodeURIComponent(state.slug)+'&edit&t='+Date.now();
+}
+function applyMode(){
   const m=state.mode;
   $('mCanvas').classList.toggle('on',m==='canvas'); $('mForm').classList.toggle('on',m==='form'); $('mRaw').classList.toggle('on',m==='raw');
   $('canvaswrap').classList.toggle('hidden',m!=='canvas'); $('main').classList.toggle('hidden',m==='canvas');
