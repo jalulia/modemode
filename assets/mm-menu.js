@@ -30,13 +30,15 @@
      the site reads as one system. */
   function style(){ if(document.getElementById('mmm-style'))return; const st=document.createElement('style'); st.id='mmm-style';
     st.textContent=
-     '#mm-legend{display:flex;flex-direction:column;gap:1px;font-family:var(--text,ui-monospace,monospace);}'
+     /* Index sits on a solid panel so ambient blobs behind the rail don't
+        bleed through the project links (Matt, 2026-09-07). */
+     '#mm-legend{display:flex;flex-direction:column;gap:1px;font-family:var(--text,ui-monospace,monospace);background:var(--panel,#FBFBF9);border:1px solid var(--hair,rgba(18,16,12,.17));border-radius:5px;padding:12px 12px 10px;position:relative;z-index:2;}'
     +'#mm-legend.floating{position:fixed;left:36px;bottom:34px;z-index:60;}'
-    +'#mm-legend.inline{margin-top:22px;padding-top:18px;border-top:1px solid var(--hair,rgba(18,16,12,.17));}'
+    +'#mm-legend.inline{margin-top:22px;}'
     +'#mm-legend .lg-h{font-size:9.5px;letter-spacing:.2em;color:var(--grey-2,#B6B5AD);margin-bottom:8px;text-transform:uppercase;}'
-    +'#mm-legend .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;color:var(--ink,#15140F);text-decoration:none;transition:.2s;}'
-    +'#mm-legend .lg-row:hover{background:var(--panel,#FBFBF9);border-color:var(--hair,rgba(18,16,12,.17));}'
-    +'#mm-legend .lg-row.cur{background:var(--panel,#FBFBF9);border-color:var(--hair,rgba(18,16,12,.17));cursor:default;}'
+    +'#mm-legend .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;color:var(--ink,#15140F);text-decoration:none;transition:.2s;border-radius:3px;}'
+    +'#mm-legend .lg-row:hover{background:var(--ground,#F3F3F0);border-color:var(--hair,rgba(18,16,12,.17));}'
+    +'#mm-legend .lg-row.cur{background:var(--ground,#F3F3F0);border-color:var(--hair,rgba(18,16,12,.17));cursor:default;}'
     +'#mm-legend .lg-dot{width:9px;height:9px;border-radius:50%;flex:none;}'
     +'#mm-legend .lg-code{font-size:9.5px;letter-spacing:.1em;color:var(--grey,#7E7D75);width:30px;flex:none;}'
     +'#mm-legend .lg-name{font-size:10.5px;}'
@@ -58,13 +60,13 @@
         +'<span class="lg-dot" style="background:'+rgb(p.core)+'"></span>'
         +'<span class="lg-code">'+esc(p.code||'')+'</span>'
         +'<span class="lg-name">'+esc(p.name||'')+'</span></'+tag+'>'; }).join('');
+    // Field map link removed — the MODE MODE wordmark at the top of the rail
+    // already goes home (Julia, 2026-09-07). About arrow dropped too, to
+    // consolidate vertical space so long classification lists fit.
     const about = current==='about'
-      ? '<div class="lg-alt cur"><span>About the studio</span><span class="ar">→</span></div>'
-      : '<a class="lg-alt" href="about.html"><span>About the studio</span><span class="ar">→</span></a>';
-    const field = current==='home'
-      ? ''  // homepage is field map — no self-link
-      : '<a class="lg-alt back" href="index.html"><span class="ar">←</span><span>Field map</span></a>';
-    root.innerHTML='<div class="lg-h">Index / '+String(list.length).padStart(2,'0')+'</div>'+rows+about+field;
+      ? '<div class="lg-alt cur"><span>About the studio</span></div>'
+      : '<a class="lg-alt" href="about.html"><span>About the studio</span></a>';
+    root.innerHTML='<div class="lg-h">Index / '+String(list.length).padStart(2,'0')+'</div>'+rows+about;
   }
   function build(container){ if(root)return; style();
     root=document.createElement('nav'); root.id='mm-legend';

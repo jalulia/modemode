@@ -136,7 +136,11 @@
   #axisH{left:0;width:100%;height:7px;transform:translateY(-50%);background:repeating-linear-gradient(90deg,var(--grey-2) 0 1px,transparent 1px 13px);}
   #axisV{top:0;height:100%;width:7px;transform:translateX(-50%);background:repeating-linear-gradient(0deg,var(--grey-2) 0 1px,transparent 1px 13px);}
   body.darkbg #axisH,body.darkbg #axisV{opacity:.32;}
-  .legend{position:absolute;left:36px;bottom:34px;display:flex;flex-direction:column;gap:1px;z-index:6;}
+  /* Legend on solid panel so ambient blobs don't bleed through the project
+     links (Matt, 2026-09-07). Rounded card matches the project page's index. */
+  .legend{position:absolute;left:36px;bottom:34px;display:flex;flex-direction:column;gap:1px;z-index:6;
+    background:var(--panel);border:1px solid var(--hair);border-radius:5px;padding:12px 12px 10px;}
+  body.darkbg .legend{background:#131318;border-color:#2C2C32;}
   .legend .lg-h{font-size:9.5px;letter-spacing:.2em;color:var(--grey-2);margin-bottom:8px;}
   .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;transition:.2s;}
   .lg-row:hover,.lg-row.active{background:var(--panel);border-color:var(--hair);}
@@ -788,7 +792,7 @@ function buildLegend(){ const vis=projects.filter(p=>p.code!=='P-07'); legendEl.
     row.onclick=()=>{ if(PAGES[p.code]) location.href='project.html?p='+encodeURIComponent(PAGES[p.code]); };
     legendEl.appendChild(row);});
   const ab=document.createElement('a'); ab.className='lg-about'; ab.href='about.html';
-  ab.innerHTML='<span>About the studio</span><span class="ar">→</span>';
+  ab.innerHTML='<span>About the studio</span>';
   legendEl.appendChild(ab); }
 function syncLegend(){const fi=lock||hover;legendEl.querySelectorAll('.lg-row').forEach(r=>{r.classList.toggle('active',r.dataset.id===fi);r.classList.toggle('dim',fi&&r.dataset.id!==fi);});}
 function updateReadout(){const fi=lock||hover;const pv=document.getElementById('hoverPreview');
