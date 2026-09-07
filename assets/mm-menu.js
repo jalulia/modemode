@@ -40,12 +40,13 @@
     +'#mm-legend .lg-dot{width:9px;height:9px;border-radius:50%;flex:none;}'
     +'#mm-legend .lg-code{font-size:9.5px;letter-spacing:.1em;color:var(--grey,#7E7D75);width:30px;flex:none;}'
     +'#mm-legend .lg-name{font-size:10.5px;}'
-    +'#mm-legend .lg-alt{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:9px;padding:9px 8px 2px 4px;border-top:1px solid var(--hair-2,rgba(18,16,12,.08));font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey,#7E7D75);cursor:pointer;text-decoration:none;transition:color .2s;}'
-    +'#mm-legend .lg-alt:hover{color:var(--ink,#15140F);}'
-    +'#mm-legend .lg-alt.cur{color:var(--accent,#C40021);cursor:default;}'
+    /* About / Field map read as continuations of the index — no top border,
+       no gap, same row rhythm as the project rows above. */
+    +'#mm-legend .lg-alt{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:0;padding:4px 8px 4px 4px;border:1px solid transparent;font-size:10.5px;letter-spacing:.02em;color:var(--grey,#7E7D75);cursor:pointer;text-decoration:none;transition:color .2s,background .2s;text-transform:none;}'
+    +'#mm-legend .lg-alt:hover{color:var(--ink,#15140F);background:var(--panel,#FBFBF9);border-color:var(--hair,rgba(18,16,12,.17));}'
+    +'#mm-legend .lg-alt.cur{color:var(--accent,#C40021);cursor:default;background:var(--panel,#FBFBF9);border-color:var(--hair,rgba(18,16,12,.17));}'
     +'#mm-legend .lg-alt .ar{color:var(--accent,#C40021);transition:transform .2s;}'
     +'#mm-legend .lg-alt:hover .ar{transform:translateX(3px);}'
-    +'#mm-legend .lg-alt.back{margin-top:0;border-top:0;padding-top:2px;}'
     +'#mm-legend .lg-alt.back:hover .ar{transform:translateX(-3px);}';
     document.head.appendChild(st); }
 

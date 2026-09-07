@@ -21,9 +21,9 @@
   .corner.tr{top:18px;right:18px;border-left:0;border-bottom:0;}
   .corner.bl{bottom:18px;left:18px;border-right:0;border-top:0;}
   .corner.br{bottom:18px;right:18px;border-left:0;border-top:0;}
-  .wordmark{position:fixed;top:30px;left:36px;user-select:none;z-index:60;color:var(--ink);transition:opacity .15s;}
+  .wordmark{position:fixed;top:var(--wm-top,30px);left:var(--wm-left,36px);user-select:none;z-index:60;color:var(--ink);transition:opacity .15s;}
   .wordmark:hover{opacity:.7;}
-  .wordmark .mm-logo{display:block;width:94px;height:auto;}
+  .wordmark .mm-logo{display:block;width:var(--wm-w,94px);height:auto;}
   .topctrls{position:absolute;top:30px;right:36px;z-index:30;display:flex;align-items:center;gap:9px;}
   body:not(.studio) .topctrls{display:none;}   /* studio chrome (EDIT/PRESENT + light-dark) hidden from the public; reveal with ?studio */
   .modeToggle{display:flex;border:1px solid var(--hair);background:var(--panel);}
@@ -141,12 +141,13 @@
   .lg-row{display:flex;align-items:center;gap:9px;padding:4px 8px 4px 4px;cursor:pointer;border:1px solid transparent;transition:.2s;}
   .lg-row:hover,.lg-row.active{background:var(--panel);border-color:var(--hair);}
   .lg-row.dim{opacity:.4;}
-  /* About — sits below the index, deliberately unlike a project row: no colour dot, a
-     hairline above, an arrow. It's a page, not a node on the field. */
-  .lg-about{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:9px;padding:9px 8px 2px 4px;
-    border-top:1px solid var(--hair-2);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey);cursor:pointer;transition:color .2s;}
-  .lg-about:hover{color:var(--ink);} .lg-about .ar{color:var(--accent);transition:transform .2s;} .lg-about:hover .ar{transform:translateX(3px);}
-  body.darkbg .lg-about{color:#8A8A84;border-color:#26262C;} body.darkbg .lg-about:hover{color:#EDEDE8;}
+  /* About — a continuation of the index (no separator), same row rhythm as
+     the project rows above. Still an alt (no colour dot, has an arrow). */
+  .lg-about{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:0;padding:4px 8px 4px 4px;
+    border:1px solid transparent;font-size:10.5px;letter-spacing:.02em;color:var(--grey);cursor:pointer;text-decoration:none;transition:color .2s,background .2s;text-transform:none;}
+  .lg-about:hover{color:var(--ink);background:var(--panel);border-color:var(--hair);}
+  .lg-about .ar{color:var(--accent);transition:transform .2s;} .lg-about:hover .ar{transform:translateX(3px);}
+  body.darkbg .lg-about{color:#8A8A84;} body.darkbg .lg-about:hover{color:#EDEDE8;background:#15151A;border-color:#333;}
   .lg-dot{width:9px;height:9px;border-radius:50%;flex:none;}
   .lg-code{font-size:9.5px;letter-spacing:.1em;color:var(--grey);width:30px;flex:none;}
   .lg-name{font-size:10.5px;}
@@ -398,7 +399,20 @@ function layout(){
   heightBuf=new Float32Array(lowW*lowH);
   if(!pl.canvas){pl.canvas=document.createElement('canvas');pl.ctx=pl.canvas.getContext('2d',{willReadFrequently:true});}  // read back every animated frame -> CPU-backed is faster for getImageData
   pl.canvas.width=cssW; pl.canvas.height=cssH;
-  ensureFx(); applyBg(); positionAxes(); dirty=true; lastField=0; sceneDirty=true; fxChanged=true;
+  ensureFx(); applyBg(); positionAxes(); sizeWordmark(); dirty=true; lastField=0; sceneDirty=true; fxChanged=true;
+}
+/* wordmark sized to the dot lattice: 2 grid squares tall, snapped to a dot column/row.
+   grid: spacing s = max(40, mfd/12); dots at (cx + k*s, cy + k*s), same formula as drawLattice. */
+function sizeWordmark(){
+  const wm=document.querySelector('.wordmark'); if(!wm||!mfd) return;
+  const s=Math.max(40,mfd/12), cx=fL+fW/2, cy=fT+fH/2;
+  const AR=676.58/266.78;                                 // MODE MODE SVG viewBox aspect
+  const h=2*s, w=h*AR;                                    // height = 2 grid squares
+  const MINX=Math.max(24,cssW*0.018), MINY=Math.max(20,cssH*0.028);
+  const kx=Math.ceil((MINX-cx)/s), ky=Math.ceil((MINY-cy)/s);
+  const left=cx+kx*s, top=cy+ky*s;
+  const R=document.documentElement.style;
+  R.setProperty('--wm-w',w+'px'); R.setProperty('--wm-left',left+'px'); R.setProperty('--wm-top',top+'px');
 }
 function d2p(x,y){return [fL+(x+1)/2*fW,(fT+fH)-(y+1)/2*fH];}
 function p2d(px,py){return [clamp((px-fL)/fW*2-1,-1,1),clamp(((fT+fH)-py)/fH*2-1,-1,1)];}

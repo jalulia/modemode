@@ -42,21 +42,22 @@
   /* Rail is now a single scrollable column: wordmark → code + name →
      ambient field → section nav → site index (mm-menu, inline). No
      fixed-position overlays; the two navs stack in hierarchy. */
-  .rail{position:sticky;top:0;height:100vh;height:100dvh;overflow-y:auto;overflow-x:visible;
-    display:flex;flex-direction:column;padding:96px 14px 34px 0;scrollbar-width:thin;}
-  /* one fixed logo lockup — identical viewport position on every page, never jumps */
-  /* Wordmark is larger + doubles as the "back to homepage" affordance. The
-     separate back-chevron is gone. */
-  .wordmark{position:fixed;top:30px;left:36px;width:136px;z-index:60;color:var(--ink);transition:opacity .15s;cursor:pointer;}
+  .rail{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;
+    display:flex;flex-direction:column;padding:140px 14px 34px 0;}
+  /* one fixed logo lockup — identical viewport position on every page, never jumps.
+     Left column pinned to stage inset (54px), so wordmark + rail content + main
+     copy all share the SAME left edge — nothing floats out of column. */
+  .wordmark{position:fixed;top:30px;left:54px;width:136px;z-index:60;color:var(--ink);transition:opacity .15s;cursor:pointer;}
   .wordmark:hover{opacity:.7;}
   .mm-logo{display:block;width:136px;height:auto;}
   .ident{flex:0 0 auto;position:relative;z-index:2;} .code-row{position:relative;display:inline-block;margin-bottom:14px;}
   .ident .code{font-size:11.5px;letter-spacing:.28em;color:var(--accent);}
-  .ident .name{font-family:var(--disp);font-size:clamp(40px,4vw,58px);line-height:.86;letter-spacing:.004em;
-    color:var(--accent);margin:0 0 18px;text-transform:uppercase;hyphens:none;}
+  /* project name suppressed in the rail — long titles (EYEKNOW MANOR) broke the
+     column height; the NDEX list at the bottom flags the current project instead. */
+  .ident .name{display:none;}
 
   /* ambient project field — the homepage blob: large, borderless, animated + textured, bleeding behind the title (mock #2) */
-  .rail-top{position:relative;flex:0 0 auto;min-height:172px;display:flex;flex-direction:column;}
+  .rail-top{position:relative;flex:0 0 auto;min-height:60px;display:flex;flex-direction:column;}
   .field{position:fixed;top:0;left:0;width:46vw;height:100vh;z-index:0;overflow:hidden;pointer-events:none;}
   .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)));}
   #minimap{display:block;width:100%;height:100%;cursor:default;}
@@ -67,7 +68,10 @@
 
   /* section nav — flows naturally in the rail column; if the whole rail is
      taller than the viewport it scrolls as one column (single hierarchy). */
-  .nav{flex:0 0 auto;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;background:var(--panel);}
+  /* nav absorbs any leftover column height and hides its own overflow — the
+     Index below always stays visible; long classification lists clip cleanly. */
+  .nav{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;background:var(--panel);}
+  .nav::-webkit-scrollbar{display:none;}
   .nav-item{flex:0 0 auto;min-height:34px;display:flex;align-items:center;gap:14px;padding:6px 14px;
     border-bottom:1px solid var(--hair-2);font-size:13px;letter-spacing:.02em;transition:padding-left .16s ease,color .16s;}
   .nav-item .mk{width:8px;height:8px;border-radius:50%;border:1.4px solid var(--accent);flex:none;transition:background .16s;}
@@ -253,10 +257,10 @@
   @media (max-width:880px){
     .stage{padding:0 36px;}
     .page{grid-template-columns:1fr;gap:8px;}
-    .rail{position:static;height:auto;overflow:visible;padding:84px 0 8px;}
+    .rail{position:static;height:auto;overflow:visible;padding:120px 0 8px;}
     .code-row{display:block;}
     .nav-item{max-height:none;padding:14px 2px;}
-    .rail-top{flex:0 0 auto;min-height:230px;} .field{top:-30px;left:-16px;right:-16px;}
+    .rail-top{flex:0 0 auto;min-height:60px;} .field{top:-30px;left:-16px;right:-16px;}
     .main{padding:26px 0 48px;}
   }
 </style>
