@@ -44,11 +44,12 @@
   @media (max-width:1400px){ .page{grid-template-columns:300px minmax(0,1fr);gap:44px;} }
   @media (max-width:1180px){ .page{grid-template-columns:260px minmax(0,1fr);gap:32px;} .stage{padding:0 40px;} }
 
-  /* ===================== LEFT RAIL — anchored, locked, ALWAYS fits (never scrolls) ===================== */
-  /* Rail is now a single scrollable column: wordmark → code + name →
-     ambient field → section nav → site index (mm-menu, inline). No
-     fixed-position overlays; the two navs stack in hierarchy. */
-  .rail{position:sticky;top:0;height:100vh;height:100dvh;overflow:hidden;
+  /* ===================== LEFT RAIL — natural flow, nothing ever truncates ===================== */
+  /* Rail flows at its full natural height: wordmark → name → ambient field →
+     section nav → site index. No height lock, no internal scroll region, no
+     clipping — the page scrolls as one, so every classification item and the
+     whole blob are always visible (Julia, 2026-09-08). */
+  .rail{position:static;height:auto;overflow:visible;
     display:flex;flex-direction:column;padding:140px 14px 34px 0;}
   /* one fixed logo lockup — identical viewport position on every page, never jumps.
      Left column pinned to stage inset (54px), so wordmark + rail content + main
@@ -68,9 +69,12 @@
   /* Ambient project field — the homepage blob, contained to the rail-top
      zone (behind the title). Height-capped and bottom-faded so it can't leak
      down through the CLASSIFICATION / INDEX cards below (Julia, 2026-09-08). */
-  .rail-top{position:relative;flex:0 0 auto;min-height:220px;display:flex;flex-direction:column;overflow:hidden;}
-  .field{position:absolute;top:-30px;left:-16px;right:-16px;height:280px;z-index:0;overflow:hidden;pointer-events:none;}
-  .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:55%;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)) 92%);}
+  /* Field box is flush with rail-top (bottom:0, not a taller fixed height),
+     so the canvas is never cross-clipped mid-blob — the contain-fit draws the
+     whole blob inside the box, and the fade is a soft landing, not a shave. */
+  .rail-top{position:relative;flex:0 0 auto;min-height:320px;display:flex;flex-direction:column;overflow:hidden;}
+  .field{position:absolute;top:-30px;left:-16px;right:-16px;bottom:0;z-index:0;overflow:hidden;pointer-events:none;}
+  .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:26%;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)) 96%);}
   #minimap{display:block;width:100%;height:100%;cursor:default;}
   .field-scrim{position:absolute;top:-86px;left:-30px;right:-26px;height:190px;z-index:1;pointer-events:none;
     background:linear-gradient(180deg,rgba(var(--scrim),.74),rgba(var(--scrim),.18) 64%,rgba(var(--scrim),0));}
@@ -79,11 +83,10 @@
 
   /* section nav — flows naturally in the rail column; if the whole rail is
      taller than the viewport it scrolls as one column (single hierarchy). */
-  /* Nav absorbs leftover column height, hides its own overflow. Background
-     kept transparent — only the INDEX drawer below carries the white fill,
-     per Julia (2026-09-08). Rows read against the page ground, not a card. */
-  .nav{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;}
-  .nav::-webkit-scrollbar{display:none;}
+  /* Nav takes its full natural height — no internal scroll, no clipping:
+     every classification item renders (Julia, 2026-09-08). Background stays
+     transparent — only the INDEX drawer below carries the white fill. */
+  .nav{flex:0 0 auto;overflow:visible;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;}
   .nav-item{flex:0 0 auto;min-height:34px;display:flex;align-items:center;gap:14px;padding:6px 14px;
     border-bottom:1px solid var(--hair-2);font-size:13px;letter-spacing:.02em;transition:padding-left .16s ease,color .16s;}
   .nav-item .mk{width:8px;height:8px;border-radius:50%;border:1.4px solid var(--accent);flex:none;transition:background .16s;}
