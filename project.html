@@ -478,20 +478,16 @@ function setupField(cv,nodes,edge,core,ink){
 }
 /* Author-controlled framing of the ambient field: zoom multiplies the auto contain-fit,
    x/y pan the blob as a fraction of the canvas. Defaults (zoom 1, x/y 0) reproduce the
-   original auto-fit exactly. Kept off the noise/canvas rebuild so drags stay smooth.
-   HARD GUARANTEE (Julia, 2026-09-08): the blob is never cut on any side — zoom is
-   clamped so the node bounding box fits the canvas, and pan is clamped to the slack
-   that remains. A framing authored for a differently-shaped box degrades gracefully
-   instead of shoving the blob off-canvas. Margin absorbs the organic animation drift. */
+   original auto-fit exactly — the default NEVER cuts the blob. Authored framing is
+   UNCLAMPED and WYSIWYG (Julia, 2026-09-08): dragging the blob off-canvas or zooming
+   past the fit is a deliberate compositional bleed and renders exactly as framed.
+   Kept off the noise/canvas rebuild so drags stay smooth.
+   NOTE: a framing saved against a differently-shaped field box renders differently
+   when the box changes — reframe (or Reset) in the Framing tool to re-compose. */
 function applyFraming(fr){ fr=fr||{}; if(!F.fitBase)return;
-  const W=F.lowW,H=F.lowH,{bw,bh}=F.fitBase;
-  const mx=W*0.06, my=H*0.06;                                  // safety margin per side
-  const maxCover=Math.min((W-2*mx)/bw,(H-2*my)/bh);
-  const z=(+fr.zoom>0?+fr.zoom:1);
-  const cover=Math.min(F.baseCover*z, maxCover);
-  const slackX=Math.max(0,(W-2*mx-cover*bw)/2), slackY=Math.max(0,(H-2*my-cover*bh)/2);
-  const panX=clamp((+fr.x||0)*W,-slackX,slackX), panY=clamp((+fr.y||0)*H,-slackY,slackY);
-  F.fit={ cover, cx:F.fitBase.cx, cy:F.fitBase.cy, provMin:F.fitBase.provMin, panX, panY };
+  const z=(+fr.zoom>0?+fr.zoom:1), cover=F.baseCover*z;
+  F.fit={ cover, cx:F.fitBase.cx, cy:F.fitBase.cy, provMin:F.fitBase.provMin,
+          panX:(+fr.x||0)*F.lowW, panY:(+fr.y||0)*F.lowH };
   F.mfd=F.fitBase.provMin*cover;
 }
 function drawField(t){
