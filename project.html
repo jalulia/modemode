@@ -61,7 +61,11 @@
 
   /* ambient project field — the homepage blob: large, borderless, animated + textured, bleeding behind the title (mock #2) */
   .rail-top{position:relative;flex:0 0 auto;min-height:60px;display:flex;flex-direction:column;}
-  .field{position:fixed;top:0;left:0;width:46vw;height:100vh;z-index:0;overflow:hidden;pointer-events:none;}
+  /* Ambient field disabled — it leaked behind the sidebar cards and read as
+     noise, and in stacked layouts it took a full column of empty space next
+     to the INDEX. If we want it back later, contain to a small fixed box
+     behind the title (Julia, 2026-09-08). */
+  .field{display:none;}
   .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)));}
   #minimap{display:block;width:100%;height:100%;cursor:default;}
   .field-scrim{position:absolute;top:-86px;left:-30px;right:-26px;height:190px;z-index:1;pointer-events:none;
@@ -71,9 +75,10 @@
 
   /* section nav — flows naturally in the rail column; if the whole rail is
      taller than the viewport it scrolls as one column (single hierarchy). */
-  /* nav absorbs any leftover column height and hides its own overflow — the
-     Index below always stays visible; long classification lists clip cleanly. */
-  .nav{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;background:var(--panel);}
+  /* Nav absorbs leftover column height, hides its own overflow. Background
+     kept transparent — only the INDEX drawer below carries the white fill,
+     per Julia (2026-09-08). Rows read against the page ground, not a card. */
+  .nav{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;}
   .nav::-webkit-scrollbar{display:none;}
   .nav-item{flex:0 0 auto;min-height:34px;display:flex;align-items:center;gap:14px;padding:6px 14px;
     border-bottom:1px solid var(--hair-2);font-size:13px;letter-spacing:.02em;transition:padding-left .16s ease,color .16s;}
@@ -257,10 +262,10 @@
   #lightbox>img{max-width:95vw;max-height:92vh;width:auto;height:auto;display:block;background:#fff;box-shadow:0 12px 64px rgba(0,0,0,.5);}
   #lightbox .lb-close{position:fixed;top:22px;right:26px;font-family:var(--text);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:none;border:0;cursor:pointer;opacity:.75;}
   #lightbox .lb-close:hover{opacity:1;}
-  /* Below 1200px (laptop scale): stack rail on top, give the main content the
-     full column so cards + images stop getting squeezed (Matt, 2026-09-07).
-     Below 880px: tighten stage padding for small screens. */
-  @media (max-width:1200px){
+  /* Below 1520px (typical laptop scale — MBP 14 default is 1512): stack rail
+     on top, give the main content the full column so cards + images stop
+     getting squeezed. Below 880px: tighten stage padding for small screens. */
+  @media (max-width:1520px){
     .page{grid-template-columns:1fr;gap:8px;}
     .rail{position:static;height:auto;overflow:visible;padding:120px 0 8px;max-width:none;}
     .rail-top{flex:0 0 auto;min-height:60px;} .field{top:-30px;left:-16px;right:-16px;bottom:auto;height:auto;width:auto;position:absolute;}
@@ -444,10 +449,12 @@ const F={ cv:null,ctx:null,lo:null,lox:null,lowW:0,lowH:0,cssW:0,cssH:0,DPR:1,
 function buildNoise(W,H){ const n=new Float32Array(W*H), step=0.05;
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){ let s=0,amp=0.5,f=1; for(let o=0;o<4;o++){s+=amp*vnoise2(x*step*f,y*step*f);f*=2;amp*=0.5;} n[y*W+x]=clamp(s,0,1); }
   return n; }
-function layoutField(cv){ const f=cv&&cv.parentElement; if(!f)return; const main=document.querySelector('.main');
-  if(window.innerWidth>880 && main){ const ml=main.getBoundingClientRect().left;
-    f.style.cssText='position:fixed;top:0;left:0;height:100vh;z-index:0;overflow:hidden;pointer-events:none;width:'+Math.round(ml+46)+'px'; }
-  else { f.style.cssText='position:absolute;top:-30px;left:-16px;right:-16px;bottom:-4px;z-index:0;overflow:hidden;pointer-events:none;'; } }
+function layoutField(cv){ const f=cv&&cv.parentElement; if(!f)return;
+  // Field is contained behind rail-top only; capped height so the blob can't
+  // stretch down through the sidebar and read as noise between cards
+  // (Julia, 2026-09-08). CSS already carries these values — clear any inline
+  // override the older fixed-position path may have left behind.
+  f.style.cssText=''; }
 function setupField(cv,nodes,edge,core,ink){
   F.cv=cv; F.ctx=cv.getContext('2d'); F.nodes=nodes; F.edge=edge; F.core=core; F.ink=ink||core;
   F.DPR=Math.min(window.devicePixelRatio||1,2);
