@@ -49,7 +49,7 @@
      section nav → site index. No height lock, no internal scroll region, no
      clipping — the page scrolls as one, so every classification item and the
      whole blob are always visible (Julia, 2026-09-08). */
-  .rail{position:static;height:auto;overflow:visible;
+  .rail{position:static;height:auto;overflow:visible;align-self:stretch;
     display:flex;flex-direction:column;padding:140px 14px 34px 0;}
   /* one fixed logo lockup — identical viewport position on every page, never jumps.
      Left column pinned to stage inset (54px), so wordmark + rail content + main
@@ -66,26 +66,23 @@
   .ident .name{font-family:var(--disp);font-size:clamp(28px,2.3vw,40px);line-height:.9;letter-spacing:.004em;
     color:var(--accent);margin:0 0 18px;text-transform:uppercase;hyphens:none;overflow-wrap:break-word;word-break:break-word;}
 
-  /* Ambient project field — the homepage blob, contained to the rail-top
-     zone (behind the title). Height-capped and bottom-faded so it can't leak
-     down through the CLASSIFICATION / INDEX cards below (Julia, 2026-09-08). */
-  /* Field box is flush with rail-top (bottom:0, not a taller fixed height),
-     so the canvas is never cross-clipped mid-blob — the contain-fit draws the
-     whole blob inside the box, and the fade is a soft landing, not a shave. */
-  .rail-top{position:relative;flex:0 0 auto;min-height:320px;display:flex;flex-direction:column;overflow:hidden;}
-  .field{position:absolute;top:-30px;left:-16px;right:-16px;bottom:0;z-index:0;overflow:hidden;pointer-events:none;}
-  .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:26%;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)) 96%);}
-  #minimap{display:block;width:100%;height:100%;cursor:default;}
-  .field-scrim{position:absolute;top:-86px;left:-30px;right:-26px;height:190px;z-index:1;pointer-events:none;
-    background:linear-gradient(180deg,rgba(var(--scrim),.74),rgba(var(--scrim),.18) 64%,rgba(var(--scrim),0));}
-  .field-fade{position:absolute;left:-30px;right:-26px;bottom:-4px;height:42%;z-index:1;pointer-events:none;
-    background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)) 90%);}
+  /* Ambient project field — the blob lives in its OWN in-flow box directly
+     under the title. Nothing overlaps it, nothing crops it, no scrim, no
+     fade: the renderer's clamped contain-fit guarantees the whole blob draws
+     inside the box on every side (Julia, 2026-09-08). */
+  .rail-top{position:relative;flex:0 0 auto;display:flex;flex-direction:column;}
+  .rail-top .ident{order:1;}
+  .field{order:2;position:relative;height:300px;margin:4px -16px 0;z-index:0;pointer-events:none;}
+  #minimap{display:block;width:100%;height:100%;cursor:default;pointer-events:auto;}
+  .field-scrim,.field-fade{display:none;}
 
   /* section nav — flows naturally in the rail column; if the whole rail is
      taller than the viewport it scrolls as one column (single hierarchy). */
-  /* Nav takes its full natural height — no internal scroll, no clipping:
-     every classification item renders (Julia, 2026-09-08). Background stays
-     transparent — only the INDEX drawer below carries the white fill. */
+  /* Anchor block: nav + INDEX ride in one sticky wrapper — as the main
+     column scrolls they pin to the top of the viewport and stay in reach
+     (Julia, 2026-09-08). Full natural height inside: no internal scroll,
+     no clipping — every classification item always renders. */
+  .rail-anchor{position:sticky;top:104px;z-index:2;display:flex;flex-direction:column;}  /* pins below the fixed wordmark (30+~54+20) */
   .nav{flex:0 0 auto;overflow:visible;display:flex;flex-direction:column;border-top:1px solid var(--hair);margin-top:14px;position:relative;z-index:2;}
   .nav-item{flex:0 0 auto;min-height:34px;display:flex;align-items:center;gap:14px;padding:6px 14px;
     border-bottom:1px solid var(--hair-2);font-size:13px;letter-spacing:.02em;transition:padding-left .16s ease,color .16s;}
@@ -473,16 +470,25 @@ function setupField(cv,nodes,edge,core,ink){
   if(!isFinite(mnx)){mnx=0;mny=0;mxx=W;mxy=H;}
   const bw=Math.max(1,mxx-mnx), bh=Math.max(1,mxy-mny);
   F.baseCover=Math.min(W/bw,H/bh)*0.66;                 // auto contain-fit before authored framing
-  F.fitBase={ cx:(mnx+mxx)/2, cy:(mny+mxy)/2, provMin };
+  F.fitBase={ cx:(mnx+mxx)/2, cy:(mny+mxy)/2, provMin, bw, bh };
   applyFraming((state.project&&state.project.field)||{});
 }
 /* Author-controlled framing of the ambient field: zoom multiplies the auto contain-fit,
    x/y pan the blob as a fraction of the canvas. Defaults (zoom 1, x/y 0) reproduce the
-   original auto-fit exactly. Kept off the noise/canvas rebuild so drags stay smooth. */
+   original auto-fit exactly. Kept off the noise/canvas rebuild so drags stay smooth.
+   HARD GUARANTEE (Julia, 2026-09-08): the blob is never cut on any side — zoom is
+   clamped so the node bounding box fits the canvas, and pan is clamped to the slack
+   that remains. A framing authored for a differently-shaped box degrades gracefully
+   instead of shoving the blob off-canvas. Margin absorbs the organic animation drift. */
 function applyFraming(fr){ fr=fr||{}; if(!F.fitBase)return;
-  const z=(+fr.zoom>0?+fr.zoom:1), cover=F.baseCover*z;
-  F.fit={ cover, cx:F.fitBase.cx, cy:F.fitBase.cy, provMin:F.fitBase.provMin,
-          panX:(+fr.x||0)*F.lowW, panY:(+fr.y||0)*F.lowH };
+  const W=F.lowW,H=F.lowH,{bw,bh}=F.fitBase;
+  const mx=W*0.06, my=H*0.06;                                  // safety margin per side
+  const maxCover=Math.min((W-2*mx)/bw,(H-2*my)/bh);
+  const z=(+fr.zoom>0?+fr.zoom:1);
+  const cover=Math.min(F.baseCover*z, maxCover);
+  const slackX=Math.max(0,(W-2*mx-cover*bw)/2), slackY=Math.max(0,(H-2*my-cover*bh)/2);
+  const panX=clamp((+fr.x||0)*W,-slackX,slackX), panY=clamp((+fr.y||0)*H,-slackY,slackY);
+  F.fit={ cover, cx:F.fitBase.cx, cy:F.fitBase.cy, provMin:F.fitBase.provMin, panX, panY };
   F.mfd=F.fitBase.provMin*cover;
 }
 function drawField(t){
@@ -783,7 +789,8 @@ function render(p){
   // Only labelled nodes that actually carry content appear in the chapter nav —
   // a mapped-but-empty subsection is hidden here (still shapes the blob / minimap).
   state.nodes.forEach(n=>{ if(n.label&&n.label.trim()&&hasContent(n)) navRow(n.id, n.label, true, false); });
-  rail.appendChild(nav);
+  // Sticky anchor: nav + site index pin together while the main column scrolls.
+  const anchor=el('div','rail-anchor'); anchor.appendChild(nav); rail.appendChild(anchor);
   // Previous / next project pager removed — the always-open Index at the
   // bottom-left is now the site nav.
   page.appendChild(rail);
@@ -1287,7 +1294,7 @@ if(EDIT) document.addEventListener('keydown',e=>{ if(!(e.metaKey||e.ctrlKey))ret
     if(tries<=0)return cb(null); setTimeout(function(){ waitForRail(cb,tries-1); },80); }
   waitForRail(function(rail){
     if(!window.MMMenu)return;
-    window.MMMenu.mount({current:slug, container:rail || undefined});
+    window.MMMenu.mount({current:slug, container:(rail&&rail.querySelector('.rail-anchor')) || rail || undefined});
   }); })();</script>
 </body>
 </html>
