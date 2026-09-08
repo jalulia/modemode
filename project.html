@@ -71,8 +71,11 @@
      fade: the renderer's clamped contain-fit guarantees the whole blob draws
      inside the box on every side (Julia, 2026-09-08). */
   .rail-top{position:relative;flex:0 0 auto;display:flex;flex-direction:column;}
-  .rail-top .ident{order:1;}
-  .field{order:2;position:relative;height:300px;margin:4px -16px 0;z-index:0;pointer-events:none;}
+  /* Title is a direct rail child (outside rail-top) so its sticky travel spans
+     the whole column: it pins just below the fixed wordmark while the blob
+     scrolls away beneath it, then the nav anchor pins beneath the title. */
+  .ident{position:sticky;top:104px;z-index:3;}
+  .field{position:relative;height:300px;margin:4px -16px 0;z-index:0;pointer-events:none;}
   #minimap{display:block;width:100%;height:100%;cursor:default;pointer-events:auto;}
   .field-scrim,.field-fade{display:none;}
 
@@ -773,10 +776,12 @@ function render(p){
   const wm=el('a','wordmark',LOGO); wm.href='index.html'; wm.setAttribute('aria-label','MODE MODE — back to home'); rail.appendChild(wm);
   const ident=el('div','ident',`<div class="code-row"><span class="code">${esc(p.code||'')}</span></div><h1 class="name">${esc(p.name||'')}</h1>`);
   // Wordmark is the back-to-homepage affordance — separate back-chevron removed.
+  // Title is a DIRECT rail child (not inside rail-top): sticky within the
+  // full column, so it stays anchored below the wordmark while scrolling.
+  rail.appendChild(ident);
   const railTop=el('div','rail-top');
   railTop.appendChild(el('div','field','<canvas id="minimap"></canvas>'));
   railTop.appendChild(el('div','field-scrim'));
-  railTop.appendChild(ident);            // title sits over the ambient field (z above)
   rail.appendChild(railTop);
   const nav=el('nav','nav');
   const navRow=(key,label,live,kicker)=>{ const it=el('div','nav-item'+(live?' live':' muted')+(kicker?' kicker':'')); it.dataset.key=key;
@@ -791,6 +796,11 @@ function render(p){
   state.nodes.forEach(n=>{ if(n.label&&n.label.trim()&&hasContent(n)) navRow(n.id, n.label, true, false); });
   // Sticky anchor: nav + site index pin together while the main column scrolls.
   const anchor=el('div','rail-anchor'); anchor.appendChild(nav); rail.appendChild(anchor);
+  // Anchor pins BELOW the pinned title — offset follows the title's real
+  // height (one- vs two-line names), kept fresh on resize.
+  const setAnchorTop=()=>{ anchor.style.top=(104+ident.offsetHeight+10)+'px'; };
+  requestAnimationFrame(setAnchorTop);
+  window.addEventListener('resize',setAnchorTop);
   // Previous / next project pager removed — the always-open Index at the
   // bottom-left is now the site nav.
   page.appendChild(rail);
