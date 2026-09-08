@@ -35,8 +35,14 @@
 
   /* Anchored to the left with a hard content cap — on wide laptops/monitors
      the page no longer stretches to fill the viewport. */
-  .stage{max-width:1280px;margin:0;padding:0 54px;}
-  .page{display:grid;grid-template-columns:368px minmax(0,1fr);gap:60px;align-items:start;}
+  /* Stage no longer capped at 1280 — main content column uses the full
+     viewport width on laptop / desktop / wide displays (Julia, 2026-09-08). */
+  .stage{max-width:none;margin:0;padding:0 54px;}
+  .page{display:grid;grid-template-columns:340px minmax(0,1fr);gap:56px;align-items:start;}
+  /* Sub-desktop scaling: shrink the rail + gap so main keeps room instead of
+     the whole thing overflowing (still two-column, still not stacked). */
+  @media (max-width:1400px){ .page{grid-template-columns:300px minmax(0,1fr);gap:44px;} }
+  @media (max-width:1180px){ .page{grid-template-columns:260px minmax(0,1fr);gap:32px;} .stage{padding:0 40px;} }
 
   /* ===================== LEFT RAIL — anchored, locked, ALWAYS fits (never scrolls) ===================== */
   /* Rail is now a single scrollable column: wordmark → code + name →
@@ -59,14 +65,12 @@
   .ident .name{font-family:var(--disp);font-size:clamp(28px,2.3vw,40px);line-height:.9;letter-spacing:.004em;
     color:var(--accent);margin:0 0 18px;text-transform:uppercase;hyphens:none;overflow-wrap:break-word;word-break:break-word;}
 
-  /* ambient project field — the homepage blob: large, borderless, animated + textured, bleeding behind the title (mock #2) */
-  .rail-top{position:relative;flex:0 0 auto;min-height:60px;display:flex;flex-direction:column;}
-  /* Ambient field disabled — it leaked behind the sidebar cards and read as
-     noise, and in stacked layouts it took a full column of empty space next
-     to the INDEX. If we want it back later, contain to a small fixed box
-     behind the title (Julia, 2026-09-08). */
-  .field{display:none;}
-  .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30%;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)));}
+  /* Ambient project field — the homepage blob, contained to the rail-top
+     zone (behind the title). Height-capped and bottom-faded so it can't leak
+     down through the CLASSIFICATION / INDEX cards below (Julia, 2026-09-08). */
+  .rail-top{position:relative;flex:0 0 auto;min-height:220px;display:flex;flex-direction:column;overflow:hidden;}
+  .field{position:absolute;top:-30px;left:-16px;right:-16px;height:280px;z-index:0;overflow:hidden;pointer-events:none;}
+  .field::after{content:'';position:absolute;left:0;right:0;bottom:0;height:55%;pointer-events:none;background:linear-gradient(180deg,rgba(var(--scrim),0),rgb(var(--scrim)) 92%);}
   #minimap{display:block;width:100%;height:100%;cursor:default;}
   .field-scrim{position:absolute;top:-86px;left:-30px;right:-26px;height:190px;z-index:1;pointer-events:none;
     background:linear-gradient(180deg,rgba(var(--scrim),.74),rgba(var(--scrim),.18) 64%,rgba(var(--scrim),0));}
