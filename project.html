@@ -262,21 +262,17 @@
   #lightbox>img{max-width:95vw;max-height:92vh;width:auto;height:auto;display:block;background:#fff;box-shadow:0 12px 64px rgba(0,0,0,.5);}
   #lightbox .lb-close{position:fixed;top:22px;right:26px;font-family:var(--text);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#fff;background:none;border:0;cursor:pointer;opacity:.75;}
   #lightbox .lb-close:hover{opacity:1;}
-  /* Below 1520px (typical laptop scale — MBP 14 default is 1512): stack rail
-     on top, give the main content the full column so cards + images stop
-     getting squeezed. Below 880px: tighten stage padding for small screens. */
-  @media (max-width:1520px){
-    .page{grid-template-columns:1fr;gap:8px;}
-    .rail{position:static;height:auto;overflow:visible;padding:120px 0 8px;max-width:none;}
-    .rail-top{flex:0 0 auto;min-height:60px;} .field{top:-30px;left:-16px;right:-16px;bottom:auto;height:auto;width:auto;position:absolute;}
-    .nav{overflow:visible;}    /* full-width layout has room; drop the internal clip */
-    .nav-item{max-height:none;padding:14px 2px;}
-    .code-row{display:block;}
-    .main{padding:26px 0 48px;}
-    #mm-legend.inline{max-width:520px;}
-  }
+  /* Two-column stays two-column across laptop + desktop. Only small screens
+     (real mobile / narrow tablet) stack the rail on top. */
   @media (max-width:880px){
     .stage{padding:0 36px;}
+    .page{grid-template-columns:1fr;gap:8px;}
+    .rail{position:static;height:auto;overflow:visible;padding:120px 0 8px;}
+    .code-row{display:block;}
+    .nav{overflow:visible;}
+    .nav-item{max-height:none;padding:14px 2px;}
+    .rail-top{flex:0 0 auto;min-height:60px;}
+    .main{padding:26px 0 48px;}
   }
 </style>
 </head>
