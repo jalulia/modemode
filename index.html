@@ -21,10 +21,14 @@
   .corner.tr{top:18px;right:18px;border-left:0;border-bottom:0;}
   .corner.bl{bottom:18px;left:18px;border-right:0;border-top:0;}
   .corner.br{bottom:18px;right:18px;border-left:0;border-top:0;}
-  .wordmark{position:fixed;top:var(--wm-top,30px);left:var(--wm-left,36px);user-select:none;z-index:60;color:var(--ink);transition:opacity .15s;}
+  /* Shared wordmark anchor — top:40 / left:40 across index, project, about.
+     Width may vary per page, but the top-left corner stays put. Homepage
+     computes --wm-w / --wm-h in sizeWordmark() so the hover readout can sit
+     below the logo without overlap; other pages just override --wm-w. */
+  .wordmark{position:fixed;top:var(--wm-top,40px);left:var(--wm-left,40px);user-select:none;z-index:60;color:var(--ink);transition:opacity .15s;}
   .wordmark:hover{opacity:.7;}
-  .wordmark .mm-logo{display:block;width:var(--wm-w,94px);height:auto;}
-  .topctrls{position:absolute;top:30px;right:36px;z-index:30;display:flex;align-items:center;gap:9px;}
+  .wordmark .mm-logo{display:block;width:var(--wm-w,150px);height:auto;}
+  .topctrls{position:absolute;top:40px;right:40px;z-index:30;display:flex;align-items:center;gap:9px;}
   body:not(.studio) .topctrls{display:none;}   /* studio chrome (EDIT/PRESENT + light-dark) hidden from the public; reveal with ?studio */
   .modeToggle{display:flex;border:1px solid var(--hair);background:var(--panel);}
   .modeToggle button{font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:8px 13px;border:0;background:none;color:var(--grey);cursor:pointer;}
@@ -106,7 +110,10 @@
   .modal-h{padding:16px 20px;border-bottom:1px solid var(--hair);font-size:11px;letter-spacing:.18em;display:flex;justify-content:space-between;align-items:center;}
   .modal textarea{flex:1;min-height:320px;font-family:var(--mono);font-size:11px;line-height:1.55;border:0;padding:16px 20px;resize:none;background:#fff;color:var(--ink);outline:none;}
   .modal-f{padding:14px 20px;border-top:1px solid var(--hair);display:flex;gap:10px;justify-content:flex-end;}
-  .readout{position:absolute;left:36px;top:96px;width:232px;background:var(--panel);border:1px solid var(--hair);padding:14px 16px 15px;opacity:0;transform:translateY(4px);transition:.35s;pointer-events:none;z-index:6;}
+  /* Hover readout sits below the wordmark. Its top tracks the live wordmark
+     bottom (--wm-top + --wm-h + 28px gap) so a wider viewport, which gives a
+     taller wordmark, never causes overlap. Same for the media preview below. */
+  .readout{position:absolute;left:var(--wm-left,40px);top:calc(var(--wm-top,40px) + var(--wm-h,60px) + 28px);width:232px;background:var(--panel);border:1px solid var(--hair);padding:14px 16px 15px;opacity:0;transform:translateY(4px);transition:.35s;pointer-events:none;z-index:6;}
   .readout.show{opacity:1;transform:translateY(0);}
   .readout .r-code{font-size:10px;letter-spacing:.18em;color:var(--grey);}
   .readout .r-name{font-size:14px;font-weight:700;margin:5px 0 10px;}
@@ -118,7 +125,10 @@
     border-top:1px solid var(--hair);font-size:10px;letter-spacing:.14em;font-weight:700;text-decoration:none;pointer-events:auto;}
   .readout .r-open:hover{opacity:.6;}
   /* hover-image preview — appears when a project with a page is focused (present mode) */
-  #hoverPreview{position:absolute;left:36px;top:300px;width:232px;z-index:8;opacity:0;transform:translateY(6px);
+  /* Media preview sits under the readout — same offset as before (readout is
+     ~204px tall including its gap), still keyed to the wordmark bottom so it
+     travels with the readout as the logo scales. */
+  #hoverPreview{position:absolute;left:var(--wm-left,40px);top:calc(var(--wm-top,40px) + var(--wm-h,60px) + 232px);width:232px;z-index:8;opacity:0;transform:translateY(6px);
     transition:opacity .3s,transform .3s;pointer-events:none;background:var(--panel);border:1px solid var(--hair);}
   #hoverPreview.show{opacity:1;transform:translateY(0);}
   #hoverPreview img{display:block;width:100%;height:auto;max-height:42vh;object-fit:cover;object-position:center top;}
@@ -405,18 +415,24 @@ function layout(){
   pl.canvas.width=cssW; pl.canvas.height=cssH;
   ensureFx(); applyBg(); positionAxes(); sizeWordmark(); dirty=true; lastField=0; sceneDirty=true; fxChanged=true;
 }
-/* wordmark sized to the dot lattice: 2 grid squares tall, snapped to a dot column/row.
-   grid: spacing s = max(40, mfd/12); dots at (cx + k*s, cy + k*s), same formula as drawLattice. */
+/* Wordmark is anchored to a fixed top:40 / left:40 — same on every page —
+   and scales in width only. Height is 1.6 grid squares (was 2 → 20% smaller
+   on the homepage, per Julia's spec) and capped so it can never crash into
+   the hover readout below. --wm-h is written to the root so .readout and
+   #hoverPreview can position themselves against the live logo bottom. */
 function sizeWordmark(){
   const wm=document.querySelector('.wordmark'); if(!wm||!mfd) return;
-  const s=Math.max(40,mfd/12), cx=fL+fW/2, cy=fT+fH/2;
+  const s=Math.max(40,mfd/12);
   const AR=676.58/266.78;                                 // MODE MODE SVG viewBox aspect
-  const h=2*s, w=h*AR;                                    // height = 2 grid squares
-  const MINX=Math.max(24,cssW*0.018), MINY=Math.max(20,cssH*0.028);
-  const kx=Math.ceil((MINX-cx)/s), ky=Math.ceil((MINY-cy)/s);
-  const left=cx+kx*s, top=cy+ky*s;
+  let h=1.6*s;                                            // 20% shorter than the old 2*s
+  const H_MAX=96;                                         // ceiling so the logo never grows into readout territory
+  if(h>H_MAX) h=H_MAX;
+  const w=h*AR;
   const R=document.documentElement.style;
-  R.setProperty('--wm-w',w+'px'); R.setProperty('--wm-left',left+'px'); R.setProperty('--wm-top',top+'px');
+  R.setProperty('--wm-w',w+'px');
+  R.setProperty('--wm-h',h+'px');
+  R.setProperty('--wm-top','40px');
+  R.setProperty('--wm-left','40px');
 }
 function d2p(x,y){return [fL+(x+1)/2*fW,(fT+fH)-(y+1)/2*fH];}
 function p2d(px,py){return [clamp((px-fL)/fW*2-1,-1,1),clamp(((fT+fH)-py)/fH*2-1,-1,1)];}
