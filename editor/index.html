@@ -80,6 +80,14 @@
   .ctrls button{border:1px solid var(--hair);background:var(--paper);border-radius:3px;width:24px;height:24px;font-size:12px;color:var(--grey);padding:0;}
   .ctrls button:hover{color:var(--ink);border-color:var(--grey-2);}
   .ctrls button.x:hover{color:var(--accent);border-color:var(--accent);}
+  /* move-block menu */
+  .movemenu{position:absolute;z-index:60;min-width:186px;max-width:270px;background:var(--paper);
+    border:1px solid var(--hair);border-radius:5px;padding:5px;box-shadow:0 10px 30px rgba(22,22,15,.18);}
+  .movemenu .mm-h{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--grey-2);padding:6px 8px 7px;}
+  .movemenu .mm-row{display:block;width:100%;text-align:left;border:0;background:none;border-radius:3px;
+    padding:7px 9px;font-size:11.5px;line-height:1.3;color:var(--ink);white-space:normal;}
+  .movemenu .mm-row:hover{background:var(--panel);}
+  .movemenu .mm-row.cur{color:var(--grey-2);cursor:default;} .movemenu .mm-row.cur:hover{background:none;}
 
   .sub{border-left:2px solid var(--hair-2);padding:0 0 0 12px;margin:10px 0;}
   .sub .si{display:flex;gap:8px;align-items:flex-start;margin:0 0 8px;}
@@ -160,7 +168,9 @@
 </head>
 <body>
   <div class="top">
-    <span class="brand">MODE MODE<small>Studio · CMS</small></span>
+    <span class="brand">MODE MODE<small>Content editor</small></span>
+    <a class="btn ghost tiny" href="../admin.html" title="Back end — all internal tools">◇ Back end</a>
+    <a class="btn ghost tiny" href="../studio/" title="Studio — proposals &amp; invoices">Studio ↗</a>
     <div class="sp"></div>
     <span id="status"></span>
     <span class="who" id="who"></span>
@@ -458,6 +468,38 @@ function blockBody(b){
         host.appendChild(imageField('Image',im,'src',{})); host.appendChild(inputField('Caption',im,'caption')); host.appendChild(inputField('Alt',im,'alt')); })); }
   return c;
 }
+/* ---------- move a block to another section (node ⇄ node) ---------- */
+function moveDestinations(sourceArr){
+  const d=state.doc, out=[];
+  if(d&&d.classification&&Array.isArray(d.classification.intro))
+    out.push({name:'Classification · intro', current:d.classification.intro===sourceArr, get:()=>d.classification.intro});
+  ((d&&d.nodes)||[]).forEach(n=>{
+    const label=(n.label&&n.label.trim())||('(unlabelled · '+(n.id||'node')+')');
+    out.push({ name:label, current:!!(n.content&&n.content.blocks===sourceArr),
+      get:()=>{ if(!n.content) n.content={hidden:false,order:(d.nodes.indexOf(n)+1),blocks:[]}; n.content.blocks=n.content.blocks||[]; return n.content.blocks; } });
+  });
+  return out;
+}
+let _moveMenu=null, _moveOutside=null;
+function closeMoveMenu(){ if(_moveMenu){ _moveMenu.remove(); _moveMenu=null; }
+  if(_moveOutside){ document.removeEventListener('mousedown',_moveOutside); _moveOutside=null; } }
+function openMoveMenu(anchor, arr, i){
+  closeMoveMenu();
+  const menu=el('div','movemenu'); menu.appendChild(el('div','mm-h','Move block to…'));
+  moveDestinations(arr).forEach(dst=>{
+    const row=el('button','mm-row'+(dst.current?' cur':''), dst.name); row.type='button';
+    if(dst.current){ row.disabled=true; row.title='current section'; }
+    else row.onclick=()=>{ closeMoveMenu(); const [blk]=arr.splice(i,1); dst.get().push(blk); markDirty(); render(); setStatus('moved → '+dst.name,'ok'); };
+    menu.appendChild(row);
+  });
+  document.body.appendChild(menu);
+  const r=anchor.getBoundingClientRect();
+  menu.style.top=(window.scrollY+r.bottom+5)+'px';
+  menu.style.left=Math.max(8, Math.min(window.scrollX+r.right-menu.offsetWidth, window.scrollX+window.innerWidth-menu.offsetWidth-10))+'px';
+  _moveOutside=(e)=>{ if(_moveMenu&&!_moveMenu.contains(e.target)&&e.target!==anchor) closeMoveMenu(); };
+  setTimeout(()=>document.addEventListener('mousedown',_moveOutside),0);
+  _moveMenu=menu;
+}
 function blockEditor(arr,i){
   const b=arr[i]; const wrap=el('div','block');
   const bh=el('div','bh'); bh.appendChild(el('span','t',b.type));
@@ -470,6 +512,10 @@ function blockEditor(arr,i){
   const wsel=el('select','wsel'); [['','—'],['full','Full'],['two-thirds','⅔'],['half','½'],['third','⅓']].forEach(([v,t])=>{ const o=el('option',null,t); o.value=v; if((b.width||'')===v)o.selected=true; wsel.appendChild(o); });
   wsel.title='Block width'; wsel.onchange=()=>{ if(wsel.value)b.width=wsel.value; else delete b.width; markDirty(); }; bh.appendChild(wsel);
   const ctr=el('div','ctrls');
+  if(moveDestinations(arr).some(x=>!x.current)){
+    const mv=el('button','mv','⇄'); mv.title='Move to another section';
+    mv.onclick=(e)=>{ e.stopPropagation(); openMoveMenu(e.currentTarget, arr, i); }; ctr.appendChild(mv);
+  }
   const up=el('button',null,'↑'); up.onclick=()=>{ if(i>0){ [arr[i-1],arr[i]]=[arr[i],arr[i-1]]; markDirty(); render(); } };
   const dn=el('button',null,'↓'); dn.onclick=()=>{ if(i<arr.length-1){ [arr[i+1],arr[i]]=[arr[i],arr[i+1]]; markDirty(); render(); } };
   const rm=el('button','x','✕'); rm.onclick=()=>{ if(confirm('Delete this '+b.type+' block?')){ arr.splice(i,1); markDirty(); render(); } };

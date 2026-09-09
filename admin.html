@@ -1,2 +1,48 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=editor/"><title>MODE MODE — Studio</title></head>
-<body style="font-family:ui-monospace,monospace;padding:40px;color:#16160F">Redirecting to the MODE MODE Studio… <a href="editor/">open it →</a></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" href="data:,">
+<title>MODE MODE — Back end</title>
+<style>
+  @font-face{font-family:'BB Strata ML';src:url('assets/fonts/BBStrata-MLRegular.woff2') format('woff2'),url('assets/fonts/BBStrata-MLRegular.otf') format('opentype');font-weight:400;font-display:swap;}
+  :root{--ground:#F3F3F0;--paper:#fff;--ink:#16160F;--grey:#8C8C86;--hair:rgba(22,22,15,.16);--accent:#C40021;--mono:'BB Strata ML',ui-monospace,Menlo,monospace;}
+  *{box-sizing:border-box;} html,body{margin:0;background:var(--ground);}
+  body{font-family:var(--mono);color:var(--ink);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;}
+  .wm{font-weight:900;font-size:44px;line-height:.84;letter-spacing:-2px;text-align:center;margin-bottom:6px;}
+  .wm span{display:block;font-weight:400;font-size:10px;letter-spacing:.5px;color:var(--grey);margin-top:16px;text-transform:uppercase;}
+  .lede{color:var(--grey);font-size:12px;margin:16px 0 34px;text-align:center;}
+  .grid{display:grid;grid-template-columns:repeat(2,minmax(0,260px));gap:16px;width:100%;max-width:560px;}
+  a.tool{display:block;background:var(--paper);border:1px solid var(--ink);padding:24px;color:var(--ink);text-decoration:none;transition:background .12s;}
+  a.tool:hover{background:#fff;box-shadow:0 8px 26px rgba(22,22,15,.10);}
+  a.tool .n{font-size:9px;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;}
+  a.tool h2{font-size:19px;margin:12px 0 8px;letter-spacing:-.4px;}
+  a.tool p{font-size:11.5px;color:var(--grey);line-height:1.5;margin:0;}
+  a.tool .go{margin-top:18px;font-size:11px;color:var(--ink);}
+  .foot{margin-top:34px;font-size:10px;color:var(--grey);text-align:center;line-height:1.7;}
+  @media(max-width:560px){.grid{grid-template-columns:1fr;max-width:320px;}}
+</style>
+</head>
+<body>
+  <div class="wm">MODE<br>MODE<span>Back end</span></div>
+  <p class="lede">Internal tools. Each opens behind its own sign-in.</p>
+  <div class="grid">
+    <a class="tool" href="editor/">
+      <div class="n">01 · Site</div>
+      <h2>Content editor</h2>
+      <p>Field map, project pages, and the About page. Publishes the public site.</p>
+      <div class="go">Open ↗</div>
+    </a>
+    <a class="tool" href="studio/">
+      <div class="n">02 · Studio</div>
+      <h2>Proposals &amp; invoices</h2>
+      <p>Clients, projects, proposals and invoices. Issued documents are frozen with a PDF.</p>
+      <div class="go">Open ↗</div>
+    </a>
+  </div>
+  <div class="foot">Authorized accounts only · records are private (editor-only)</div>
+</body>
+</html>
