@@ -35,9 +35,10 @@
 
   /* Anchored to the left with a hard content cap — on wide laptops/monitors
      the page no longer stretches to fill the viewport. */
-  /* Stage no longer capped at 1280 — main content column uses the full
-     viewport width on laptop / desktop / wide displays (Julia, 2026-09-08). */
-  .stage{max-width:none;margin:0;padding:0 54px;}
+  /* Anchored to the left with a hard content cap — on wide laptops/monitors
+     the page never stretches to fill the viewport (Matt: content must not
+     infinitely fill; cap restored 2026-09-17 after a6361b2 removed it). */
+  .stage{max-width:1280px;margin:0;padding:0 54px;}
   .page{display:grid;grid-template-columns:340px minmax(0,1fr);gap:56px;align-items:start;}
   /* Sub-desktop scaling: shrink the rail + gap so main keeps room instead of
      the whole thing overflowing (still two-column, still not stacked). */
